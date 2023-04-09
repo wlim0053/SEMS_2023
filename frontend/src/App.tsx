@@ -1,20 +1,25 @@
 // hooks
-import { useState } from 'react'
+import React, { useState } from 'react';
+import { ChakraProvider } from '@chakra-ui/react';
 // components
-import Navbar from './components/Navbar'
-import Admin from './pages/Admin'
-// css
-import './App.css'
+import LoginPage from './components/LoginPage';
 
+const App: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-function App() {
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
 
-  	return (
-    	<div className="App">
-      		<Navbar></Navbar>
-      		<Admin></Admin>
-    	</div>
-  )
-}
+  return (
+    <ChakraProvider>
+      {!isLoggedIn ? (
+        <LoginPage onLoginSuccess={handleLoginSuccess} />
+      ) : (
+        <div>Logged in successfully!</div>
+      )}
+    </ChakraProvider>
+  );
+};
 
-export default App
+export default App;
