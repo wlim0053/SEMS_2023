@@ -12,20 +12,20 @@ useToast,
 Image,
 Center,
 } from '@chakra-ui/react';
+import { EmailIcon } from '@chakra-ui/icons';
+
 
 interface LoginProps {
 onLoginSuccess: () => void;
 }
 
 const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
-const [email, setEmail] = useState('');
-const [password, setPassword] = useState('');
 const toast = useToast();
 const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     toast({
     title: 'Logged In',
-    description: `Welcome, ${email}`,
+    description: `Welcome`,
     status: 'success',
     duration: 3000,
     isClosable: true,
@@ -35,40 +35,19 @@ const handleSubmit = (e: FormEvent) => {
 
 return (
     <Box width="100%" maxWidth="400px" margin="0 auto" mt="100px">
-        <Center mb={4}>
+        {/* <Center mb={4}>
+        </Center> */}
+        <VStack>
             <Image
                 src="https://media.discordapp.net/attachments/950381894187483173/1003982545299439778/2016-MonashUniversityMALAYSIA_2-MonoCMYKoutlines.png?width=653&height=378"
                 alt="Monash University Logo"
             />
-        </Center>
-        <VStack
-        as="form"
-        onSubmit={handleSubmit}
-        alignItems="stretch"
-        spacing={4}
-        >
-        <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb={4}>
+            <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb={4}>
+                Login
+            </Text>
+            <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon/>}>
             Login
-        </Text>
-        <FormControl id="email">
-        <FormLabel>Email</FormLabel>
-        <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-        />
-        </FormControl>
-        <FormControl id="password">
-        <FormLabel>Password</FormLabel>
-        <Input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        />
-        </FormControl>
-        <Button type="submit" colorScheme="blue" mt={4}>
-            Login
-        </Button>
+            </Button>
         </VStack>
     </Box>
 );
