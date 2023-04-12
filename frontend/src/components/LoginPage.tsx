@@ -15,14 +15,24 @@ Center,
 import { EmailIcon } from '@chakra-ui/icons';
 
 
+// Interface for LoginProps containing a function that gets called on successful login
 interface LoginProps {
 onLoginSuccess: () => void;
 }
 
+// LoginPage functional component
 const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
+// State for email input
+const [email, setEmail] = useState('');
+// State for password input
+const [password, setPassword] = useState('');
+// Hook to create toast notifications
 const toast = useToast();
+
+// Function to handle form submission
 const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
+    // Show toast notification with a welcome message
     toast({
     title: 'Logged In',
     description: `Welcome`,
@@ -30,9 +40,11 @@ const handleSubmit = (e: FormEvent) => {
     duration: 3000,
     isClosable: true,
     });
+    // Call the onLoginSuccess function passed as a prop
     onLoginSuccess();
 };
 
+// Render the login form
 return (
     <Box width="100%" maxWidth="400px" margin="0 auto" mt="100px">
         {/* <Center mb={4}>
