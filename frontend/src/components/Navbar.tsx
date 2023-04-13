@@ -13,40 +13,43 @@ import {
   background,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const buttonRef = React.useRef(null)
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const buttonRef = React.useRef(null);
+  const navigate = useNavigate();
 
   return (
     <>
       <Box bg="blue.700">
         {/* <Button ref={buttonRef} onClick={onOpen} variant='ghost' _hover={{}}> */}
-          <HamburgerIcon ref={buttonRef} 
+        <HamburgerIcon
+          ref={buttonRef}
           onClick={onOpen}
-          boxSize='1.5em'
+          boxSize="1.5em"
           css={{
-            margin: '10px',
-            cursor: 'pointer'
-          }}/> 
+            margin: "10px",
+            cursor: "pointer",
+          }}
+        />
         {/* </Button> */}
         <Drawer
           isOpen={isOpen}
-          placement='left'
+          placement="left"
           onClose={onClose}
           finalFocusRef={buttonRef}
           colorScheme="blackAlpha"
-          >
-          <DrawerOverlay ></DrawerOverlay>
+        >
+          <DrawerOverlay></DrawerOverlay>
           <DrawerContent>
-            <DrawerCloseButton/>
+            <DrawerCloseButton />
             <DrawerHeader>Menu</DrawerHeader>
             <DrawerBody>
-              {['Home', 'Organiser List', 'Activity Log'].map((nav) => 
-                <Box>
-                    {nav}
-                </Box>
-              )}
+              {["Home", "Organiser List", "Activity Log"].map((nav) => (
+                <Box>{nav}</Box>
+              ))}
+              <button onClick={() => navigate("/StudentHome")}>Student Home</button>
             </DrawerBody>
             <DrawerFooter>Hello3</DrawerFooter>
           </DrawerContent>
