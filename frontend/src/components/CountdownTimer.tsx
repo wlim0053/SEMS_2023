@@ -4,11 +4,11 @@ import "./TimerStyle.css";
 
 function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState(0);
-  const [eventDate, setEventDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [, setEventDate] = useState("");
+  const [, setStartTime] = useState("");
+  const [, setEndTime] = useState("");
   const [title, setTitle] = useState("");
-  const [isMobile, setIsMobile] = useState(false);
+  const [, setIsMobile] = useState(false);
   const [futureEvent, setFutureEvent] = useState(true);
 
   const events = [
@@ -39,8 +39,8 @@ function CountdownTimer() {
     const interval = setInterval(() => {
       const currentDate = new Date();
       let nearestEvent = null;
-      for (let i = 0; i < events.length; i++) {
-        const eventDate = new Date(events[i].start);
+      for (const element of events) {
+        const eventDate = new Date(element.start);
         const timeLeft = eventDate.getTime() - currentDate.getTime();
         if (
           timeLeft > 0 &&
@@ -53,11 +53,11 @@ function CountdownTimer() {
               hour: "numeric",
               minute: "numeric",
             }),
-            endTime: new Date(events[i].end).toLocaleTimeString([], {
+            endTime: new Date(element.end).toLocaleTimeString([], {
               hour: "numeric",
               minute: "numeric",
             }),
-            title: events[i].title,
+            title: element.title,
           };
         }
       }
