@@ -1,0 +1,72 @@
+.countdown-card {
+    max-width: 30rem;
+    border: 1px solid #006dac;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0.5rem 0.1rem #006dac;
+    padding: 1.5rem;
+    margin: 0 auto;
+}
+
+.countdown-box {
+    padding: 1.5rem;
+}
+
+.countdown-title {
+    font-family: "Helvetica Neue", "Arial Narrow", sans-serif;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.countdown-container {
+    margin-top: 1.5rem;
+}
+
+.countdown-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.countdown-item {
+    text-align: center;
+}
+
+.countdown-value {
+    font-family: "Helvetica Neue", "Arial Narrow", sans-serif;
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.countdown-label {
+    font-family: "Helvetica Neue", "Arial Narrow", sans-serif;
+    font-size: 1rem;
+}
+
+#timer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 1.5rem;
+}
+
+/* styles for mobile */
+@media only screen and (max-width: 845px){
+    .countdown-card {
+        max-width: 20rem;
+        padding: 0;
+    }
+
+    .countdown-title {
+        font-size: 1.2rem;
+    }
+
+    .countdown-value {
+        font-size: 2rem;
+    }
+
+    .countdown-label {
+        font-size: 0.8rem;
+    }
+}
