@@ -83,19 +83,11 @@ function Calendar() {
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
-        headerToolbar={
-          isMobile
-            ? {
-                start: "title",
-                center: "",
-                end: "prev,next today",
-              }
-            : {
-                start: "title",
-                center: "",
-                end: "prev,next today",
-              }
-        }
+        headerToolbar={{
+          start: "title",
+          center: "",
+          end: "prev,next today",
+        }}
         buttonText={{
           today: "Today",
           month: "Month",
