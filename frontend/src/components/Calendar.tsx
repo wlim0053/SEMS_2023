@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import {EventClickArg} from "@fullcalendar/core";
+import React, { useEffect, useState } from "react";
+import { EventClickArg, EventHoveringArg } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -14,6 +14,7 @@ import {
   ModalFooter,
   Button,
 } from "@chakra-ui/react";
+import "./CalendarStyle.css";
 
 function Calendar() {
   const [title, setTitle] = useState("");
@@ -22,18 +23,44 @@ function Calendar() {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [eventDate, setEventDate] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 845);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleEventClick = (clickInfo: EventClickArg) => {
     setTitle(clickInfo.event.title);
     setDescription(clickInfo.event.extendedProps.description);
-    setEventDate(clickInfo.event.start ? clickInfo.event.start.toLocaleDateString() : "");
+    setEventDate(
+      clickInfo.event.start ? clickInfo.event.start.toLocaleDateString() : ""
+    );
     if (clickInfo.event.start) {
-      setStartTime(clickInfo.event.start.toLocaleTimeString([], {hour: 'numeric', minute:'numeric'}));
+      setStartTime(
+        clickInfo.event.start.toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "numeric",
+        })
+      );
     }
     if (clickInfo.event.end) {
-      setEndTime(clickInfo.event.end.toLocaleTimeString([], {hour: 'numeric', minute:'numeric'}));
+      setEndTime(
+        clickInfo.event.end.toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "numeric",
+        })
+      );
     }
     setModal(true);
+  };
+
+  const handleEventHover = (hoverInfo: EventHoveringArg) => {
+    hoverInfo.el.style.cursor = "pointer";
   };
 
   const events = [
@@ -46,34 +73,48 @@ function Calendar() {
   ];
 
   return (
-    <div
-      style={{
-        font: "Roboto Condensed",
-        fontWeight: 500,
-        padding: "0px",
-        marginLeft: "30px",
-        marginRight: "30px",
-        marginTop: "20px",
-      }}
-    >
+    <div className="calendar">
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
-        headerToolbar={{
-          start: "prev,next today",
-          center: "title",
-          end: "dayGridMonth,timeGridWeek,timeGridDay",
-        }}
+        headerToolbar={
+          isMobile
+            ? {
+                start: "title",
+                center: "",
+                end: "prev,next today",
+              }
+            : {
+                start: "title",
+                center: "",
+                end: "prev,next today",
+              }
+        }
         buttonText={{
           today: "Today",
           month: "Month",
           week: "Week",
           day: "Day",
         }}
-        height={"90vh"}
+        dayHeaderFormat={isMobile ? { weekday: "short" } : { weekday: "long" }}
+        eventTimeFormat={
+          isMobile
+            ? {
+                hour: "numeric",
+                hour12: true,
+              }
+            : {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              }
+        }
+        height={isMobile ? "auto" : "90vh"}
         events={events}
         eventClick={handleEventClick}
+        eventMouseEnter={handleEventHover}
       />
+
       <Modal isOpen={modal} onClose={() => setModal(false)}>
         <ModalOverlay />
         <ModalContent>
