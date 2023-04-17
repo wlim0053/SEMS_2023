@@ -70,6 +70,12 @@ function Calendar() {
       end: "2023-04-05T09:00:00",
       description: "This is a MUM event",
     },
+    {
+      title: "MUM Event 2",
+      start: "2023-04-19T08:00:00",
+      end: "2023-04-19T09:00:00",
+      description: "This is a MUM event",
+    },
   ];
 
   return (
