@@ -16,8 +16,9 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/react";
+import { Route, Outlet } from 'react-router-dom';
 
-const Admin = () => {
+function Admin() {
   return (
     <>
       <Wrap>
@@ -35,6 +36,8 @@ const Admin = () => {
             </CardBody>
           </Card>
         ))}
+        {/* Render the nested routes using Outlet */}
+      <Outlet />
       </Wrap>
     </>
   );
