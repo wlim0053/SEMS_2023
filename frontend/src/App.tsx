@@ -11,14 +11,14 @@ import ActivityLog from './pages/Admin/ActivityLog';
 
 function App() {
 
-  	return (
-    	<div className="App">
+	return (
+		<div className="App">
 			<Router>
 				<Navbar />
 				<Outlet /> {/* Render nested routes */}
 			</Router>
 		</div>
-  );
+	);
 }
 
 export default App
