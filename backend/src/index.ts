@@ -38,22 +38,3 @@ new mssql.ConnectionPool(config)
     app.listen(PORT, () => console.log(`Running on PORT ${PORT}`));
   })
   .catch((error) => console.error(error));
-
-// // create connection to db
-// mysql.createPool(process.env.KEVIN_DATABASE_URL || "").pool.getConnection((error, connection) => {
-//     if (error) throw error;
-//     connection.release();
-// })
-// only listen for request if connected to db
-
-// create connection to db
-// mssql.connect({
-//   user: "LAPTOP-EMHKSMD3\\ASUS",
-//   password: "",
-//   database: "test",
-//   server: "localhost",
-// })
-
-// only listen for request if connected to db
-
-// app.listen(PORT, () => console.log(`Running on port ${PORT}`));
