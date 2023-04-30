@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Card, Text } from "@chakra-ui/react";
-import "./TimerStyle.css";
+import {Box, Text, Flex, useMediaQuery} from "@chakra-ui/react";
 
 function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState(0);
@@ -20,11 +19,19 @@ function CountdownTimer() {
     },
     {
       title: "MUM Event 2",
-      start: "2023-04-19T08:00:00",
-      end: "2023-04-19T09:00:00",
+      start: "2023-05-26T08:00:00",
+      end: "2023-05-26T09:00:00",
       description: "This is a MUM event",
     },
   ];
+
+  const [isSmallerThan500] = useMediaQuery("(max-width: 500px)");
+
+  const maxWidth = isSmallerThan500 ? "calc(100% - 4rem)" : "30rem";
+  const mt = isSmallerThan500 ? "0.1rem" : { base: "1rem", md: "1.5rem" };
+  const mb = isSmallerThan500 ? "0.1rem" : { base: "1rem", md: "1.5rem" };
+  const p = isSmallerThan500 ? "0.1rem" : { base: "1rem", md: "1.5rem" };
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -88,52 +95,119 @@ function CountdownTimer() {
 
   if (!futureEvent) {
     return (
-      <div id="timer">
-        <Card className="card countdown-card">
-          <Text className="countdown-title">
+      <Flex
+        id="timer"
+        justifyContent="center"
+        alignItems="center"
+        flexDirection="column"
+        mt="1.5rem"
+      >
+        <Box
+          className="card countdown-card"
+          maxW={maxWidth}
+          borderWidth="1px"
+          borderColor="#006dac"
+          borderRadius="0.5rem"
+          boxShadow="0 0 0.5rem 0.1rem #006dac"
+          p={p}
+          m="0 auto"
+          mt={mt}
+          mb={mb}
+        >
+          <Text
+            className="countdown-title"
+            fontFamily="Helvetica Neue, Arial Narrow, sans-serif"
+            fontWeight="bold"
+            fontSize="1.5rem"
+            textAlign="center"
+          >
             There are no future events from {getCurrentDate()} onwards
           </Text>
-        </Card>
-      </div>
+        </Box>
+      </Flex>
     );
   }
 
   return (
-    <div id="timer">
-      <Card className="card countdown-card">
-        <Box className="countdown-box">
-          <Text className="countdown-title">Next event - {title} is in:</Text>
-          <Box className="countdown-container">
-            <Box className="countdown-row">
-              <Box className="countdown-item">
-                <Text className="countdown-value">
-                  {Math.floor(timeLeft / (1000 * 60 * 60 * 24))}
-                </Text>
-                <Text className="countdown-label">Days</Text>
-              </Box>
-              <Box className="countdown-item">
-                <Text className="countdown-value">
-                  {Math.floor((timeLeft / (1000 * 60 * 60)) % 24)}
-                </Text>
-                <Text className="countdown-label">Hours</Text>
-              </Box>
-              <Box className="countdown-item">
-                <Text className="countdown-value">
-                  {Math.floor((timeLeft / 1000 / 60) % 60)}
-                </Text>
-                <Text className="countdown-label">Minutes</Text>
-              </Box>
-              <Box className="countdown-item">
-                <Text className="countdown-value">
-                  {Math.floor((timeLeft / 1000) % 60)}
-                </Text>
-                <Text className="countdown-label">Seconds</Text>
-              </Box>
-            </Box>
-          </Box>
+    <Flex
+      id="timer"
+      justifyContent="center"
+      alignItems="center"
+      flexDirection="column"
+      mt="1.5rem"
+    >
+      <Box
+        className="card countdown-card"
+        maxW={maxWidth}
+        borderWidth="1px"
+        borderColor="#006dac"
+        borderRadius="0.5rem"
+        boxShadow="0 0 0.5rem 0.1rem #006dac"
+        p={p}
+        m="0 auto"
+        mt={mt}
+        mb={mb}
+      >
+        <Box className="countdown-box" p="1.5rem">
+          <Text
+            className="countdown-title"
+            fontFamily="Helvetica Neue, Arial Narrow, sans-serif"
+            fontWeight="bold"
+            fontSize={isSmallerThan500 ? "1.125rem" : "1.5rem"}
+            textAlign="center"
+          >
+            Next event - {title} is in:
+          </Text>
+          <Flex
+            className="countdown-container"
+            mt="1.5rem"
+            justifyContent="center"
+          >
+            {[
+              {
+                label: "Days",
+                value: Math.floor(timeLeft / (1000 * 60 * 60 * 24)),
+              },
+              {
+                label: "Hours",
+                value: Math.floor((timeLeft / (1000 * 60 * 60)) % 24),
+              },
+              {
+                label: "Minutes",
+                value: Math.floor((timeLeft / 1000 / 60) % 60),
+              },
+              { label: "Seconds", value: Math.floor((timeLeft / 1000) % 60) },
+            ].map((item, index) => (
+              <Flex
+                key=""
+                className="countdown-item"
+                textAlign="center"
+                flex="1"
+                mr={index < 3 ? "1rem" : "0"}
+              >
+                <Box>
+                  <Text
+                    className="countdown-value"
+                    fontFamily="Helvetica Neue, Arial Narrow, sans-serif"
+                    fontSize={isSmallerThan500 ? "2.25rem" : "3rem"}
+                    fontWeight="bold"
+                  >
+                    {item.value}
+                  </Text>
+                  <Text
+                    className="countdown-label"
+                    fontFamily="Helvetica Neue, Arial Narrow, sans-serif"
+                    fontSize="1rem"
+                  >
+                    {item.label}
+                  </Text>
+                </Box>
+              </Flex>
+            ))}
+          </Flex>
         </Box>
-      </Card>
-    </div>
+      </Box>
+    </Flex>
   );
 }
 
