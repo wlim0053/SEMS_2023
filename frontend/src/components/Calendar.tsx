@@ -13,6 +13,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
+  Box,
 } from "@chakra-ui/react";
 import "./CalendarStyle.css";
 
@@ -27,7 +28,7 @@ function Calendar() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 845);
+      setIsMobile(window.innerWidth <= 500);
     };
     window.addEventListener("resize", handleResize);
     handleResize();
@@ -79,7 +80,15 @@ function Calendar() {
   ];
 
   return (
-    <div className="calendar">
+    <div
+      className="calendar"
+      style={{
+        fontFamily: "Arial Narrow, sans-serif",
+        padding: 0,
+        margin: "20px 30px",
+        lineHeight: 1.5,
+      }}
+    >
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
@@ -116,16 +125,28 @@ function Calendar() {
       <Modal isOpen={modal} onClose={() => setModal(false)}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{title}</ModalHeader>
+          <ModalHeader
+            fontFamily="'Helvetica Neue Condensed', 'Arial Narrow', sans-serif"
+            fontWeight="semibold"
+            color="#006dac"
+            pb={2}
+          >
+            {title}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <p>{description}</p>
-            <p>Date: {eventDate}</p>
-            <p>Start Time: {startTime}</p>
-            <p>End Time: {endTime}</p>
+            <Box
+              fontSize="lg"
+              fontFamily="'Helvetica Neue', 'Arial Narrow', sans-serif"
+            >
+              <p>{description}</p>
+              <p>Date: {eventDate}</p>
+              <p>Start Time: {startTime}</p>
+              <p>End Time: {endTime}</p>
+            </Box>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={() => setModal(false)}>
+            <Button colorScheme="blue" mr={-3} onClick={() => setModal(false)}>
               Close
             </Button>
           </ModalFooter>
