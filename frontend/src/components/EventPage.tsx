@@ -269,7 +269,13 @@ function EventPage() {
           <Box borderBottom="1px solid" borderColor="gray.400" />
           <ModalBody mt={2}>
             {clubs.map((club) => (
-              <Box key={club.id} display="flex" flexDirection="row" alignItems="center" mb={2}>
+              <Box
+                key={club.id}
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                mb={2}
+              >
                 <Checkbox
                   value={club.name}
                   isChecked={selectedClubs.includes(club.name)}
