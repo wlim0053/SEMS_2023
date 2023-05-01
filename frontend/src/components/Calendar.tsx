@@ -73,8 +73,8 @@ function Calendar() {
     },
     {
       title: "MUM Event 2",
-      start: "2023-04-19T08:00:00",
-      end: "2023-04-19T09:00:00",
+      start: "2023-05-26T08:00:00",
+      end: "2023-05-26T09:00:00",
       description: "This is a MUM event",
     },
   ];
