@@ -7,6 +7,7 @@ import Admin from "./pages/Admin";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import StudentHome from "./pages/StudentHome";
+import EventHome from "./pages/EventHome";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             }
           />
           <Route path="/StudentHome" element={<StudentHome />} />
+          <Route path="/EventHome" element={<EventHome />} />
         </Routes>
       </BrowserRouter>
     </div>
