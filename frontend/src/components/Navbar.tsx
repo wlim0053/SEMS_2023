@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Box,
-  Button,
   Drawer,
   DrawerBody,
   DrawerFooter,
@@ -10,7 +9,6 @@ import {
   DrawerContent,
   DrawerCloseButton,
   useDisclosure,
-  background,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
@@ -50,6 +48,8 @@ const Navbar = () => {
                 <Box>{nav}</Box>
               ))}
               <button onClick={() => navigate("/StudentHome")}>Student Home</button>
+              <br></br>
+              <button onClick={() => navigate("/EventHome")}>Event Page</button>
             </DrawerBody>
             <DrawerFooter>Hello3</DrawerFooter>
           </DrawerContent>
