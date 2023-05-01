@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.18",
-    "@chakra-ui/react": "^2.5.4",
-    "@emotion/react": "^11.10.6",
-    "@emotion/styled": "^11.10.6",
-    "framer-motion": "^10.9.1",
+    "@chakra-ui/react": "^2.6.0",
+    "@emotion/react": "^11.10.8",
+    "@emotion/styled": "^11.10.8",
+    "framer-motion": "^10.12.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

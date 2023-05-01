@@ -1,20 +1,20 @@
 // hooks
-import { useState } from 'react'
+import { useState } from "react";
 // components
-import Navbar from './components/Navbar'
-import Admin from './pages/Admin'
+import Navbar from "./components/Navbar";
+import Admin from "./pages/Admin";
 // css
-import './App.css'
-
+import "./App.css";
+import FeedbackForm from "./components/FeedbackForm";
 
 function App() {
+  return (
+    <div className="App">
+      <Navbar></Navbar>
 
-  	return (
-    	<div className="App">
-      		<Navbar></Navbar>
-      		<Admin></Admin>
-    	</div>
-  )
+      <FeedbackForm />
+    </div>
+  );
 }
 
-export default App
+export default App;
