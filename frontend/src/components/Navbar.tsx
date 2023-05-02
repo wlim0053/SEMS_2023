@@ -15,17 +15,17 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Text,
-  background,
   Image,
   Flex,
   Spacer,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import { Link, Route, Routes, Navigate } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 import OrganiserList from "../pages/Admin/OrganiserList";
 import ActivityLog from "../pages/Admin/ActivityLog";
 import Admin from "../pages/Admin/AdminDashboard";
+import StudentHome from "../pages/StudentHome";
+import EventHome from "../pages/EventHome";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -47,7 +47,7 @@ const Navbar = () => {
             }} />
         </Box>
         {/* <Spacer/> */}
-        <Image src='../public/monash_logo.png' height='50px'></Image>
+        <Image src='/monash_logo.png' height='50px'></Image>
         <Spacer />
         <Menu>
           {/* To do: change the sign in sign up to an icon */}
@@ -83,6 +83,8 @@ const Navbar = () => {
               <Link to="/Admin">Home</Link>
               <Link to="/OrganiserList">Organiser List</Link>
               <Link to="/ActivityLog">Activity Log</Link>
+              <Link to="/StudentHome">Student Home</Link>
+              <Link to="/EventHome">Event Home</Link>
             </VStack>
           </DrawerBody>
           <DrawerFooter>Hello3</DrawerFooter>
@@ -90,10 +92,12 @@ const Navbar = () => {
       </Drawer>
 
       <Routes>
-        <Route path="/" element={<Navigate to="/Admin" replace />} />
+        <Route path="/" element="" />
         <Route path="/Admin" element={<Admin />} />
         <Route path="/OrganiserList" element={<OrganiserList />} />
         <Route path="/ActivityLog" element={<ActivityLog />} />
+        <Route path="/StudentHome" element={<StudentHome />} />
+        <Route path="/EventHome" element={<EventHome />} />
       </Routes>
     </>
   );
