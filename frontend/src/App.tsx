@@ -4,6 +4,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 // components
 import LoginPage from './components/LoginPage';
 
+
 const App = () => {
 const [isLoggedIn, setIsLoggedIn] = useState(false);
 const handleLoginSuccess = () => {

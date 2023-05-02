@@ -1,4 +1,7 @@
 // LoginPage.tsx
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+import './firebase-config';
 import React, { useState, FormEvent } from 'react';
 import {
 Box,
@@ -15,8 +18,39 @@ Center,
 import { EmailIcon } from '@chakra-ui/icons';
 
 
+
 interface LoginProps {
 onLoginSuccess: () => void;
+}
+
+const auth = getAuth();
+const provider = new GoogleAuthProvider()
+
+const loginWithGoogle= () =>{
+
+    signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    // The signed-in user info.
+    const user = result.user;
+    console.log(user);
+    console.log(user.uid);
+    console.log(user.reloadUserInfo.displayName)
+    // IdP data available using getAdditionalUserInfo(result)
+    // ...
+  }).then((response)=>{console.log(response)})
+  .catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
 }
 
 const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
@@ -45,7 +79,7 @@ return (
             <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb={4}>
                 Login
             </Text>
-            <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon/>}>
+            <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon/>} onClick={loginWithGoogle}>
             Login
             </Button>
         </VStack>
