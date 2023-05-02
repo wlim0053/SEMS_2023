@@ -9,6 +9,7 @@
     "dev": "cross-env NODE_ENV=development concurrently \"tsc --watch\" \"nodemon -q dist/index.js\"",
     "prestart": "npm run build",
     "start": "cross-env NODE_ENV=production node dist/index.js",
+    "seed": "cross-env NODE_ENV=development nodemon ./src/utils/seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -35,6 +36,7 @@
     "concurrently": "^8.0.1",
     "cross-env": "^7.0.3",
     "nodemon": "^2.0.22",
-    "rimraf": "^5.0.0"
+    "rimraf": "^5.0.0",
+    "ts-node": "^10.9.1"
   }
 }
