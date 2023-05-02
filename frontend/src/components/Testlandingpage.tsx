@@ -5,7 +5,7 @@ import { Container, Heading, List,ListItem, Divider,Box, Center, Image,HStack, V
 const Testlandingpage = () =>{
     return(
         <>
-        <Center bg='blue' h='100px' color='white'>
+        <Center bg='#006DAE' h='100px' color='white'>
             <Heading  as='h3' size='lg'>STUDENT EXPERIENCE MANAGEMENT SYSTEM</Heading>
         </Center>
 
@@ -26,7 +26,7 @@ const Testlandingpage = () =>{
 
         <HStack spacing='50px' mt={50} mb= {50}>
 
-            <Box ml={50} border='1px' borderColor='blue' w = '655px' h = '270px' borderWidth={5}  >
+            <Box ml={50} border='1px' borderColor='#006DAE' w = '655px' h = '270px' borderWidth={5}  >
                 <Center>
                     <Text fontSize={40} fontWeight = 'bold'>
                         Student
@@ -41,7 +41,7 @@ const Testlandingpage = () =>{
 
             </Box>
 
-            <Box border='1px'  borderColor='blue' w = '655px' h = '270px' borderWidth={5}  >
+            <Box border='1px'  borderColor='#006DAE' w = '655px' h = '270px' borderWidth={5}  >
                 <Center>
                    <Text fontSize={40} fontWeight = 'bold'>
                     Organiser
@@ -68,23 +68,6 @@ const Testlandingpage = () =>{
                 
             </VStack>
         </Container>
-
-
-
-
-
-
-
-
-        
-        
-
-
-
-        
-
-
-        
 
         </>
     )
