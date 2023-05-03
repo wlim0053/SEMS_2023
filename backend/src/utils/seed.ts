@@ -46,6 +46,9 @@ const createTables = async () => {
                 stu_fire_id VARCHAR(255) PRIMARY KEY,
                 stu_email VARCHAR(255) NOT NULL,
                 stu_name VARCHAR(255) NOT NULL,
+                stu_id INT,
+                enrolment_year DATE,
+                enrolment_intake INT CHECK (enrolment_intake IN (2, 7, 10)),
                 stu_gender INT NOT NULL CHECK (stu_gender IN (0,1)),
                 dis_uuid UNIQUEIDENTIFIER NOT NULL
             )
@@ -64,7 +67,7 @@ const createTables = async () => {
             CREATE TABLE tbl_discipline(
                 dis_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
                 dis_name VARCHAR(255) NOT NULL,
-                school_uuid UNIQUEIDENTIFER NOT NULL, 
+                school_uuid UNIQUEIDENTIFIER NOT NULL, 
                 CONSTRAINT UC_tbl_discipline UNIQUE (dis_name, school_uuid)
             )
         END
@@ -105,6 +108,16 @@ const createTables = async () => {
                 reg_start_date SMALLDATETIME NOT NULL,
                 reg_end_date SMALLDATETIME NOT NULL,
                 reg_google_form VARCHAR(255) NOT NULL UNIQUE
+            )
+        END
+
+        IF NOT EXISTS(SELECT * FROM sysobjects WHERE name='tbl_participation' AND xtype='U')
+        BEGIN
+            CREATE TABLE tbl_participation(
+                participation_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+                event_uuid UNIQUEIDENTIFIER NOT NULL,
+                stu_fire_id VARCHAR(255) NOT NULL,
+                CONSTRAINT UC_tbl_participation UNIQUE (event_uuid, stu_fire_id)
             )
         END
     `,
