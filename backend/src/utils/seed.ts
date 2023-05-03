@@ -35,7 +35,7 @@ const createDatabase = async () => {
 
 const createTables = async () => {
 	const connection = await pool.connect()
-	return await readFile(sqlPath("create_tables.sql"), "utf8", (err, data) => {
+	await readFile(sqlPath("create_tables.sql"), "utf-8", (err, data) => {
 		if (err) console.log(err)
 		connection.query(data, (err, res) => {
 			if (err) console.log(err)
@@ -44,7 +44,17 @@ const createTables = async () => {
 	})
 }
 
-const alterTables = async () => {}
+const alterTables = async () => {
+	const connection = await pool.connect()
+	await readFile(sqlPath("alter_tables.sql"), "utf-8", (err, data) => {
+		if (err) console.log(err)
+		connection.query(data, (err, res) => {
+			if (err) console.log(err)
+			console.log(res)
+		})
+	})
+}
 
 createDatabase()
 createTables()
+alterTables()

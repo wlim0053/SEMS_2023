@@ -37,7 +37,6 @@ BEGIN
         organiser_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         parent_uuid UNIQUEIDENTIFIER,
         organiser_name VARCHAR(255) NOT NULL,
-        organiser_id VARCHAR(255) NOT NULL,
         stu_fire_id VARCHAR(255)
     )
 END
@@ -55,7 +54,8 @@ BEGIN
         event_desc VARCHAR(255) NOT NULL,
         event_venue VARCHAR(255) NOT NULL,
         event_capacity INT NOT NULL,
-        event_status VARCHAR(255) NOT NULL DEFAULT 'PENDING' CHECK(event_status IN ('PENDING', 'APPROVED'))
+        event_status VARCHAR(255) NOT NULL DEFAULT 'PENDING' CHECK(event_status IN ('DRAFT', 'PENDING', 'APPROVED')),
+        constraint UC_tbl_event UNIQUE(organiser_uuid, event_ems_no, event_start_date)
     )
 END
 
