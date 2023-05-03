@@ -35,13 +35,17 @@ const createDatabase = async () => {
 
 const createTables = async () => {
 	const connection = await pool.connect()
-	await readFile(sqlPath("create_tables.sql"), "utf-8", (err, data) => {
-		if (err) console.log(err)
-		connection.query(data, (err, res) => {
+	const a = await readFile(
+		sqlPath("create_tables.sql"),
+		"utf-8",
+		(err, data) => {
 			if (err) console.log(err)
-			console.log(res)
-		})
-	})
+			connection.query(data, (err, res) => {
+				if (err) console.log(err)
+				console.log(res)
+			})
+		}
+	)
 }
 
 const alterTables = async () => {
@@ -56,5 +60,5 @@ const alterTables = async () => {
 }
 
 createDatabase()
-createTables()
-alterTables()
+setTimeout(createTables, 3000)
+setTimeout(alterTables, 5000)
