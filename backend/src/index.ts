@@ -3,11 +3,13 @@ import helmet from "helmet"
 import dotenv from "dotenv"
 import mssql from "mssql"
 
-import * as schoolRoutes from './routes/schoolRoutes';
+import * as schoolRoutes from "./routes/schoolRoutes"
 
 dotenv.config({
 	path: "development" === process.env.NODE_ENV ? ".env.dev" : ".env.prod",
 })
+
+console.log(process.env.user)
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -20,7 +22,7 @@ app.use(express.json())
 // routes
 // app.use("/api/");
 
-app.use('/api', schoolRoutes.routes);
+// app.use('/api', schoolRoutes.routes);
 
 const config: mssql.config = {
 	user: process.env.user,
