@@ -1,10 +1,8 @@
 import mssql from "mssql"
 import { readFile, promises as fs } from "fs"
-import { dbConfig } from "./dfConfig"
+import { pool } from "./dfConfig"
 
 const sqlPath = (filename: string) => `./src/utils/schema/${filename}`
-
-const pool = new mssql.ConnectionPool(dbConfig)
 
 const createDatabase = async () => {
 	const connection = await pool.connect()
@@ -13,6 +11,7 @@ const createDatabase = async () => {
 		connection.query(data, (err, res) => {
 			if (err) console.log(err)
 			console.log(res)
+			connection.close()
 		})
 	})
 }
@@ -27,6 +26,7 @@ const createTables = async () => {
 			connection.query(data, (err, res) => {
 				if (err) console.log(err)
 				console.log(res)
+				connection.close()
 			})
 		}
 	)
@@ -39,44 +39,45 @@ const alterTables = async () => {
 		connection.query(data, (err, res) => {
 			if (err) console.log(err)
 			console.log(res)
+			connection.close()
 		})
 	})
 }
 
-createDatabase()
+// createDatabase()
 // setTimeout(createTables, 3000)
 // setTimeout(alterTables, 5000)
 
-// school
-const school_names = [
-	"School of Arts and Social Sciences",
-	"School of Business",
-	"School of Engineering",
-	"School of Information Technology",
-	"School of Pharmacy",
-	"School of Science",
-]
-
-export const createSchool = async (schoolData: { school_name: any }) => {
+// ! Use bulk insert when populating the initial db
+export const createSchool = async () => {
+	const school_names = [
+		"School of Arts and Social Sciences",
+		"School of Business",
+		"School of Engineering",
+		"School of Information Technology",
+		"School of Pharmacy",
+		"School of Science",
+	]
 	const connection = await pool.connect()
+	const table = new mssql.Table("[sems_demo].[dbo].[tbl_school]")
+	table.create = false
+	table.columns.add("school_uuid", mssql.UniqueIdentifier, {
+		nullable: false,
+		primary: true,
+	})
+	table.columns.add("school_name", mssql.VarChar, { nullable: false })
+	school_names.forEach((school) => table.rows.add(null, school))
+
 	try {
-		const createSchoolSQL = await fs.readFile(
-			sqlPath("create_school.sql"),
-			"utf-8"
-		)
-		const create = await connection
-			.request()
-			.input("school_name", mssql.VarChar, schoolData.school_name)
-			.query(createSchoolSQL)
-		return create.recordset
+		await connection.request().bulk(table, (err, res) => {
+			console.log(res)
+		})
 	} catch (error) {
 		console.log(error)
-		throw new Error("Failed to create school.")
 	}
 }
 
-// school_names.map(name => createSchool({school_name: name}));
-
+// TODO shift this to controller
 export const updateSchool = async (
 	school_uuid: any,
 	schoolData: { school_name: any }
@@ -99,6 +100,7 @@ export const updateSchool = async (
 	}
 }
 
+// TODO shift to controller
 export const deleteSchool = async (school_uuid: any) => {
 	const connection = await pool.connect()
 	try {
