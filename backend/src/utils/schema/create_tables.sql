@@ -55,7 +55,7 @@ BEGIN
         event_venue VARCHAR(255) NOT NULL,
         event_capacity INT NOT NULL,
         event_status VARCHAR(255) NOT NULL DEFAULT 'PENDING' CHECK(event_status IN ('DRAFT', 'PENDING', 'APPROVED')),
-        constraint UC_tbl_event UNIQUE(organiser_uuid, event_ems_no, event_start_date)
+        CONSTRAINT UC_tbl_event UNIQUE(organiser_uuid, event_ems_no, event_start_date)
     )
 END
 
