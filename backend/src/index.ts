@@ -1,15 +1,8 @@
 import express, { Request, Response } from "express"
 import helmet from "helmet"
-import dotenv from "dotenv"
 import mssql from "mssql"
-
-import * as schoolRoutes from "./routes/schoolRoutes"
-
-dotenv.config({
-	path: "development" === process.env.NODE_ENV ? ".env.dev" : ".env.prod",
-})
-
-console.log(process.env.user)
+import { schoolRouter } from "./routes/school"
+import { pool } from "./utils/dfConfig"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -19,29 +12,12 @@ app.use(helmet())
 app.use(express.json())
 // app.use(express.urlencoded());
 
-// routes
-// app.use("/api/");
-
-// app.use('/api', schoolRoutes.routes);
-
-const config: mssql.config = {
-	user: process.env.user,
-	password: process.env.password,
-	server: process.env.server || "",
-	database: process.env.database,
-	options: {
-		trustServerCertificate: true,
-		trustedConnection: true,
-		enableArithAbort: true,
-	},
-	port: Number(process.env.db_port) || 1433,
-}
-
-const pool = new mssql.ConnectionPool(config)
+/**
+ * Routes
+ * * Name of the router should be specified only once in the app.use() method, and not repeated in the router's definition
+ * * DO: app.use('/api/school', schoolRouter)
+ * ! DON'T: router.get('/school'), router.post('school')...
+ */
+app.use("/api/school", schoolRouter)
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))
-// pool.connect()
-// 	.then((pool) => {
-// 		app.locals.database = pool
-// 	})
-// 	.catch((error) => console.error(error))
