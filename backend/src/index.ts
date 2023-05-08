@@ -2,6 +2,7 @@ import express, { Request, Response } from "express"
 import helmet from "helmet"
 import mssql from "mssql"
 import { schoolRouter } from "./routes/school"
+import { studentRouter } from "./routes/student"
 import { pool } from "./utils/dfConfig"
 
 const PORT = process.env.PORT || 3000
@@ -16,8 +17,9 @@ app.use(express.json())
  * Routes
  * * Name of the router should be specified only once in the app.use() method, and not repeated in the router's definition
  * * DO: app.use('/api/school', schoolRouter)
- * ! DON'T: router.get('/school'), router.post('school')...
+ * ! DON'T: router.get('/school'), router.post('/school')...
  */
 app.use("/api/school", schoolRouter)
+app.use("/api/student", studentRouter)
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))
