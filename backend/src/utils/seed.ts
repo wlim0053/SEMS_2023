@@ -44,10 +44,6 @@ const alterTables = async () => {
 	})
 }
 
-// createDatabase()
-// setTimeout(createTables, 3000)
-// setTimeout(alterTables, 5000)
-
 // ! Use bulk insert when populating the initial db
 export const createSchool = async () => {
 	const school_names = [
@@ -77,43 +73,7 @@ export const createSchool = async () => {
 	}
 }
 
-// TODO shift this to controller
-export const updateSchool = async (
-	school_uuid: any,
-	schoolData: { school_name: any }
-) => {
-	const connection = await pool.connect()
-	try {
-		const updateSchoolSQL = await fs.readFile(
-			sqlPath("update_school.sql"),
-			"utf-8"
-		)
-		const update = await connection
-			.request()
-			.input("school_uuid", mssql.UniqueIdentifier, school_uuid)
-			.input("school_name", mssql.VarChar, schoolData.school_name)
-			.query(updateSchoolSQL)
-		return update.recordset
-	} catch (error) {
-		console.log(error)
-		throw new Error("Failed to update school.")
-	}
-}
-
-// TODO shift to controller
-export const deleteSchool = async (school_uuid: any) => {
-	const connection = await pool.connect()
-	try {
-		const deleteSchoolSQL = await fs.readFile(
-			sqlPath("delete_school.sql"),
-			"utf-8"
-		)
-		await connection
-			.request()
-			.input("school_uuid", mssql.UniqueIdentifier, school_uuid)
-			.query(deleteSchoolSQL)
-	} catch (error) {
-		console.log(error)
-		throw new Error("Failed to delete school.")
-	}
-}
+// createDatabase()
+// setTimeout(createTables, 3000)
+// setTimeout(alterTables, 5000)
+// createSchool()
