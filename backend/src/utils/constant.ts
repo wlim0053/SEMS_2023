@@ -1,3 +1,13 @@
+export enum DbTables {
+	DISCIPLINE = "[sems_demo].[dbo].[tbl_discipline]",
+	EVENT = "[sems_demo].[dbo].[tbl_event]",
+	ORGANISER = "[sems_demo].[dbo].[tbl_organiser]",
+	PARTICIPATION = "[sems_demo].[dbo].[tbl_participation]",
+	REGISTRATION = "[sems_demo].[dbo].[tbl_registration]",
+	SCHOOL = "[sems_demo].[dbo].[tbl_school]",
+	STUDENT = "[sems_demo].[dbo].[tbl_student]",
+}
+
 export enum StatusCodes {
 	OK = 200, // Request succeeded
 	CREATED = 201, // New resource was created
