@@ -5,12 +5,11 @@ import { pool } from "../utils/dfConfig"
 export const getSchools = async (req: Request, res: Response) => {
 	try {
 		const connection = await pool.connect()
-		const getSchoolsSQL = 
-			`SELECT [school_uuid], [school_name] 
+		const getSchoolsSQL = `SELECT [school_uuid], [school_name] 
 			FROM [sems_demo].[dbo].[tbl_school]`
 		const schools = await connection.query(getSchoolsSQL)
 		connection.close()
-		return res.status(200).send(schools.recordset)
+		return res.status(200).json({ records: schools.recordset })
 	} catch (error) {
 		console.log(error)
 	}
@@ -21,8 +20,7 @@ export const getSchoolById = async (req: Request, res: Response) => {
 	try {
 		const schoolUUID = req.params.id
 		const connection = await pool.connect()
-		const getSchoolByIdSQL = 
-			`SELECT * FROM [sems_demo].[dbo].[tbl_school] 
+		const getSchoolByIdSQL = `SELECT * FROM [sems_demo].[dbo].[tbl_school] 
 			WHERE school_uuid=@school_uuid`
 		const school = await connection
 			.request()
@@ -41,8 +39,7 @@ const updateSchool = async (
 ) => {
 	try {
 		const connection = await pool.connect()
-		const updateSchoolSQL = 
-			`UPDATE [sems_demo].[dbo].[tbl_school] 
+		const updateSchoolSQL = `UPDATE [sems_demo].[dbo].[tbl_school] 
 			SET [school_name] = @school_name
 			WHERE [school_uuid] = @school_uuid
 			
@@ -77,8 +74,7 @@ export const updateSchoolController = async (req: Request, res: Response) => {
 const deleteSchool = async (school_uuid: any) => {
 	try {
 		const connection = await pool.connect()
-		const deleteSchoolSQL = 
-			`DELETE [sems_demo].[dbo].[tbl_school]
+		const deleteSchoolSQL = `DELETE [sems_demo].[dbo].[tbl_school]
 			WHERE [school_uuid] = @school_uuid`
 		await connection
 			.request()
