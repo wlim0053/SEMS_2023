@@ -1,9 +1,8 @@
-import express, { Request, Response } from "express"
+import express from "express"
 import helmet from "helmet"
-import mssql from "mssql"
 import { schoolRouter } from "./routes/school"
 import { studentRouter } from "./routes/student"
-import { pool } from "./utils/dbConfig"
+import { organiserRouter } from "./routes/organiser"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -21,5 +20,6 @@ app.use(express.json())
  */
 app.use("/api/school", schoolRouter)
 app.use("/api/student", studentRouter)
+app.use("/api/organiser", organiserRouter)
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))
