@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import mssql, { VarChar } from "mssql"
+import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 
