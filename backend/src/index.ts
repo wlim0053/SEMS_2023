@@ -3,6 +3,7 @@ import helmet from "helmet"
 import { schoolRouter } from "./routes/school"
 import { studentRouter } from "./routes/student"
 import { organiserRouter } from "./routes/organiser"
+import { disciplineRouter } from "./routes/discipline"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -21,5 +22,6 @@ app.use(express.json())
 app.use("/api/school", schoolRouter)
 app.use("/api/student", studentRouter)
 app.use("/api/organiser", organiserRouter)
+app.use("/api/discipline", disciplineRouter)
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))
