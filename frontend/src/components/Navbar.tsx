@@ -49,20 +49,20 @@ const Navbar = () => {
         {/* <Spacer/> */}
         <Image src='/monash_logo.png' height='50px'></Image>
         <Spacer />
-        <Menu>
-          {/* To do: change the sign in sign up to an icon */}
-          <MenuButton ml={4} mr={4} as={Button} variant="ghost">
-            Sign In / Sign Up
-          </MenuButton>
-          <MenuList>
-            <MenuItem>
-              <Link to="/signin">Sign In</Link>
-            </MenuItem>
-            <MenuItem>
-              <Link to="/signup">Sign Up</Link>
-            </MenuItem>
-          </MenuList>
-        </Menu>
+        {/*<Menu>*/}
+        {/*  /!* To do: change the sign in sign up to an icon *!/*/}
+        {/*  <MenuButton ml={4} mr={4} as={Button} variant="ghost">*/}
+        {/*    Sign In / Sign Up*/}
+        {/*  </MenuButton>*/}
+        {/*  <MenuList>*/}
+        {/*    <MenuItem>*/}
+        {/*      <Link to="/signin">Sign In</Link>*/}
+        {/*    </MenuItem>*/}
+        {/*    <MenuItem>*/}
+        {/*      <Link to="/signup">Sign Up</Link>*/}
+        {/*    </MenuItem>*/}
+        {/*  </MenuList>*/}
+        {/*</Menu>*/}
       </Flex>
 
 
