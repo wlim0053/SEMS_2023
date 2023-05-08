@@ -73,10 +73,16 @@ function Calendar() {
     },
     {
       title: "MUM Event 2",
-      start: "2023-05-26T08:00:00",
-      end: "2023-05-26T09:00:00",
+      start: "2023-05-02T12:26:00",
+      end: "2023-05-02T13:00:00",
       description: "This is a MUM event",
     },
+    {
+      title: "MUM Event 3",
+      start: "2023-05-04T12:26:00",
+      end: "2023-05-04T13:00:00",
+      description: "This is a MUM event",
+    }
   ];
 
   return (
@@ -95,12 +101,12 @@ function Calendar() {
         headerToolbar={{
           start: "title",
           center: "",
-          end: "prev,next today",
+          end: "prev,next dayGridMonth timeGridWeek today",
         }}
         buttonText={{
           today: "Today",
-          month: "Month",
-          week: "Week",
+          month: "Monthly View",
+          week: "Weekly View",
           day: "Day",
         }}
         dayHeaderFormat={isMobile ? { weekday: "short" } : { weekday: "long" }}
