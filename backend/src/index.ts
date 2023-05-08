@@ -3,7 +3,7 @@ import helmet from "helmet"
 import mssql from "mssql"
 import { schoolRouter } from "./routes/school"
 import { studentRouter } from "./routes/student"
-import { pool } from "./utils/dfConfig"
+import { pool } from "./utils/dbConfig"
 
 const PORT = process.env.PORT || 3000
 const app = express()

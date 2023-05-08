@@ -1,6 +1,6 @@
 import mssql from "mssql"
 import { readFile, promises as fs } from "fs"
-import { pool } from "./dfConfig"
+import { pool } from "./dbConfig"
 
 const sqlPath = (filename: string) => `./src/utils/schema/${filename}`
 const sqlTable = (tableName: string) => `[sems_demo].[dbo].[${tableName}]`

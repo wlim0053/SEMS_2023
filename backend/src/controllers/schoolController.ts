@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import mssql from "mssql"
-import { pool } from "../utils/dfConfig"
+import { pool } from "../utils/dbConfig"
 
 export const getSchools = async (req: Request, res: Response) => {
 	try {

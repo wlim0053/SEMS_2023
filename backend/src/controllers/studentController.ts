@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import mssql, { VarChar } from "mssql"
-import { pool } from "../utils/dfConfig"
+import { pool } from "../utils/dbConfig"
 import { StatusCodes } from "../utils/statusCodes"
 
 export const getStudents = async (req: Request, res: Response) => {
