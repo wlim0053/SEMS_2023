@@ -1,0 +1,22 @@
+Controller
+POST -  create[Table]Controller
+PUT -   update[Table]Controller
+GET -   get[Table]Controller
+        get[Table]ByIdController
+        get[Table]ByQueryController
+DELETE -delete[Table]Controller
+
+Response (Success)
+{
+    "data": {
+        ...
+    }
+}
+
+Response (Error)
+{
+    "error": {
+        "code": ...
+        "message": ...
+    }
+}
