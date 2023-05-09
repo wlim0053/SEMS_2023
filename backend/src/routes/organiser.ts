@@ -3,7 +3,7 @@ import {
     createOrganiserController,
     deleteOrganiserController,
     updateOrganiserController,
-    getOrganisersController,
+    getOrganiserController,
     getOrganiserByIDController
 } from "../controllers/organiserController"
 
@@ -12,7 +12,7 @@ export const organiserRouter = express.Router()
 organiserRouter
     .route("/")
     .post(createOrganiserController)
-    .get(getOrganisersController)
+    .get(getOrganiserController)
 
 organiserRouter
 	.route("/:id")
