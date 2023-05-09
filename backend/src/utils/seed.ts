@@ -66,9 +66,7 @@ export const createSchool = async () => {
 		})
 		table.columns.add("school_name", mssql.VarChar, { nullable: false })
 		schoolNames.forEach((school) => table.rows.add(null, school))
-		await connection.request().bulk(table, (err, res) => {
-			console.log(res)
-		})
+		await connection.request().bulk(table)
 		connection.close()
 	} catch (error) {
 		console.log(error)
