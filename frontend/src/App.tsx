@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
 // components
 import LoginPage from './components/LoginPage';
+import AttendancePage from './components/AttendancePage';
 
 // App functional component
 const App = () => {
@@ -16,11 +17,7 @@ const App = () => {
   // Render the app
   return (
     <>
-      {!isLoggedIn ? (
-        <LoginPage onLoginSuccess={handleLoginSuccess} />
-      ) : (
-        <div>Logged in successfully!</div>
-      )}
+      <AttendancePage />
     </>
   );
 };

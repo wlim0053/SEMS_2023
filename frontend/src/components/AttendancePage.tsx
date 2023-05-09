@@ -224,8 +224,6 @@ function AttendancePage() {
               {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
             </Th>
             <Th>Venue</Th>
-            <Th>Description</Th>
-            <Th>Actions</Th>
           </Tr>
         </Thead>
         <Tbody>
