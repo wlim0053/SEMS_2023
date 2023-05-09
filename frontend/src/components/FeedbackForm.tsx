@@ -14,11 +14,11 @@ import {
 const FeedbackForm = () => {
   const [value, setValue] = React.useState("0");
   return (
-    <div>
+    <>
       <Box
         color="gray.600"
         fontSize="sm"
-        width="50%"
+        width="60em"
         margin={"auto"}
         padding={6}
         borderWidth={3}
@@ -29,8 +29,8 @@ const FeedbackForm = () => {
         <Heading marginBottom={9} marginTop={6}>
           Feedback
         </Heading>
-        <Stack spacing={6}>
-          <Input placeholder="Name" size="md" />
+        <Stack spacing={6} fontFamily={"Arial"}>
+          <Input placeholder="Name" />
           <Input placeholder="Student ID" size="md" />
           <Stack spacing={5}>
             <Text fontSize="md">
@@ -63,7 +63,7 @@ const FeedbackForm = () => {
           Submit
         </Button>
       </Box>
-    </div>
+    </>
   );
 };
 
