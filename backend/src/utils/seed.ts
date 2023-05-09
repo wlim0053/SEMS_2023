@@ -52,6 +52,7 @@ export const createSchool = async () => {
 		"School of Business",
 		"School of Engineering",
 		"School of Information Technology",
+		"School of Medicine, Health Science and Psychology",
 		"School of Pharmacy",
 		"School of Science",
 	]
@@ -75,8 +76,9 @@ export const createSchool = async () => {
 
 const createDisciplines = async () => {
 	const engineeringDisciplines = [
-		"Civil Engineering",
 		"Chemical Engineering",
+		"Civil Engineering",
+		"Common Year",
 		"Electrical and Computer Systems Engineering",
 		"Mechanical Engineering",
 		"Robotics and Mechatronics Engineering",
