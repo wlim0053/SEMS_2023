@@ -81,7 +81,7 @@ export const deleteStudentController = async (req: Request, res: Response) => {
 			.query(
 				`DELETE FROM ${DbTables.STUDENT} WHERE [stu_fire_id]=@stu_fire_id`
 			)
-		res.sendStatus(204) // ? No content in response when deleting data?
+		res.sendStatus(204) 
 		connection.close()
 	} catch (error) {
 		console.log(error)

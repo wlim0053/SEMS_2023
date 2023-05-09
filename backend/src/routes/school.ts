@@ -1,17 +1,17 @@
-import express from "express"
+import express from "express";
 import {
-	getSchools,
-	getSchoolById,
-	updateSchoolController,
-	deleteSchoolController,
-} from "../controllers/schoolController"
+  getSchoolController,
+  getSchoolByIdController,
+  updateSchoolController,
+  deleteSchoolController,
+} from "../controllers/schoolController";
 
-export const schoolRouter = express.Router()
+export const schoolRouter = express.Router();
 
-schoolRouter.route("/").get(getSchools)
+schoolRouter.route("/").get(getSchoolController);
 
 schoolRouter
-	.route("/:id")
-	.get(getSchoolById)
-	.put(updateSchoolController)
-	.delete(deleteSchoolController)
+  .route("/:id")
+  .get(getSchoolByIdController)
+  .put(updateSchoolController)
+  .delete(deleteSchoolController);
