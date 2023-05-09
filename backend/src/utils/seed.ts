@@ -105,9 +105,7 @@ const createDisciplines = async () => {
 		engineeringDisciplines.forEach((discipline) =>
 			table.rows.add(null, discipline, engineeringUUID)
 		)
-		await connection.request().bulk(table, (err, res) => {
-			console.log(res)
-		})
+		await connection.request().bulk(table)
 	} catch (error) {
 		console.log(error)
 	}
