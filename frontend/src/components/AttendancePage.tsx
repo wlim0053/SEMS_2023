@@ -25,6 +25,7 @@ import { useState } from "react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 
 function AttendancePage() {
+  // Sample event data
   const events: AttendanceEvent[] = [
     {
       eventNo: 1,
@@ -47,6 +48,7 @@ function AttendancePage() {
     },
   ];
 
+  // State variables for search, sort and filter functionality
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [sortField, setSortField] = useState<
@@ -55,6 +57,7 @@ function AttendancePage() {
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Sample club data
   const clubs = [
     { name: "IEMMSS", id: "iemmss" },
     { name: "CHEMECAR", id: "chemecar" },
@@ -63,6 +66,7 @@ function AttendancePage() {
     { name: "JJK", id: "jjk" },
   ];
 
+  // Type definition for AttendanceEvent
   type AttendanceEvent = {
     eventNo: number;
     eventName: string;
@@ -70,6 +74,7 @@ function AttendancePage() {
     dateTime: Date;
   };
 
+  // Table styles
   const tableStyles: CSSObject = {
     borderCollapse: "collapse",
     border: "2px solid #ddd",
@@ -86,9 +91,12 @@ function AttendancePage() {
     },
   };
 
+  // Handle search input change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
+
+  // Handle sorting by specific fields
   const handleSort = (field: "eventNo" | "eventName" | "dateTime" | "club") => {
     if (field === sortField) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -98,12 +106,14 @@ function AttendancePage() {
     }
   };
 
+  // Reset sort and filter options
   const handleReset = () => {
     setSortField("eventNo");
     setSortOrder("asc");
     setSelectedClubs([]);
   };
 
+  // Handle club filter change
   const handleClubFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     const club = event.target.value;
     console.log(club);
@@ -114,6 +124,7 @@ function AttendancePage() {
     }
   };
 
+  // Filter events based on search term and selected clubs
   const filteredEvents = events.filter((event) => {
     const matchesSearchTerm = event.eventName
       .toLowerCase()
@@ -123,6 +134,7 @@ function AttendancePage() {
     return matchesSearchTerm && matchesSelectedClubs;
   });
 
+  // Sort filtered events based on sort field and order
   const sortedEvents = filteredEvents.sort((a, b) => {
     if (sortField === "eventNo") {
       return sortOrder === "asc"
@@ -143,6 +155,7 @@ function AttendancePage() {
     }
   });
 
+  // Reset filter and sort options on component mount
   useEffect(() => {
     handleReset();
   }, []);
