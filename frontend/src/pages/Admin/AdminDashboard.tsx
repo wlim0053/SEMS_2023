@@ -37,7 +37,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Spinner } from "@chakra-ui/react";
-import { Route, Outlet } from 'react-router-dom';
+import { Route, Outlet } from "react-router-dom";
 
 const data = [
   {
@@ -165,7 +165,7 @@ const Admin = () => {
       p="6"
       spacing={10}
       textAlign="center"
-      minChildWidth="593px"
+      minChildWidth="500px"
       columns={2}
     >
       {/* //1st Box */}
@@ -173,7 +173,7 @@ const Admin = () => {
         <Box sx={infoBoxStyle}>
           <SimpleGrid columns={2} p={5} fontSize={"2rem"} fontWeight="500">
             Admin Dashboard
-            <Select variant="outline" placeholder="Select option">
+            <Select variant="outline" placeholder="Select option" width="70%">
               <option value="option1">MUMEC</option>
               <option value="option2">MUMTEC</option>
               <option value="option3">Monash Staff</option>
@@ -211,7 +211,7 @@ const Admin = () => {
                 </HStack>
               </Box>
             </GridItem>
-            <GridItem colSpan={4} bg="red" />
+            <GridItem colSpan={4} bg="white" />
           </Grid>
         </Box>
       </Box>
