@@ -6,6 +6,7 @@ import Admin from './pages/Admin'
 import Testlandingpage from './components/Testlandingpage'
 // css
 import './App.css'
+import Historypage from './components/Histotypage'
 
 
 //<Navbar></Navbar>
@@ -14,7 +15,8 @@ function App() {
 
   	return (
     	<div className="App">
-			<Testlandingpage></Testlandingpage>
+			<Navbar></Navbar>
+			<Historypage></Historypage>
     	</div>
   )
 }
