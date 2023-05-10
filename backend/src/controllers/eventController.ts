@@ -33,7 +33,7 @@ export const createEventController = async (req: Request,res: Response) => {
                     @event_desc,
                     @event_venue,
                     @event_capacity,
-                    DEFAULT,
+                    DEFAULT
                 )`)
 		res.send({ data: create.recordset })
 		connection.close()
