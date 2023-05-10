@@ -3,23 +3,34 @@ import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 
-export const createEventController = async (req: Request,res: Response) => {
+export const createEventController = async (req: Request, res: Response) => {
 	try {
 		const connection = await pool.connect()
 		const create = await connection
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, req.body.event_uuid)
 			.input("event_ems_no", mssql.VarChar, req.body.event_ems_no)
-			.input("organiser_uuid", mssql.UniqueIdentifier, req.body.organiser_uuid)
-			.input("event_start_date", mssql.SmallDateTime, req.body.event_start_date)
-			.input("event_end_date", mssql.SmallDateTime, req.body.event_end_date)
+			.input(
+				"organiser_uuid",
+				mssql.UniqueIdentifier,
+				req.body.organiser_uuid
+			)
+			.input(
+				"event_start_date",
+				mssql.SmallDateTime,
+				req.body.event_start_date
+			)
+			.input(
+				"event_end_date",
+				mssql.SmallDateTime,
+				req.body.event_end_date
+			)
 			.input("event_id", mssql.VarChar, req.body.event_id)
 			.input("event_title", mssql.VarChar, req.body.event_title)
 			.input("event_desc", mssql.VarChar, req.body.event_desc)
 			.input("event_venue", mssql.VarChar, req.body.event_venue)
 			.input("event_capacity", mssql.Int, req.body.event_capacity)
-			.input("event_status", mssql.VarChar, req.body.event_status)
-			.query(`
+			.input("event_status", mssql.VarChar, req.body.event_status).query(`
                 INSERT INTO ${DbTables.EVENT}  
 				OUTPUT INSERTED.*
 				VALUES (
@@ -42,16 +53,31 @@ export const createEventController = async (req: Request,res: Response) => {
 	}
 }
 
-export const updateOrganiserController = async (req: Request, res: Response) => {
+export const updateOrganiserController = async (
+	req: Request,
+	res: Response
+) => {
 	try {
 		const connection = await pool.connect()
 		const updated = await connection
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, req.params.id)
 			.input("event_ems_no", mssql.VarChar, req.body.event_ems_no)
-			.input("organiser_uuid", mssql.UniqueIdentifier, req.body.organiser_uuid)
-			.input("event_start_date", mssql.SmallDateTime, req.body.event_start_date)
-			.input("event_end_date", mssql.SmallDateTime, req.body.event_end_date)
+			.input(
+				"organiser_uuid",
+				mssql.UniqueIdentifier,
+				req.body.organiser_uuid
+			)
+			.input(
+				"event_start_date",
+				mssql.SmallDateTime,
+				req.body.event_start_date
+			)
+			.input(
+				"event_end_date",
+				mssql.SmallDateTime,
+				req.body.event_end_date
+			)
 			.input("event_id", mssql.VarChar, req.body.event_id)
 			.input("event_title", mssql.VarChar, req.body.event_title)
 			.input("event_desc", mssql.VarChar, req.body.event_desc)
@@ -72,7 +98,8 @@ export const updateOrganiserController = async (req: Request, res: Response) => 
                         [event_status] = @event_status
 				OUTPUT INSERTED.*
 			    WHERE [event_uuid] = @event_uuid
-			`)
+			`
+			)
 		res.send({ data: updated.recordset })
 		connection.close()
 	} catch (error) {
@@ -83,10 +110,8 @@ export const updateOrganiserController = async (req: Request, res: Response) => 
 export const getEventController = async (req: Request, res: Response) => {
 	try {
 		const connection = await pool.connect()
-		const events = await connection.query(
-			`SELECT * FROM ${DbTables.EVENT}`
-		)
-		res.status(StatusCodes.OK).json({ data: events.recordset }) // TODO 
+		const events = await connection.query(`SELECT * FROM ${DbTables.EVENT}`)
+		res.status(StatusCodes.OK).json({ data: events.recordset }) // TODO
 		connection.close()
 	} catch (error) {
 		console.log(error)
@@ -122,5 +147,24 @@ export const deleteEventController = async (req: Request, res: Response) => {
 		connection.close()
 	} catch (error) {
 		console.log(error)
+	}
+}
+
+export const getEventParticipationController = async (
+	req: Request,
+	res: Response
+) => {
+	try {
+		const connection = await pool.connect()
+		const participants = await connection
+			.request()
+			.input("event_uuid", mssql.UniqueIdentifier, req.params.id)
+			.query(
+				`SELECT * FROM ${DbTables.PARTICIPATION} WHERE event_uuid=@event_uuid`
+			)
+		res.send({ data: participants.recordset })
+		connection.close()
+	} catch (error) {
+		res.status(404).send(error)
 	}
 }
