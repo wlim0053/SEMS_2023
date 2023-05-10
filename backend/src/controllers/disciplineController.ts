@@ -14,13 +14,13 @@ export const createDisciplineController = async (
 			.input("dis_name", mssql.VarChar, req.body.dis_name)
 			.input("school_uuid", mssql.UniqueIdentifier, req.body.school_uuid)
 			.query(`
-                INSERT INTO ${DbTables.DISCIPLINE} 
-                OUTPUT INSERTED.dis_uuid, INSERTED.dis_name, INSERTED.school_uuid
-                VALUES (DEFAULT, @dis_name, @school_uuid)
+                INSERT INTO ${DbTables.DISCIPLINE} (dis_name, school_uuid)
+                OUTPUT INSERTED.*
+                VALUES (@dis_name, @school_uuid)
             `)
 		res.send({ data: create.recordset })
 	} catch (error) {
-		res.send(error)
+		res.status(404).send(error)
 	}
 }
 
@@ -40,7 +40,7 @@ export const updateDisciplineController = async (
             UPDATE ${DbTables.DISCIPLINE} SET
                 [dis_name]=@dis_name,
                 [school_uuid]=@school_uuid
-            OUTPUT INSERTED.dis_uuid, INSERTED.dis_name, INSERTED.school_uuid
+            OUTPUT INSERTED.*
             WHERE [dis_uuid]=@dis_uuid
         `)
 		res.send({ data: update.recordset })
