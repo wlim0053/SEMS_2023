@@ -5,6 +5,7 @@ import { studentRouter } from "./routes/student"
 import { organiserRouter } from "./routes/organiser"
 import { disciplineRouter } from "./routes/discipline"
 import { eventRouter } from "./routes/event"
+import { participationRouter } from "./routes/participation"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -25,5 +26,6 @@ app.use("/api/student", studentRouter)
 app.use("/api/organiser", organiserRouter)
 app.use("/api/discipline", disciplineRouter)
 app.use("/api/event", eventRouter)
+app.use("/api/participation", participationRouter)
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))
