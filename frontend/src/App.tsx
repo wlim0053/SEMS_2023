@@ -1,25 +1,22 @@
 // hooks
-import React, { useState } from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
 // components
-import LoginPage from './components/LoginPage';
+import Navbar from './components/Navbar'
+// css
+import './App.css'
+import { BrowserRouter as Router, Outlet } from "react-router-dom";
 import AttendancePage from './components/AttendancePage';
+// css
 
-// App functional component
-const App = () => {
-    // State to track whether the user is logged in
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    // Function to handle a successful login
-    const handleLoginSuccess = () => {
-        setIsLoggedIn(true);
-    };
-
-  // Render the app
+function App() {
   return (
-    <>
-      <AttendancePage />
-    </>
+    <div className="App">
+      <Router>
+        <Navbar />
+        <AttendancePage />
+        <Outlet /> {/* Render nested routes */}
+      </Router>
+    </div>
   );
-};
+}
 
 export default App;
