@@ -59,7 +59,7 @@ const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon />}>
           Login
         </Button>
-        <Button colorScheme="teal" mt={4}>
+        <Button colorScheme="blue" mt={4}>
           Sign Up
         </Button>
       </VStack>
