@@ -5,7 +5,6 @@ import {
 	updateSchoolController,
 	deleteSchoolController,
 } from "../controllers/schoolController"
-import { ParamsWithId } from "../interfaces/paramsWithId"
 import { School } from "../interfaces/school"
 import { requestValidators } from "../middlewares/requestValidator"
 
