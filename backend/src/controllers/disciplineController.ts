@@ -1,15 +1,18 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
+import { SuccessResponse } from "../interfaces/response"
+import { Discipline, DisciplineWithUUID } from "../interfaces/discipline"
 
 export const createDisciplineController = async (
-	req: Request,
-	res: Response
+	req: Request<{}, SuccessResponse<DisciplineWithUUID>, Discipline>,
+	res: Response<SuccessResponse<DisciplineWithUUID>>,
+	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const create = await connection
+		const create: mssql.IResult<DisciplineWithUUID> = await connection
 			.request()
 			.input("dis_name", mssql.VarChar, req.body.dis_name)
 			.input("school_uuid", mssql.UniqueIdentifier, req.body.school_uuid)
@@ -18,22 +21,26 @@ export const createDisciplineController = async (
                 OUTPUT INSERTED.*
                 VALUES (@dis_name, @school_uuid)
             `)
-		res.send({ data: create.recordset })
+		res.json({ data: create.recordset })
 	} catch (error) {
-		res.status(404).send(error)
+		next(error)
 	}
 }
 
 export const updateDisciplineController = async (
-	req: Request,
-	res: Response
+	req: Request<
+		{ id: string },
+		SuccessResponse<DisciplineWithUUID>,
+		Discipline
+	>,
+	res: Response<SuccessResponse<DisciplineWithUUID>>,
+	next: NextFunction
 ) => {
-	const id = req.params.id
 	try {
 		const connection = await pool.connect()
-		const update = await connection
+		const update: mssql.IResult<DisciplineWithUUID> = await connection
 			.request()
-			.input("dis_uuid", mssql.UniqueIdentifier, id)
+			.input("dis_uuid", mssql.UniqueIdentifier, req.params.id)
 			.input("dis_name", mssql.VarChar, req.body.dis_name)
 			.input("school_uuid", mssql.UniqueIdentifier, req.body.school_uuid)
 			.query(`
@@ -43,60 +50,64 @@ export const updateDisciplineController = async (
             OUTPUT INSERTED.*
             WHERE [dis_uuid]=@dis_uuid
         `)
-		res.send({ data: update.recordset })
+		res.json({ data: update.recordset })
 		connection.close()
 	} catch (error) {
-		res.status(404).send(error)
+		next(error)
 	}
 }
 
 export const deleteDisciplineController = async (
-	req: Request,
-	res: Response
+	req: Request<{ id: string }, {}, {}>,
+	res: Response<{}>,
+	next: NextFunction
 ) => {
-	const id = req.params.id
 	try {
 		const connection = await pool.connect()
 		const deleted = await connection
 			.request()
-			.input("dis_uuid", mssql.UniqueIdentifier, id).query(`
+			.input("dis_uuid", mssql.UniqueIdentifier, req.params.id).query(`
             DELETE FROM ${DbTables.DISCIPLINE} WHERE [dis_uuid]=@dis_uuid
         `)
 		res.sendStatus(204)
 		connection.close()
 	} catch (error) {
-		res.status(404).send(error)
+		next(error)
 	}
 }
 
-export const getDisciplineController = async (req: Request, res: Response) => {
+export const getDisciplineController = async (
+	req: Request<{}, SuccessResponse<DisciplineWithUUID>, {}>,
+	res: Response<SuccessResponse<DisciplineWithUUID>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const disciplines = await connection
+		const disciplines: mssql.IResult<DisciplineWithUUID> = await connection
 			.request()
 			.query(`SELECT * FROM ${DbTables.DISCIPLINE}`)
-		res.send({ data: disciplines.recordset })
+		res.json({ data: disciplines.recordset })
 		connection.close()
 	} catch (error) {
-		res.status(404).send(error)
+		next(error)
 	}
 }
 
 export const getDisciplineByIdController = async (
-	req: Request,
-	res: Response
+	req: Request<{ id: string }, SuccessResponse<DisciplineWithUUID>, {}>,
+	res: Response<SuccessResponse<DisciplineWithUUID>>,
+	next: NextFunction
 ) => {
-	const id = req.params.id
 	try {
 		const connection = await pool.connect()
 		const discipline = await connection
 			.request()
-			.input("dis_uuid", mssql.UniqueIdentifier, id).query(`
+			.input("dis_uuid", mssql.UniqueIdentifier, req.params.id).query(`
             SELECT * FROM ${DbTables.DISCIPLINE} WHERE [dis_uuid]=@dis_uuid
         `)
-		res.send({ data: discipline.recordset })
+		res.json({ data: discipline.recordset })
 		connection.close()
 	} catch (error) {
-		res.status(404).send(error)
+		next(error)
 	}
 }
