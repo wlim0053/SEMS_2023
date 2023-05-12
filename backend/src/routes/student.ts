@@ -1,21 +1,27 @@
-import express from "express";
+import express from "express"
 import {
-  createStudentController,
-  updateStudentController,
-  getStudentByIdController,
-  getStudentController,
-  deleteStudentController,
-} from "../controllers/studentController";
+	createStudentController,
+	updateStudentController,
+	getStudentByIdController,
+	getStudentController,
+	deleteStudentController,
+} from "../controllers/studentController"
+import { Student, StudentWithFireId } from "../interfaces/student"
+import { errorHandler } from "../middlewares/errorHandler"
+import { requestValidators } from "../middlewares/requestValidator"
 
-export const studentRouter = express.Router();
-
-studentRouter
-  .route("/")
-  .post(createStudentController)
-  .get(getStudentController);
+export const studentRouter = express.Router()
 
 studentRouter
-  .route("/:id")
-  .put(updateStudentController)
-  .get(getStudentByIdController)
-  .delete(deleteStudentController);
+	.route("/")
+	.post(
+		requestValidators({ body: StudentWithFireId }),
+		createStudentController
+	)
+	.get(getStudentController)
+
+studentRouter
+	.route("/:id")
+	.put(requestValidators({ body: Student }), updateStudentController)
+	.get(getStudentByIdController)
+	.delete(deleteStudentController)
