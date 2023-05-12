@@ -1,17 +1,22 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
+import { SuccessResponse } from "../interfaces/response"
+import { Organiser, OrganiserWithUUID } from "../interfaces/organiser"
 
-export const createOrganiserController = async (req: Request,res: Response) => {
+export const createOrganiserController = async (
+	req: Request<{}, SuccessResponse<OrganiserWithUUID>, Organiser>,
+	res: Response<SuccessResponse<OrganiserWithUUID>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const create = await connection
+		const create: mssql.IResult<OrganiserWithUUID> = await connection
 			.request()
 			.input("parent_uuid", mssql.UniqueIdentifier, req.body.parent_uuid)
 			.input("organiser_name", mssql.VarChar, req.body.organiser_name)
-			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id)
-			.query(`
+			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id).query(`
                 INSERT INTO ${DbTables.ORGANISER}  
 				OUTPUT INSERTED.*
 				VALUES (
@@ -20,19 +25,23 @@ export const createOrganiserController = async (req: Request,res: Response) => {
                     @organiser_name,
                     @stu_fire_id
                 )`)
-		res.send({ data: create.recordset })
+		res.json({ data: create.recordset })
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
 
-export const updateOrganiserController = async (req: Request, res: Response) => {
+export const updateOrganiserController = async (
+	req: Request<{ id: string }, SuccessResponse<OrganiserWithUUID>, Organiser>,
+	res: Response<SuccessResponse<OrganiserWithUUID>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const updated = await connection
+		const updated: mssql.IResult<OrganiserWithUUID> = await connection
 			.request()
-			.input("organiser_uuid", mssql.UniqueIdentifier,req.params.id)
+			.input("organiser_uuid", mssql.UniqueIdentifier, req.params.id)
 			.input("parent_uuid", mssql.UniqueIdentifier, req.body.parent_uuid)
 			.input("organiser_name", mssql.VarChar, req.body.organiser_name)
 			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id)
@@ -43,31 +52,39 @@ export const updateOrganiserController = async (req: Request, res: Response) => 
                         [stu_fire_id] = @stu_fire_id
 				OUTPUT INSERTED.*
 			    WHERE [organiser_uuid] = @organiser_uuid
-			`)
-		res.send({ data: updated.recordset })
+			`
+			)
+		res.json({ data: updated.recordset })
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
 
-export const getOrganiserController = async (req: Request, res: Response) => {
+export const getOrganiserController = async (
+	req: Request<{}, SuccessResponse<OrganiserWithUUID>, {}>,
+	res: Response<SuccessResponse<OrganiserWithUUID>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const organisers = await connection.query(
-			`SELECT * FROM ${DbTables.ORGANISER}`
-		)
-		res.status(StatusCodes.OK).json({ data: organisers.recordset }) // TODO 
+		const organisers: mssql.IResult<OrganiserWithUUID> =
+			await connection.query(`SELECT * FROM ${DbTables.ORGANISER}`)
+		res.status(StatusCodes.OK).json({ data: organisers.recordset })
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
 
-export const getOrganiserByIDController = async (req: Request, res: Response) => {
+export const getOrganiserByIDController = async (
+	req: Request<{ id: string }, SuccessResponse<OrganiserWithUUID>, {}>,
+	res: Response<SuccessResponse<OrganiserWithUUID>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const organiser = await connection
+		const organiser: mssql.IResult<OrganiserWithUUID> = await connection
 			.request()
 			.input("organiser_uuid", mssql.VarChar, req.params.id)
 			.query(
@@ -76,11 +93,15 @@ export const getOrganiserByIDController = async (req: Request, res: Response) =>
 		res.json({ data: organiser.recordset })
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
 
-export const deleteOrganiserController = async (req: Request, res: Response) => {
+export const deleteOrganiserController = async (
+	req: Request<{ id: string }, {}, {}>,
+	res: Response<{}>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
 		await connection
@@ -92,6 +113,6 @@ export const deleteOrganiserController = async (req: Request, res: Response) => 
 		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
