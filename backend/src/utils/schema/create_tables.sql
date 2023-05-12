@@ -9,7 +9,7 @@ BEGIN
         enrolment_year DATE,
         enrolment_intake INT CHECK (enrolment_intake IN (2, 7, 10)),
         stu_gender INT NOT NULL CHECK (stu_gender IN (0,1)),
-        dis_uuid UNIQUEIDENTIFIER NOT NULL
+        dis_uuid UNIQUEIDENTIFIER
     )
 END
 
@@ -54,7 +54,7 @@ BEGIN
         event_desc VARCHAR(255) NOT NULL,
         event_venue VARCHAR(255) NOT NULL,
         event_capacity INT NOT NULL,
-        event_status VARCHAR(255) NOT NULL DEFAULT 'PENDING' CHECK(event_status IN ('DRAFT', 'PENDING', 'APPROVED')),
+        event_status VARCHAR(255) NOT NULL CHECK(event_status IN ('DRAFT', 'PENDING', 'APPROVED')),
         event_reg_start_date SMALLDATETIME,
         event_reg_end_date SMALLDATETIME,
         event_reg_google_form VARCHAR(255) NOT NULL
