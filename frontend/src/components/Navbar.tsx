@@ -83,6 +83,7 @@ const Navbar = () => {
               <Link to="/Admin">Home</Link>
               <Link to="/OrganiserList">Organiser List</Link>
               <Link to="/ActivityLog">Activity Log</Link>
+              <Link to="/Historypage">History Page</Link>
             </VStack>
           </DrawerBody>
           <DrawerFooter>Hello3</DrawerFooter>
