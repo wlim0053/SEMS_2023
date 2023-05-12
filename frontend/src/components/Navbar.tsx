@@ -20,7 +20,7 @@ const Navbar = () => {
 
   return (
     <>
-      <Box bg="blue.700">
+      <Box bg='#006DAE'>
         {/* <Button ref={buttonRef} onClick={onOpen} variant='ghost' _hover={{}}> */}
           <HamburgerIcon ref={buttonRef} 
           onClick={onOpen}

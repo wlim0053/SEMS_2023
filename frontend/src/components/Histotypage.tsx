@@ -5,8 +5,7 @@ import { Heading , Box ,Table,
     Tr,
     Th,
     Td,
-    TableCaption,
-    TableContainer,} from "@chakra-ui/react"
+    TableContainer,Container,VStack,Text,Divider} from "@chakra-ui/react"
 
 const Historypage =  () => {
     return (
@@ -45,6 +44,19 @@ const Historypage =  () => {
 
             </Table>
         </TableContainer>
+
+        <Container as='footer'  bottom='100%' pt = '29%'>
+            <VStack>
+                <Box bg='#5A5A5A' w='254%' p={4} color='white'>
+                    <Text fontSize={20}>Data Policy</Text>
+                    <Divider orientation='horizontal' />
+                    <Text fontSize={15}>
+                        All rights belong to Monas
+                    </Text>
+                </Box>
+                
+            </VStack>
+        </Container>
         
         </>
     )
