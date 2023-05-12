@@ -1,12 +1,18 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
+import { School, SchoolWithUUID } from "../interfaces/school"
+import { SuccessResponse } from "../interfaces/response"
 
-export const updateSchoolController = async (req: Request, res: Response) => {
+export const updateSchoolController = async (
+	req: Request<{ id: string }, { data: SchoolWithUUID[] }, School>,
+	res: Response<{ data: SchoolWithUUID[] }>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const updated = await connection
+		const updated: mssql.IResult<SchoolWithUUID> = await connection
 			.request()
 			.input("school_uuid", mssql.UniqueIdentifier, req.params.id)
 			.input("school_name", mssql.VarChar, req.body.school_name)
@@ -16,43 +22,55 @@ export const updateSchoolController = async (req: Request, res: Response) => {
 				OUTPUT INSERTED.*
 				WHERE [school_uuid] = @school_uuid`
 			)
-		res.send({ data: updated.recordset })
+		res.json({ data: updated.recordset })
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
 
-export const getSchoolController = async (req: Request, res: Response) => {
+export const getSchoolController = async (
+	req: Request<{}, SuccessResponse<SchoolWithUUID>, {}>,
+	res: Response<SuccessResponse<SchoolWithUUID>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const schools = await connection.query(
+		const schools: mssql.IResult<SchoolWithUUID> = await connection.query(
 			`SELECT * FROM ${DbTables.SCHOOL}`
 		)
+		res.status(StatusCodes.OK).json({ data: schools.recordset })
 		connection.close()
-		res.status(StatusCodes.OK).json({ data: schools.recordset }) // TODO 
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
 
-export const getSchoolByIdController = async (req: Request, res: Response) => {
+export const getSchoolByIdController = async (
+	req: Request<{ id: string }, SuccessResponse<SchoolWithUUID>, School>,
+	res: Response<SuccessResponse<SchoolWithUUID>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const school = await connection
+		const school: mssql.IResult<SchoolWithUUID> = await connection
 			.request()
 			.input("school_uuid", mssql.UniqueIdentifier, req.params.id)
 			.query(
 				`SELECT * FROM ${DbTables.SCHOOL} WHERE school_uuid=@school_uuid`
-				)
-		res.json({ data: school.recordset })
+			)
+		res.status(StatusCodes.OK).json({ data: school.recordset })
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
 
-export const deleteSchoolController = async (req: Request, res: Response) => {
+export const deleteSchoolController = async (
+	req: Request<{ id: string }, {}, {}>,
+	res: Response<{}>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
 		await connection
@@ -61,9 +79,9 @@ export const deleteSchoolController = async (req: Request, res: Response) => {
 			.query(
 				`DELETE ${DbTables.SCHOOL} WHERE [school_uuid] = @school_uuid`
 			)
-		res.sendStatus(StatusCodes.NO_CONTENT) 
+		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
