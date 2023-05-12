@@ -15,9 +15,6 @@ schoolRouter.route("/").get(getSchoolController)
 
 schoolRouter
 	.route("/:id")
-	.get(requestValidators({ params: ParamsWithId }), getSchoolByIdController)
-	.put(
-		requestValidators({ params: ParamsWithId, body: School }),
-		updateSchoolController
-	)
+	.get(getSchoolByIdController)
+	.put(requestValidators({ body: School }), updateSchoolController)
 	.delete(deleteSchoolController)
