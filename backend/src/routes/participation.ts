@@ -6,16 +6,24 @@ import {
 	getParticipationByIdController,
 	deleteParticipationController,
 } from "../controllers/participationController"
+import { Participation } from "../interfaces/participation"
+import { requestValidators } from "../middlewares/requestValidator"
 
 export const participationRouter = express.Router()
 
 participationRouter
 	.route("/")
-	.post(createParticipationController)
+	.post(
+		requestValidators({ body: Participation }),
+		createParticipationController
+	)
 	.get(getParticipationController)
 
 participationRouter
 	.route("/:id")
-	.put(updateParticipationController)
+	.put(
+		requestValidators({ body: Participation }),
+		updateParticipationController
+	)
 	.get(getParticipationByIdController)
 	.delete(deleteParticipationController)
