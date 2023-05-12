@@ -1,12 +1,18 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
+import { SuccessResponse } from "../interfaces/response"
+import { Student, StudentWithFireId } from "../interfaces/student"
 
-export const createStudentController = async (req: Request, res: Response) => {
+export const createStudentController = async (
+	req: Request<{}, SuccessResponse<StudentWithFireId>, StudentWithFireId>,
+	res: Response<SuccessResponse<StudentWithFireId>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const create = await connection
+		const create: mssql.IResult<StudentWithFireId> = await connection
 			.request()
 			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id)
 			.input("stu_email", mssql.VarChar, req.body.stu_email)
@@ -30,20 +36,23 @@ export const createStudentController = async (req: Request, res: Response) => {
                     @dis_uuid
                 )
             `)
-		res.send({ data: create.recordset })
+		res.json({ data: create.recordset })
 		connection.close()
 	} catch (error) {
-		res.status(404).send(error)
+		next(error)
 	}
 }
 
-export const updateStudentController = async (req: Request, res: Response) => {
-	const id = req.params.id
+export const updateStudentController = async (
+	req: Request<{ id: string }, SuccessResponse<StudentWithFireId>, Student>,
+	res: Response<SuccessResponse<StudentWithFireId>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const update = await connection
+		const update: mssql.IResult<StudentWithFireId> = await connection
 			.request()
-			.input("stu_fire_id", mssql.VarChar, id)
+			.input("stu_fire_id", mssql.VarChar, req.params.id)
 			.input("stu_email", mssql.VarChar, req.body.stu_email)
 			.input("stu_name", mssql.VarChar, req.body.stu_name)
 			.input("stu_id", mssql.Int, req.body.stu_id)
@@ -60,35 +69,41 @@ export const updateStudentController = async (req: Request, res: Response) => {
                 [enrolment_intake]=@enrolment_intake,
                 [stu_gender]=@stu_gender,
                 [dis_uuid]=@dis_uuid
-            OUTPUT INSERTED.stu_fire_id, INSERTED.stu_email, INSERTED.stu_name, INSERTED.stu_id, INSERTED.enrolment_year, INSERTED.enrolment_intake, INSERTED.stu_gender, INSERTED.dis_uuid
-
+            OUTPUT INSERTED.*
             WHERE [stu_fire_id]=@stu_fire_id
         `)
-		res.send({ data: update.recordset })
+		res.json({ data: update.recordset })
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
 
-export const deleteStudentController = async (req: Request, res: Response) => {
-	const id = req.params.id
+export const deleteStudentController = async (
+	req: Request<{ id: string }, {}, {}>,
+	res: Response<{}>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
 		await connection
 			.request()
-			.input("stu_fire_id", mssql.VarChar, id)
+			.input("stu_fire_id", mssql.VarChar, req.params.id)
 			.query(
 				`DELETE FROM ${DbTables.STUDENT} WHERE [stu_fire_id]=@stu_fire_id`
 			)
-		res.sendStatus(204) 
+		res.sendStatus(204)
 		connection.close()
 	} catch (error) {
-		console.log(error)
+		next(error)
 	}
 }
 
-export const getStudentController = async (req: Request, res: Response) => {
+export const getStudentController = async (
+	req: Request<{}, SuccessResponse<StudentWithFireId>, {}>,
+	res: Response<SuccessResponse<StudentWithFireId>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
 		const students = await connection.query(
@@ -97,22 +112,25 @@ export const getStudentController = async (req: Request, res: Response) => {
 		connection.close()
 		res.status(StatusCodes.OK).json({ data: students.recordset })
 	} catch (error) {
-		console.log(error)
-		res.send(StatusCodes.NOT_FOUND)
+		next(error)
 	}
 }
 
-export const getStudentByIdController = async (req: Request, res: Response) => {
+export const getStudentByIdController = async (
+	req: Request<{ id: string }, SuccessResponse<StudentWithFireId>, {}>,
+	res: Response<SuccessResponse<StudentWithFireId>>,
+	next: NextFunction
+) => {
 	try {
 		const connection = await pool.connect()
-		const student = await connection
+		const student: mssql.IResult<StudentWithFireId> = await connection
 			.request()
 			.input("stu_fire_id", mssql.VarChar, req.params.id)
 			.query(
 				`SELECT * FROM ${DbTables.STUDENT} WHERE stu_fire_id=@stu_fire_id`
 			)
-		res.send({ data: student.recordset })
+		res.json({ data: student.recordset })
 	} catch (error) {
-		res.status(404).send(error)
+		next(error)
 	}
 }
