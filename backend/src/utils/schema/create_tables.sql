@@ -8,7 +8,7 @@ BEGIN
         stu_id INT,
         enrolment_year DATE,
         enrolment_intake INT CHECK (enrolment_intake IN (2, 7, 10)),
-        stu_gender INT NOT NULL CHECK (stu_gender IN (0,1)),
+        stu_gender INT CHECK (stu_gender IN (0,1)),
         dis_uuid UNIQUEIDENTIFIER
     )
 END

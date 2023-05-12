@@ -162,10 +162,8 @@ const populateTableStudent = async () => {
 		table.columns.add("stu_id", mssql.Int)
 		table.columns.add("enrolment_year", mssql.Date)
 		table.columns.add("enrolment_intake", mssql.Int)
-		table.columns.add("stu_gender", mssql.Int, { nullable: false })
-		table.columns.add("dis_uuid", mssql.UniqueIdentifier, {
-			nullable: false,
-		})
+		table.columns.add("stu_gender", mssql.Int)
+		table.columns.add("dis_uuid", mssql.UniqueIdentifier)
 		students.forEach(
 			({
 				stu_fire_id,
@@ -314,4 +312,4 @@ const delay = 3000
 // populateTableStudent()
 // populateTableOrganiser()
 // populateTableEvent()
-// populateTableParticipation()
+populateTableParticipation()
