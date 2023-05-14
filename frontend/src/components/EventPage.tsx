@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, {useState} from "react";
 import {
   Table,
   Thead,
@@ -20,8 +20,7 @@ import {
   ModalBody,
   Checkbox,
 } from "@chakra-ui/react";
-import { CSSObject } from "@emotion/react";
-import { useState } from "react";
+import {CSSObject} from "@emotion/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 
 function EventPage() {
@@ -134,7 +133,7 @@ function EventPage() {
     return matchesSearchTerm && matchesSelectedClubs;
   });
 
-  const sortedEvents = filteredEvents.sort((a, b) => {
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
     if (sortField === "eventNo") {
       return sortOrder === "asc"
         ? a.eventNo - b.eventNo
@@ -153,10 +152,6 @@ function EventPage() {
         : b.club.localeCompare(a.club);
     }
   });
-
-  useEffect(() => {
-    handleReset();
-  }, []);
 
   return (
     <Box width="100%" p={5} overflowX="auto">
@@ -261,6 +256,9 @@ function EventPage() {
           ))}
         </Tbody>
       </Table>
+      <Button colorScheme={"blue"} onClick={() => console.log("Load more")}>
+        Load more
+      </Button>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalOverlay />
         <ModalContent>
