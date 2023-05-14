@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {Box, Text, Flex, useMediaQuery} from "@chakra-ui/react";
+import { Box, Text, Flex } from "@chakra-ui/react";
 
 function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState(0);
@@ -25,19 +25,11 @@ function CountdownTimer() {
     },
     {
       title: "MUM Event 3",
-      start: "2023-05-09T12:26:00",
-      end: "2023-05-09T13:00:00",
+      start: "2023-05-16T12:26:00",
+      end: "2023-05-16T13:00:00",
       description: "This is a MUM event",
-    }
+    },
   ];
-
-  const [isSmallerThan500] = useMediaQuery("(max-width: 500px)");
-
-  const maxWidth = isSmallerThan500 ? "calc(100% - 4rem)" : "30rem";
-  const mt = isSmallerThan500 ? "0.1rem" : { base: "1rem", md: "1.5rem" };
-  const mb = isSmallerThan500 ? "0.1rem" : { base: "1rem", md: "1.5rem" };
-  const p = isSmallerThan500 ? "0.1rem" : { base: "1rem", md: "1.5rem" };
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -106,25 +98,25 @@ function CountdownTimer() {
         justifyContent="center"
         alignItems="center"
         flexDirection="column"
-        mt="1.5rem"
+        mt={{ base: "1.5rem", md: "2rem" }}
       >
         <Box
           className="card countdown-card"
-          maxW={maxWidth}
+          maxW={{ base: "calc(100% - 4rem)", md: "30rem" }}
           borderWidth="1px"
           borderColor="#006dac"
           borderRadius="0.5rem"
           boxShadow="0 0 0.5rem 0.1rem #006dac"
-          p={p}
+          p={{ base: "0.1rem", md: "1.5rem" }}
           m="0 auto"
-          mt={mt}
-          mb={mb}
+          mt={{ base: "0.1rem", md: "1rem" }}
+          mb={{ base: "0.1rem", md: "1.5rem" }}
         >
           <Text
             className="countdown-title"
             fontFamily="Helvetica Neue, Arial Narrow, sans-serif"
             fontWeight="bold"
-            fontSize="1.5rem"
+            fontSize={{ base: "1.2rem", md: "1.5rem" }}
             textAlign="center"
           >
             There are no future events from {getCurrentDate()} onwards
@@ -140,26 +132,26 @@ function CountdownTimer() {
       justifyContent="center"
       alignItems="center"
       flexDirection="column"
-      mt="1.5rem"
+      mt={{ base: "1.5rem", md: "2rem" }}
     >
       <Box
         className="card countdown-card"
-        maxW={maxWidth}
+        maxW={{ base: "calc(100% - 4rem)", md: "30rem" }}
         borderWidth="1px"
         borderColor="#006dac"
         borderRadius="0.5rem"
         boxShadow="0 0 0.5rem 0.1rem #006dac"
-        p={p}
+        p={{ base: "0.1rem", md: "1.5rem" }}
         m="0 auto"
-        mt={mt}
-        mb={mb}
+        mt={{ base: "0.1rem", md: "1rem" }}
+        mb={{ base: "0.1rem", md: "1.5rem" }}
       >
         <Box className="countdown-box" p="1.5rem">
           <Text
             className="countdown-title"
             fontFamily="Helvetica Neue, Arial Narrow, sans-serif"
             fontWeight="bold"
-            fontSize={isSmallerThan500 ? "1.125rem" : "1.5rem"}
+            fontSize={{ base: "1.2rem", md: "1.5rem" }}
             textAlign="center"
           >
             Next event - {title} is in:
@@ -195,7 +187,7 @@ function CountdownTimer() {
                   <Text
                     className="countdown-value"
                     fontFamily="Helvetica Neue, Arial Narrow, sans-serif"
-                    fontSize={isSmallerThan500 ? "2.25rem" : "3rem"}
+                    fontSize={{ base: "2.25rem", md: "3rem" }}
                     fontWeight="bold"
                   >
                     {item.value}
