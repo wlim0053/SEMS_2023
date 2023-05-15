@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   Table,
   Thead,
@@ -20,8 +20,9 @@ import {
   ModalBody,
   Checkbox,
 } from "@chakra-ui/react";
-import {CSSObject} from "@emotion/react";
+import { CSSObject } from "@emotion/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
+import { useNavigate } from "react-router-dom";
 
 function EventPage() {
   const events: Event[] = [
@@ -55,11 +56,11 @@ function EventPage() {
     },
   ];
 
+  type SortField = "eventNo" | "eventName" | "dateTime" | "club";
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [sortField, setSortField] = useState<
-    "eventNo" | "eventName" | "dateTime" | "club"
-  >("eventNo");
+  const [sortField, setSortField] = useState<SortField>("eventNo");
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -80,6 +81,16 @@ function EventPage() {
     description: string;
   };
 
+  const headers = [
+    "Event No.",
+    "Event Name",
+    "Club",
+    "Date & Time",
+    "Venue",
+    "Description",
+    "Actions",
+  ];
+
   const tableStyles: CSSObject = {
     borderCollapse: "collapse",
     border: "2px solid #ddd",
@@ -96,10 +107,16 @@ function EventPage() {
     },
   };
 
+  const navigate = useNavigate();
+
+  const handleGoToCalendar = () => {
+    navigate("/StudentHome");
+  };
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
-  const handleSort = (field: "eventNo" | "eventName" | "dateTime" | "club") => {
+  const handleSort = (field: SortField) => {
     if (field === sortField) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
@@ -219,19 +236,20 @@ function EventPage() {
       <Table variant="simple" size="md" width="auto" mx="auto" sx={tableStyles}>
         <Thead>
           <Tr>
-            <Th>Event No.</Th>
-            <Th onClick={() => handleSort("eventName")}>
-              Event Name{" "}
-              {sortField === "eventName" && (sortOrder === "asc" ? "↑" : "↓")}
-            </Th>
-            <Th>Club</Th>
-            <Th onClick={() => handleSort("dateTime")}>
-              Date & Time{" "}
-              {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
-            </Th>
-            <Th>Venue</Th>
-            <Th>Description</Th>
-            <Th>Actions</Th>
+            {headers.map((header) => (
+              <Th
+                key={header}
+                whiteSpace="nowrap"
+                backgroundColor="#f2f2f2"
+                fontWeight="bold"
+                border="1px solid #ccc"
+                padding="0.5rem"
+                onClick={() => handleSort(header as SortField)}
+              >
+                {header}{" "}
+                {sortField === header && (sortOrder === "asc" ? "↑" : "↓")}
+              </Th>
+            ))}
           </Tr>
         </Thead>
         <Tbody>
@@ -256,8 +274,13 @@ function EventPage() {
           ))}
         </Tbody>
       </Table>
-      <Button colorScheme={"blue"} onClick={() => console.log("Load more")}>
-        Load more
+      <Button
+        size="sm"
+        mt={2}
+        colorScheme={"blue"}
+        onClick={handleGoToCalendar}
+      >
+        Go to Calendar View →
       </Button>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalOverlay />
