@@ -165,7 +165,7 @@ const Admin = () => {
       p="6"
       spacing={10}
       textAlign="center"
-      minChildWidth="500px"
+      minChildWidth="540px"
       columns={2}
     >
       {/* //1st Box */}
