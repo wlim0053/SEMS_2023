@@ -22,6 +22,18 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
+  VStack,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Text,
+  background,
+  Image,
+  Flex,
+  Spacer,
+} from "@chakra-ui/react";
+import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, Route, Routes, Navigate } from "react-router-dom";
 import OrganiserList from "../pages/Admin/OrganiserList";
 import ActivityLog from "../pages/Admin/ActivityLog";
@@ -83,7 +95,6 @@ const Navbar = () => {
               <Link to="/Admin">Home</Link>
               <Link to="/OrganiserList">Organiser List</Link>
               <Link to="/ActivityLog">Activity Log</Link>
-              <Link to="/Historypage">History Page</Link>
             </VStack>
           </DrawerBody>
           <DrawerFooter>Hello3</DrawerFooter>
