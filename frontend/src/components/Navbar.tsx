@@ -28,26 +28,27 @@ import ActivityLog from "../pages/Admin/ActivityLog";
 import Admin from "../pages/Admin/AdminDashboard";
 
 const Navbar = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const buttonRef = React.useRef(null)
-
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const buttonRef = React.useRef(null);
 
   return (
     <>
       {/* Change the gap between hamburger icon and the logo */}
-      <Flex bg="#006DAE" h="60px" alignItems='center' gap='10'>
+      <Flex bg="#006DAE" h="60px" alignItems="center" gap="10" justify="end">
         <Box>
-          <HamburgerIcon ref={buttonRef}
+          <HamburgerIcon
+            ref={buttonRef}
             onClick={onOpen}
-            boxSize='1.5em'
-            color='#FFFFFF'
+            boxSize="1.5em"
+            color="#FFFFFF"
             css={{
-              margin: '20px',
-              cursor: 'pointer'
-            }} />
+              margin: "20px",
+              cursor: "pointer",
+            }}
+          />
         </Box>
         {/* <Spacer/> */}
-        <Image src='../public/monash_logo.png' height='50px'></Image>
+        <Image src="../public/monash_logo.png" height="50px"></Image>
         <Spacer />
         <Menu>
           {/* To do: change the sign in sign up to an icon */}
@@ -65,16 +66,15 @@ const Navbar = () => {
         </Menu>
       </Flex>
 
-
       {/* </Button> */}
       <Drawer
         isOpen={isOpen}
-        placement='left'
+        placement="left"
         onClose={onClose}
         finalFocusRef={buttonRef}
         colorScheme="blackAlpha"
       >
-        <DrawerOverlay ></DrawerOverlay>
+        <DrawerOverlay></DrawerOverlay>
         <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader>Menu</DrawerHeader>
