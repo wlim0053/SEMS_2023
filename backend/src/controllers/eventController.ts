@@ -4,7 +4,7 @@ import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 import { Event, EventWithUUID } from "../interfaces/event"
 import { SuccessResponse } from "../interfaces/response"
-import { ParticipantWithUUID } from "../interfaces/participant"
+import { ParticipationWithUUID } from "../interfaces/participation"
 
 export const createEventController = async (
 	req: Request<{}, SuccessResponse<EventWithUUID>, Event>,
@@ -167,13 +167,13 @@ export const deleteEventController = async (
 }
 
 export const getEventParticipationController = async (
-	req: Request<{ id: string }, SuccessResponse<ParticipantWithUUID>, {}>,
-	res: Response<SuccessResponse<ParticipantWithUUID>>,
+	req: Request<{ id: string }, SuccessResponse<ParticipationWithUUID>, {}>,
+	res: Response<SuccessResponse<ParticipationWithUUID>>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const participants: mssql.IResult<ParticipantWithUUID> =
+		const participants: mssql.IResult<ParticipationWithUUID> =
 			await connection
 				.request()
 				.input("event_uuid", mssql.UniqueIdentifier, req.params.id)
