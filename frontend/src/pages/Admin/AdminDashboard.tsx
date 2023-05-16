@@ -15,10 +15,11 @@ import {
   Select,
   Image,
   HStack,
+  Button,
 } from "@chakra-ui/react";
 
 import { CalendarIcon } from "@chakra-ui/icons";
-import { BiGroup } from "react-icons/bi";
+import { BiGroup, BiExport } from "react-icons/bi";
 import { IconContext } from "react-icons";
 
 import {
@@ -128,7 +129,7 @@ const boxStyle = {
   bg: "white",
   boxShadow: "2xl",
   rounded: "md",
-  height: "430px",
+  height: "470px",
   mr: "10px",
 };
 
@@ -155,7 +156,7 @@ const boxHeaderStyle = {
   bg: "white",
   borderTopRadius: "8px 8px",
   height: "78px",
-  background: "blue.700",
+  background: "#006DAE",
 };
 
 const Admin = () => {
@@ -239,6 +240,14 @@ const Admin = () => {
             <Bar dataKey="uv" fill="#2471A3" />
           </BarChart>
         </Center>
+        <Button
+          variant="solid"
+          colorScheme="blue"
+          leftIcon={<BiExport />}
+          mt="5"
+        >
+          Export
+        </Button>
       </Box>
 
       {/* Second graph */}
@@ -269,6 +278,14 @@ const Admin = () => {
             <Legend />
           </PieChart>
         </Center>
+        <Button
+          variant="solid"
+          colorScheme="blue"
+          leftIcon={<BiExport />}
+          mt="5"
+        >
+          Export
+        </Button>
       </Box>
 
       {/* Third graph */}
@@ -300,6 +317,14 @@ const Admin = () => {
             <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
           </LineChart>
         </Center>
+        <Button
+          variant="solid"
+          colorScheme="blue"
+          leftIcon={<BiExport />}
+          mt="5"
+        >
+          Export
+        </Button>
       </Box>
 
       {/* Forth graph */}
@@ -326,6 +351,14 @@ const Admin = () => {
             <Bar dataKey="uv" stackId="a" fill="#82ca9d" />
           </BarChart>
         </Center>
+        <Button
+          variant="solid"
+          colorScheme="blue"
+          leftIcon={<BiExport />}
+          mt="5"
+        >
+          Export
+        </Button>
       </Box>
       <Box sx={boxStyle}>
         <Box sx={boxHeaderStyle}></Box>
