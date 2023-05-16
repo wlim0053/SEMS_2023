@@ -6,16 +6,18 @@ import {
 	getDisciplineController,
 	updateDisciplineController,
 } from "../controllers/disciplineController"
+import { Discipline } from "../interfaces/discipline"
+import { requestValidators } from "../middlewares/requestValidator"
 
 export const disciplineRouter = express.Router()
 
 disciplineRouter
 	.route("/")
-	.post(createDisciplineController)
+	.post(requestValidators({ body: Discipline }), createDisciplineController)
 	.get(getDisciplineController)
 
 disciplineRouter
 	.route("/:id")
-	.put(updateDisciplineController)
+	.put(requestValidators({ body: Discipline }), updateDisciplineController)
 	.get(getDisciplineByIdController)
 	.delete(deleteDisciplineController)

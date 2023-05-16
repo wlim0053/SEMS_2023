@@ -7,7 +7,6 @@ import {
 	deleteStudentController,
 } from "../controllers/studentController"
 import { Student, StudentWithFireId } from "../interfaces/student"
-import { errorHandler } from "../middlewares/errorHandler"
 import { requestValidators } from "../middlewares/requestValidator"
 
 export const studentRouter = express.Router()

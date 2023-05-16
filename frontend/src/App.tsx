@@ -18,7 +18,6 @@ const [isLoggedIn, setIsLoggedIn] = useState(false);
 const handleLoginSuccess = () => {
     setIsLoggedIn(true);
   };
-
 	return (
 		<div className="App">
 			<Router>
@@ -38,3 +37,4 @@ const handleLoginSuccess = () => {
 }
 
 export default App;
+
