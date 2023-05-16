@@ -3,8 +3,9 @@
 import Navbar from './components/Navbar'
 // css
 import './App.css'
-import { BrowserRouter as Router, Outlet } from "react-router-dom";
-// css
+import { BrowserRouter as Router, Route, Outlet } from "react-router-dom";
+import OrganiserList from './pages/Admin/OrganiserList';
+import ActivityLog from './pages/Admin/ActivityLog';
 
 function App() {
   return (
