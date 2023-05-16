@@ -17,6 +17,7 @@ Center,
 } from '@chakra-ui/react';
 import { EmailIcon } from '@chakra-ui/icons';
 
+const axios = require('axios');
 
 
 interface LoginProps {
@@ -37,7 +38,32 @@ const loginWithGoogle= () =>{
     const user = result.user;
     console.log(user);
     console.log(user.uid);
-    console.log(user.reloadUserInfo.displayName)
+    console.log(user.displayName)
+
+    const body = {
+        "stu_fire_id": user.uid,
+        "stu_email": user.email,
+        "stu_name": user.displayName,
+        "stu_id": null,
+        "enrolment_year": null,
+        "enrolment_intake": null,
+        "stu_gender": null,
+        "dis_uuid": null,
+    }
+    async function doPostRequest() {
+
+        let payload = body;
+    
+        let res = await axios.post('localhost:3000/api/student', payload);
+    
+        let data = res.data;
+        console.log(data);
+        console.log("POST Request sent")
+    }
+    
+    doPostRequest();
+
+
     // IdP data available using getAdditionalUserInfo(result)
     // ...
   }).then((response)=>{console.log(response)})
