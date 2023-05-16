@@ -3,11 +3,10 @@ import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 import { School, SchoolWithUUID } from "../interfaces/school"
-import { SuccessResponse } from "../interfaces/response"
 
 export const updateSchoolController = async (
-	req: Request<{ id: string }, { data: SchoolWithUUID[] }, School>,
-	res: Response<{ data: SchoolWithUUID[] }>,
+	req: Request<{ id: string }, SchoolWithUUID[], School>,
+	res: Response<SchoolWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -22,7 +21,7 @@ export const updateSchoolController = async (
 				OUTPUT INSERTED.*
 				WHERE [school_uuid] = @school_uuid`
 			)
-		res.json({ data: updated.recordset })
+		res.json(updated.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -30,8 +29,8 @@ export const updateSchoolController = async (
 }
 
 export const getSchoolController = async (
-	req: Request<{}, SuccessResponse<SchoolWithUUID>, {}>,
-	res: Response<SuccessResponse<SchoolWithUUID>>,
+	req: Request<{}, SchoolWithUUID[], {}>,
+	res: Response<SchoolWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -39,7 +38,7 @@ export const getSchoolController = async (
 		const schools: mssql.IResult<SchoolWithUUID> = await connection.query(
 			`SELECT * FROM ${DbTables.SCHOOL}`
 		)
-		res.status(StatusCodes.OK).json({ data: schools.recordset })
+		res.status(StatusCodes.OK).json(schools.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -47,8 +46,8 @@ export const getSchoolController = async (
 }
 
 export const getSchoolByIdController = async (
-	req: Request<{ id: string }, SuccessResponse<SchoolWithUUID>, School>,
-	res: Response<SuccessResponse<SchoolWithUUID>>,
+	req: Request<{ id: string }, SchoolWithUUID[], School>,
+	res: Response<SchoolWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -59,7 +58,7 @@ export const getSchoolByIdController = async (
 			.query(
 				`SELECT * FROM ${DbTables.SCHOOL} WHERE school_uuid=@school_uuid`
 			)
-		res.status(StatusCodes.OK).json({ data: school.recordset })
+		res.status(StatusCodes.OK).json(school.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)

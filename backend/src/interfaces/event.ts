@@ -10,6 +10,9 @@ export const Event = zod.object({
 	event_venue: zod.string().nonempty(),
 	event_capacity: zod.number().nonnegative(),
 	event_status: zod.string(),
+	event_reg_start_date: zod.string().datetime(),
+	event_reg_end_date: zod.string().datetime(),
+	event_reg_google_form: zod.string().url(),
 })
 
 export const EventWithUUID = Event.extend({

@@ -6,11 +6,10 @@ import {
 	ParticipationWithUUID,
 } from "../interfaces/participation"
 import { DbTables, StatusCodes } from "../utils/constant"
-import { SuccessResponse } from "../interfaces/response"
 
 export const createParticipationController = async (
-	req: Request<{}, SuccessResponse<ParticipationWithUUID>, Participation>,
-	res: Response<SuccessResponse<ParticipationWithUUID>>,
+	req: Request<{}, ParticipationWithUUID[], Participation>,
+	res: Response<ParticipationWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -23,7 +22,7 @@ export const createParticipationController = async (
                 OUTPUT INSERTED.*
                 VALUES (@event_uuid, @stu_fire_id)
             `)
-		res.json({ data: create.recordset })
+		res.json(create.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -31,12 +30,8 @@ export const createParticipationController = async (
 }
 
 export const updateParticipationController = async (
-	req: Request<
-		{ id: string },
-		SuccessResponse<ParticipationWithUUID>,
-		Participation
-	>,
-	res: Response<SuccessResponse<ParticipationWithUUID>>,
+	req: Request<{ id: string }, ParticipationWithUUID[], Participation>,
+	res: Response<ParticipationWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -52,7 +47,7 @@ export const updateParticipationController = async (
                 OUTPUT INSERTED.*
                 WHERE [participation_uuid]=@participation_uuid
             `)
-		res.json({ data: update.recordset })
+		res.json(update.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -60,8 +55,8 @@ export const updateParticipationController = async (
 }
 
 export const getParticipationController = async (
-	req: Request<{}, SuccessResponse<ParticipationWithUUID>, {}>,
-	res: Response<SuccessResponse<ParticipationWithUUID>>,
+	req: Request<{}, ParticipationWithUUID[], {}>,
+	res: Response<ParticipationWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -70,7 +65,7 @@ export const getParticipationController = async (
 			await connection.request().query(`
             SELECT * FROM ${DbTables.PARTICIPATION} 
         `)
-		res.json({ data: participants.recordset })
+		res.json(participants.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -78,8 +73,8 @@ export const getParticipationController = async (
 }
 
 export const getParticipationByIdController = async (
-	req: Request<{ id: string }, SuccessResponse<ParticipationWithUUID>, {}>,
-	res: Response<SuccessResponse<ParticipationWithUUID>>,
+	req: Request<{ id: string }, ParticipationWithUUID[], {}>,
+	res: Response<ParticipationWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -95,7 +90,7 @@ export const getParticipationByIdController = async (
             SELECT * FROM ${DbTables.PARTICIPATION}
             WHERE participation_uuid=@participation_uuid
         `)
-		res.json({ data: participant.recordset })
+		res.json(participant.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)

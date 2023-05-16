@@ -54,7 +54,7 @@ BEGIN
         event_desc VARCHAR(255) NOT NULL,
         event_venue VARCHAR(255) NOT NULL,
         event_capacity INT NOT NULL,
-        event_status VARCHAR(255) NOT NULL CHECK(event_status IN ('DRAFT', 'PENDING', 'APPROVED')),
+        event_status VARCHAR(255) NOT NULL CHECK(event_status IN ('DRAFT', 'PENDING', 'APPROVED', 'REJECTED')),
         event_reg_start_date SMALLDATETIME,
         event_reg_end_date SMALLDATETIME,
         event_reg_google_form VARCHAR(255) NOT NULL

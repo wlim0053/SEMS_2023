@@ -2,12 +2,11 @@ import { NextFunction, Request, Response } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
-import { SuccessResponse } from "../interfaces/response"
 import { Discipline, DisciplineWithUUID } from "../interfaces/discipline"
 
 export const createDisciplineController = async (
-	req: Request<{}, SuccessResponse<DisciplineWithUUID>, Discipline>,
-	res: Response<SuccessResponse<DisciplineWithUUID>>,
+	req: Request<{}, DisciplineWithUUID[], Discipline>,
+	res: Response<DisciplineWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -21,19 +20,15 @@ export const createDisciplineController = async (
                 OUTPUT INSERTED.*
                 VALUES (@dis_name, @school_uuid)
             `)
-		res.json({ data: create.recordset })
+		res.json(create.recordset)
 	} catch (error) {
 		next(error)
 	}
 }
 
 export const updateDisciplineController = async (
-	req: Request<
-		{ id: string },
-		SuccessResponse<DisciplineWithUUID>,
-		Discipline
-	>,
-	res: Response<SuccessResponse<DisciplineWithUUID>>,
+	req: Request<{ id: string }, DisciplineWithUUID[], Discipline>,
+	res: Response<DisciplineWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -50,7 +45,7 @@ export const updateDisciplineController = async (
             OUTPUT INSERTED.*
             WHERE [dis_uuid]=@dis_uuid
         `)
-		res.json({ data: update.recordset })
+		res.json(update.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -77,8 +72,8 @@ export const deleteDisciplineController = async (
 }
 
 export const getDisciplineController = async (
-	req: Request<{}, SuccessResponse<DisciplineWithUUID>, {}>,
-	res: Response<SuccessResponse<DisciplineWithUUID>>,
+	req: Request<{}, DisciplineWithUUID[], {}>,
+	res: Response<DisciplineWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -86,7 +81,7 @@ export const getDisciplineController = async (
 		const disciplines: mssql.IResult<DisciplineWithUUID> = await connection
 			.request()
 			.query(`SELECT * FROM ${DbTables.DISCIPLINE}`)
-		res.json({ data: disciplines.recordset })
+		res.json(disciplines.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -94,8 +89,8 @@ export const getDisciplineController = async (
 }
 
 export const getDisciplineByIdController = async (
-	req: Request<{ id: string }, SuccessResponse<DisciplineWithUUID>, {}>,
-	res: Response<SuccessResponse<DisciplineWithUUID>>,
+	req: Request<{ id: string }, DisciplineWithUUID[], {}>,
+	res: Response<DisciplineWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -105,7 +100,7 @@ export const getDisciplineByIdController = async (
 			.input("dis_uuid", mssql.UniqueIdentifier, req.params.id).query(`
             SELECT * FROM ${DbTables.DISCIPLINE} WHERE [dis_uuid]=@dis_uuid
         `)
-		res.json({ data: discipline.recordset })
+		res.json(discipline.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
