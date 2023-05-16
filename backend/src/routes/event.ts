@@ -19,6 +19,7 @@ eventRouter.route("/:id/participants").get(getEventParticipationController)
 
 eventRouter
 	.route("/:id")
+	.put(updateOrganiserController)
 	.put(requestValidators({ body: Organiser }), updateOrganiserController)
 	.get(getEventByIDController)
 	.delete(deleteEventController)
