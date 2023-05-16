@@ -22,6 +22,7 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
+import { Link, Route, Routes } from "react-router-dom";
   VStack,
   Menu,
   MenuButton,
@@ -74,7 +75,6 @@ const Navbar = () => {
               <Link to="/signup">Sign Up</Link>
             </MenuItem>
           </MenuList>
-        </Menu>
       </Flex>
 
 
