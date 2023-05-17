@@ -16,8 +16,7 @@ Image,
 Center,
 } from '@chakra-ui/react';
 import { EmailIcon } from '@chakra-ui/icons';
-
-const axios = require('axios');
+import axios from 'axios';
 
 
 interface LoginProps {
@@ -50,11 +49,24 @@ const loginWithGoogle= () =>{
         "stu_gender": null,
         "dis_uuid": null,
     }
+
+    const body2 = {
+        "stu_fire_id": "L1on3lP3ps1",
+        "stu_email": "lpep1030@student.monash.edu",
+        "stu_name": "Lionel Pepsi",
+        "stu_id": 30103010,
+        "enrolment_year": "2021-01-01T00:00:00.000Z",
+        "enrolment_intake": 7,
+        "stu_gender": 1,
+        "dis_uuid": "8DEA91DF-9FB3-4874-9DDB-7171A54EEBAE"
+      }
     async function doPostRequest() {
 
-        let payload = body;
+        let payload = body2;
+
+        console.log(payload);
     
-        let res = await axios.post('localhost:3000/api/student', payload);
+        let res = await axios.post('http://localhost:3000/api/student', payload);
     
         let data = res.data;
         console.log(data);
@@ -79,7 +91,7 @@ const loginWithGoogle= () =>{
   });
 }
 
-const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
+const LoginPage: React.FC = () => {
 const toast = useToast();
 const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -90,7 +102,7 @@ const handleSubmit = (e: FormEvent) => {
     duration: 3000,
     isClosable: true,
     });
-    onLoginSuccess();
+    // onLoginSuccess();
 };
 
 return (
