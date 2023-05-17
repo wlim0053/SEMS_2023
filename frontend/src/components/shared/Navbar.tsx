@@ -21,11 +21,11 @@ import {
 } from "@chakra-ui/react"
 import { HamburgerIcon } from "@chakra-ui/icons"
 import { Link, Route, Routes } from "react-router-dom"
-import OrganiserList from "../pages/admin/OrganiserList"
-import ActivityLog from "../pages/admin/ActivityLog"
-import Admin from "../pages/admin/AdminDashboard"
-import StudentHome from "../pages/StudentHome"
-import EventHome from "../pages/EventHome"
+import OrganiserList from "../../pages/admin/OrganiserList"
+import ActivityLog from "../../pages/admin/ActivityLog"
+import Admin from "../../pages/admin/AdminDashboard"
+import StudentHome from "../../pages/student/StudentHome"
+import EventHome from "../../pages/student/EventHome"
 
 const Navbar = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure()
@@ -54,7 +54,7 @@ const Navbar = () => {
 					/>
 				</Box>
 				{/* <Spacer/> */}
-				<Image src="../public/monash_logo.png" height="50px"></Image>
+				<Image src="../monash_logo.png" height="50px"></Image>
 				<Spacer />
 				{/*<Menu>*/}
 				{/*  /!* To do: change the sign in sign up to an icon *!/*/}
