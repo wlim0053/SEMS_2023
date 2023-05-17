@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
-import { Event, EventWithUUID } from "../interfaces/event"
+import { Event, EventWithOrganiser, EventWithUUID } from "../interfaces/event"
 import { ParticipationWithUUID } from "../interfaces/participation"
 
 export const createEventController = async (
@@ -127,15 +127,34 @@ export const updateOrganiserController = async (
 }
 
 export const getEventController = async (
-	req: Request<{}, EventWithUUID[], {}>,
-	res: Response<EventWithUUID[]>,
+	req: Request<{}, EventWithOrganiser[], {}>,
+	res: Response<EventWithOrganiser[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const events: mssql.IResult<EventWithUUID> = await connection.query(
-			`SELECT * FROM ${DbTables.EVENT}`
-		)
+		const events: mssql.IResult<EventWithOrganiser> =
+			await connection.query(
+				`SELECT 
+                event_uuid,
+                event_ems_no,
+                event_start_date,
+                event_end_date,
+                event_title,
+                event_desc,
+                event_venue,
+                event_capacity,
+                event_status,
+                event_reg_start_date,
+                event_reg_end_date,
+                event_reg_google_form,
+                o.organiser_uuid,
+                parent_uuid,
+                organiser_name,
+                stu_fire_id
+            FROM ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o 
+            ON e.organiser_uuid=o.organiser_uuid`
+			)
 		res.json(events.recordset)
 		connection.close()
 	} catch (error) {
@@ -144,17 +163,36 @@ export const getEventController = async (
 }
 
 export const getEventByIDController = async (
-	req: Request<{ id: string }, EventWithUUID[], {}>,
-	res: Response<EventWithUUID[]>,
+	req: Request<{ id: string }, EventWithOrganiser[], {}>,
+	res: Response<EventWithOrganiser[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const organiser: mssql.IResult<EventWithUUID> = await connection
+		const organiser: mssql.IResult<EventWithOrganiser> = await connection
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, req.params.id)
 			.query(
-				`SELECT * FROM ${DbTables.EVENT} WHERE [event_uuid] = @event_uuid`
+				`SELECT 
+                event_uuid,
+                event_ems_no,
+                event_start_date,
+                event_end_date,
+                event_title,
+                event_desc,
+                event_venue,
+                event_capacity,
+                event_status,
+                event_reg_start_date,
+                event_reg_end_date,
+                event_reg_google_form,
+                o.organiser_uuid,
+                parent_uuid,
+                organiser_name,
+                stu_fire_id
+            FROM ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o 
+            ON e.organiser_uuid=o.organiser_uuid
+            WHERE [event_uuid] = @event_uuid`
 			)
 		res.json(organiser.recordset)
 		connection.close()
