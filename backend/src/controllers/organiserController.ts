@@ -2,7 +2,11 @@ import { NextFunction, Request, Response } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
-import { Organiser, OrganiserWithUUID } from "../interfaces/organiser"
+import {
+	Organiser,
+	OrganiserWithStudent,
+	OrganiserWithUUID,
+} from "../interfaces/organiser"
 
 export const createOrganiserController = async (
 	req: Request<{}, OrganiserWithUUID[], Organiser>,
@@ -61,14 +65,26 @@ export const updateOrganiserController = async (
 }
 
 export const getOrganiserController = async (
-	req: Request<{}, OrganiserWithUUID[], {}>,
-	res: Response<OrganiserWithUUID[]>,
+	req: Request<{}, OrganiserWithStudent[], {}>,
+	res: Response<OrganiserWithStudent[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const organisers: mssql.IResult<OrganiserWithUUID> =
-			await connection.query(`SELECT * FROM ${DbTables.ORGANISER}`)
+		const organisers: mssql.IResult<OrganiserWithStudent> =
+			await connection.query(`SELECT 
+            organiser_uuid,
+            parent_uuid,
+            organiser_name,
+            s.stu_fire_id,
+            stu_email,
+            stu_name,
+            stu_id,
+            enrolment_year,
+            enrolment_intake,
+            stu_gender,
+            dis_uuid
+        FROM ${DbTables.ORGANISER} o join ${DbTables.STUDENT} s ON o.stu_fire_id=s.stu_fire_id`)
 		res.status(StatusCodes.OK).json(organisers.recordset)
 		connection.close()
 	} catch (error) {
@@ -77,17 +93,29 @@ export const getOrganiserController = async (
 }
 
 export const getOrganiserByIDController = async (
-	req: Request<{ id: string }, OrganiserWithUUID[], {}>,
-	res: Response<OrganiserWithUUID[]>,
+	req: Request<{ id: string }, OrganiserWithStudent[], {}>,
+	res: Response<OrganiserWithStudent[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const organiser: mssql.IResult<OrganiserWithUUID> = await connection
+		const organiser: mssql.IResult<OrganiserWithStudent> = await connection
 			.request()
 			.input("organiser_uuid", mssql.VarChar, req.params.id)
 			.query(
-				`SELECT * FROM ${DbTables.ORGANISER} WHERE organiser_uuid = @organiser_uuid`
+				`SELECT 
+                organiser_uuid,
+                parent_uuid,
+                organiser_name,
+                s.stu_fire_id,
+                stu_email,
+                stu_name,
+                stu_id,
+                enrolment_year,
+                enrolment_intake,
+                stu_gender,
+                dis_uuid
+            FROM ${DbTables.ORGANISER} o join ${DbTables.STUDENT} s ON o.stu_fire_id=s.stu_fire_id WHERE organiser_uuid = @organiser_uuid`
 			)
 		res.json(organiser.recordset)
 		connection.close()
