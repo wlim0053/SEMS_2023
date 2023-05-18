@@ -77,13 +77,13 @@ export const getOrganiserController = async (
             parent_uuid,
             organiser_name,
             s.stu_fire_id,
+            spec_uuid,
             stu_email,
             stu_name,
             stu_id,
-            enrolment_year,
-            enrolment_intake,
             stu_gender,
-            dis_uuid
+            enrolment_year,
+            enrolment_intake
         FROM ${DbTables.ORGANISER} o join ${DbTables.STUDENT} s ON o.stu_fire_id=s.stu_fire_id`)
 		res.status(StatusCodes.OK).json(organisers.recordset)
 		connection.close()
@@ -108,13 +108,13 @@ export const getOrganiserByIDController = async (
                 parent_uuid,
                 organiser_name,
                 s.stu_fire_id,
+                spec_uuid,
                 stu_email,
                 stu_name,
                 stu_id,
-                enrolment_year,
-                enrolment_intake,
                 stu_gender,
-                dis_uuid
+                enrolment_year,
+                enrolment_intake
             FROM ${DbTables.ORGANISER} o join ${DbTables.STUDENT} s ON o.stu_fire_id=s.stu_fire_id WHERE organiser_uuid = @organiser_uuid`
 			)
 		res.json(organiser.recordset)

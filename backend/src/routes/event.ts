@@ -15,7 +15,7 @@ export const eventRouter = express.Router()
 eventRouter.route("/").post(createEventController).get(getEventController)
 
 // * Endpoint to get all the participants for an event
-eventRouter.route("/:id/participants").get(getEventParticipationController)
+eventRouter.route("/:id/participation").get(getEventParticipationController)
 
 eventRouter
 	.route("/:id")

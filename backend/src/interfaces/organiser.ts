@@ -17,7 +17,7 @@ export const OrganiserWithStudent = OrganiserWithUUID.extend({
 	enrolment_year: zod.string().datetime(),
 	enrolment_intake: zod.number(),
 	stu_gender: zod.number(),
-	dis_uuid: zod.string().uuid(),
+	spec_uuid: zod.string().uuid(),
 })
 
 export type Organiser = zod.infer<typeof Organiser>

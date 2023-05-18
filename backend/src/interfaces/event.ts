@@ -7,12 +7,13 @@ export const Event = zod.object({
 	event_end_date: zod.string().datetime(),
 	event_title: zod.string().nonempty(),
 	event_desc: zod.string().nonempty(),
+	event_mode: zod.enum(["P", "V", "H"]),
 	event_venue: zod.string().nonempty(),
 	event_capacity: zod.number().nonnegative(),
-	event_status: zod.string(),
-	event_reg_start_date: zod.string().datetime(),
-	event_reg_end_date: zod.string().datetime(),
-	event_reg_google_form: zod.string().url(),
+	event_status: zod.enum(["D", "P", "A", "R"]),
+	event_reg_start_date: zod.string().datetime().nullable(),
+	event_reg_end_date: zod.string().datetime().nullable(),
+	event_reg_google_form: zod.string().url().nullable(),
 })
 
 export const EventWithUUID = Event.extend({
