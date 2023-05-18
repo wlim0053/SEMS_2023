@@ -3,7 +3,7 @@ import {
     createFeedbackController,
     updateFeedbackController,
     getFeedbackController,
-    getFeedbackByIDController,
+    getFeedbackByIdController,
     deleteFeedbackController
 } from "../controllers/feedbackController"
 import { Feedback } from "../interfaces/feedback"
@@ -18,6 +18,6 @@ feedbackRouter
 
 feedbackRouter
     .route("/:id")
-    .get(getFeedbackByIDController)
+    .get(getFeedbackByIdController)
     .put(requestValidators({ body: Feedback }), updateFeedbackController)
     .delete(deleteFeedbackController)
