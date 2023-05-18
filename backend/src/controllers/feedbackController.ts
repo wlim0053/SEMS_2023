@@ -103,7 +103,7 @@ export const getFeedbackController = async (
     }
 };
 
-export const getFeedbackByIDController = async (
+export const getFeedbackByIdController = async (
     req: Request<{ id: string }, FeedbackWithParticipation[], {}>,
     res: Response<FeedbackWithParticipation[]>,
     next: NextFunction
