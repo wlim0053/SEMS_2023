@@ -21,7 +21,6 @@ export const EventWithUUID = Event.extend({
 })
 
 export const EventWithOrganiser = EventWithUUID.extend({
-	organiser_uuid: zod.string().uuid(),
 	parent_uuid: zod.string().nullable(),
 	organiser_name: zod.string().nonempty(),
 	stu_fire_id: zod.string(),

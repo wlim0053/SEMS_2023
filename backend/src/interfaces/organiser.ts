@@ -1,7 +1,7 @@
 import zod from "zod"
 
 export const Organiser = zod.object({
-	parent_uuid: zod.string().nullable(),
+	parent_uuid: zod.string().uuid().nullable(),
 	organiser_name: zod.string().nonempty(),
 	stu_fire_id: zod.string(),
 })
