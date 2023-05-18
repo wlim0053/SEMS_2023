@@ -3,11 +3,11 @@ import {
 	createEventController,
 	getEventController,
 	getEventByIDController,
-	updateOrganiserController,
+	updateEventController,
 	deleteEventController,
 	getEventParticipationController,
 } from "../controllers/eventController"
-import { Organiser } from "../interfaces/organiser"
+import { Event } from "../interfaces/event"
 import { requestValidators } from "../middlewares/requestValidator"
 
 export const eventRouter = express.Router()
@@ -19,7 +19,7 @@ eventRouter.route("/:id/participation").get(getEventParticipationController)
 
 eventRouter
 	.route("/:id")
-	.put(updateOrganiserController)
-	.put(requestValidators({ body: Organiser }), updateOrganiserController)
+	.put(updateEventController)
+	.put(requestValidators({ body: Event }), updateEventController)
 	.get(getEventByIDController)
 	.delete(deleteEventController)

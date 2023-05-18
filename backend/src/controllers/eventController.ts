@@ -75,7 +75,7 @@ export const createEventController = async (
 	}
 }
 
-export const updateOrganiserController = async (
+export const updateEventController = async (
 	req: Request<{ id: string }, EventWithUUID[], Event>,
 	res: Response<EventWithUUID[]>,
 	next: NextFunction
