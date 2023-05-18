@@ -1,17 +1,9 @@
-import React from 'react'
-import { Box, Heading } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { Text } from "@chakra-ui/react"
-import { Button, ButtonGroup } from "@chakra-ui/react"
 import { IconButton } from "@chakra-ui/react"
-import { CalendarIcon, DeleteIcon, RepeatIcon, ChevronRightIcon, ViewIcon } from "@chakra-ui/icons";
-import CustomGridIcon from './CustomGridIcon';
-import CalendarViewButton from './CalendarViewButton'
-import { Flex, Spacer } from "@chakra-ui/react";
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
-import { Grid, GridItem } from "@chakra-ui/react";
-import { useState } from 'react';
-import CalendarDashboard from './CalendarDashboard'
-import GridViewButton from './GridViewButton'
+import { DeleteIcon, RepeatIcon, ViewIcon } from "@chakra-ui/icons";
+import { Grid } from "@chakra-ui/react";
+
 
 function GridEventDashboard() {
   return (

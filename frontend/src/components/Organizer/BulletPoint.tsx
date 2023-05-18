@@ -1,11 +1,10 @@
-import { Text } from "@chakra-ui/react"
-import {
-    ListItem,
-  } from '@chakra-ui/react'
+import { Text, ListItem } from "@chakra-ui/react"
 
+interface BulletPointProps {
+  bulletDescription: string;
+}
 
-
-function BulletPoint({bulletDescription}) {
+const BulletPoint: React.FC<BulletPointProps> = ({ bulletDescription }) => {
   return (
     <ListItem>
         <Text fontSize={"10px"} fontWeight={600}>
@@ -15,4 +14,4 @@ function BulletPoint({bulletDescription}) {
   )
 }
 
-export default BulletPoint
+export default BulletPoint;

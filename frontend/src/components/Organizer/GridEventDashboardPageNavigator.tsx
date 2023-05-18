@@ -1,7 +1,6 @@
-import React from 'react'
 import { Button, ButtonGroup } from "@chakra-ui/react"
 import { Box, IconButton } from "@chakra-ui/react"
-import { CalendarIcon, DeleteIcon, RepeatIcon, ChevronRightIcon, ViewIcon } from "@chakra-ui/icons";
+import { ChevronRightIcon } from "@chakra-ui/icons";
 function GridEventDashboardPageNavigator() {
   return (
 <Box display={"flex"} justifyContent={'center'} mt={"50px"}>

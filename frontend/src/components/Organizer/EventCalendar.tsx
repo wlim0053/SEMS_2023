@@ -49,30 +49,34 @@ const eventData = [
   }
 ];
 
-function getDaysInMonth(year, month) {
-  return new Date(year, month + 1, 0).getDate(); // Month is zero-indexed, Year and Day is one-indexed, if Day = 0, it Date object will assume last day
+function getDaysInMonth(year: number, month: number) {
+  return new Date(year, month + 1, 0).getDate();
 }
 
-function getFirstDayOfMonth(year, month) {
+function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
-function getLastDayOfMonth(year, month) {
-    const nextMonth = new Date(year, month + 1, 1);
-    const lastDayOfMonth = new Date(nextMonth - 1);
-    return lastDayOfMonth.getDate();
-  }
-  
+function getLastDayOfMonth(year: number, month: number) {
+  const previousMonth = new Date(year, month - 1, 1);
+  const lastDayOfMonth = new Date(year, month, 0).getDate();
+  return lastDayOfMonth;
+}
 
-function EventCalendar({handleSelectedEvents}) {
+
+interface EventCalendarProps {
+  handleSelectedEvents: (events: any[]) => void;
+}
+
+const EventCalendar: React.FC<EventCalendarProps> = ({ handleSelectedEvents }) => {
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const handleDateClick = (day, events) => {
+  const handleDateClick = (day: number, events: any[]) => {
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     setSelectedDate(newDate);
-    handleSelectedEvents(events)
+    handleSelectedEvents(events);
   };
 
   const handlePrevMonth = () => {

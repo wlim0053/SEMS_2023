@@ -5,12 +5,59 @@ import { useState } from 'react';
 import { Heading } from '@chakra-ui/react';
 import CalendarEventNavigator from './CalendarEventNavigator';
 
-function CalendarDashboard({ getSelectedEvents }) {
-  const [selectedEvents, setSelectedEvents] = useState();
 
-  function handleSelectedEvents(newEvents) {
+interface EventData {
+  id: string;
+  event: string;
+  venue: string;
+  club: string;
+  participants: string;
+  date: string;
+}
+
+const eventData: EventData[] = [
+  {
+    id: "ed-1",
+    event: "EXE - IMechE",
+    venue: "Monash University Malaysia",
+    club: "IMechE",
+    participants: "5/200",
+    date: "2023-05-25"
+  },
+  {
+    id: "ed2",
+    event: "EXE - ICE",
+    venue: "Monash University Malaysia",
+    club: "ICE",
+    participants: "4/200",
+    date: "2023-05-25"
+  },
+  {
+    id: "ed-3",
+    event: "EXE - SEM",
+    venue: "Monash University Malaysia",
+    club: "SEM",
+    participants: "6/200",
+    date: "2023-05-25"
+  }
+];
+
+interface Props {
+  selectedEvents: EventData[];
+}
+
+interface CalendarDashboardProps {
+  getSelectedEvents: (selectedEventsArr: EventData[]) => void;
+}
+
+const CalendarDashboard: React.FC<CalendarDashboardProps> = ({ getSelectedEvents }) => {
+  const [selectedEvents, setSelectedEvents] = useState<EventData[]>([]); // Initialize as an empty array
+
+
+  const handleSelectedEvents = (newEvents: EventData[]) => {
     setSelectedEvents(newEvents);
   }
+
 
   return (
     <Grid
@@ -40,10 +87,10 @@ function CalendarDashboard({ getSelectedEvents }) {
           Events Happening:
         </Heading>
       </GridItem>
-
+      
       <GridItem area="CalendarEventNavigator" bg="white" overflowY="scroll" maxHeight="760px" display={'flex'} justifyContent={'center'}>
-        <CalendarEventNavigator events={selectedEvents} />
-      </GridItem>
+      <CalendarEventNavigator events={selectedEvents} />
+    </GridItem>
     </Grid>
   );
 }

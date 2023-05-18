@@ -11,6 +11,7 @@ import "./App.css"
 import { BrowserRouter as Router, Route, Outlet } from "react-router-dom"
 import OrganiserList from "./pages/admin/OrganiserList"
 import ActivityLog from "./pages/admin/ActivityLog"
+import OrganiserMainPage from "./pages/Organiser/OrganiserMainPage"
 
 function App() {
 	return (
