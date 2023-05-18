@@ -61,8 +61,8 @@ const FeedbackForm = () => {
               <Thead>
                 <Tr textAlign={"center"}>
                   <Td></Td>
-                  <Td width={"33%"}>Disagree</Td>
-                  <Td width={"33%"}>Neutral</Td>
+                  <Td width={"30%"}>Disagree</Td>
+                  <Td width={"30%"}>Neutral</Td>
                   <Td>Agree</Td>
                 </Tr>
               </Thead>
