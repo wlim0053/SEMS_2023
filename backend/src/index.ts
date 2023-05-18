@@ -8,6 +8,7 @@ import { specialisationRouter } from "./routes/specialisation"
 import { eventRouter } from "./routes/event"
 import { participationRouter } from "./routes/participation"
 import { errorHandler } from "./middlewares/errorHandler"
+import { feedbackRouter } from "./routes/feedback"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -44,6 +45,7 @@ app.use("/api/organiser", organiserRouter)
 app.use("/api/specialisation", specialisationRouter)
 app.use("/api/event", eventRouter)
 app.use("/api/participation", participationRouter)
+app.use("/api/feedback", feedbackRouter)
 
 // * Error handling middleware
 app.use(errorHandler)
