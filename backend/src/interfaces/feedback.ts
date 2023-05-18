@@ -1,7 +1,7 @@
 import zod from "zod"
 
 export const Feedback = zod.object({
-    participation_uuid: zod.string(),
+    participation_uuid: zod.string().uuid(),
     feedback_comm: zod.number().nonnegative(),
     feedback_proj: zod.number().nonnegative(),
     feedback_solve: zod.number().nonnegative(),
@@ -14,7 +14,6 @@ export const FeedbackWithUUID = Feedback.extend({
 })
 
 export const FeedbackWithParticipation = FeedbackWithUUID.extend({
-    participation_uuid: zod.string().uuid(),
     event_uuid: zod.string().uuid(),
 	stu_fire_id: zod.string(),
 })
