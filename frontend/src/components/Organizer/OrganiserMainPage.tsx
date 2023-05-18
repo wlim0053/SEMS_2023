@@ -1,3 +1,6 @@
+/* 
+|| Landing Page for all Organisers
+*/
 import React from 'react'
 import { Box, Heading } from '@chakra-ui/react'
 import { Input } from "@chakra-ui/react"
