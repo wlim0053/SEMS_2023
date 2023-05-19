@@ -14,25 +14,25 @@ export const createStudentController = async (
 		const create: mssql.IResult<StudentWithFireId> = await connection
 			.request()
 			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id)
+			.input("spec_uuid", mssql.UniqueIdentifier, req.body.spec_uuid)
 			.input("stu_email", mssql.VarChar, req.body.stu_email)
 			.input("stu_name", mssql.VarChar, req.body.stu_name)
 			.input("stu_id", mssql.Int, req.body.stu_id)
+			.input("stu_gender", mssql.Int, req.body.stu_gender)
 			.input("enrolment_year", mssql.Date, req.body.enrolment_year)
 			.input("enrolment_intake", mssql.Int, req.body.enrolment_intake)
-			.input("stu_gender", mssql.Int, req.body.stu_gender)
-			.input("dis_uuid", mssql.UniqueIdentifier, req.body.dis_uuid)
 			.query(`
                 INSERT INTO ${DbTables.STUDENT} 
-                OUTPUT INSERTED.stu_fire_id, INSERTED.stu_email, INSERTED.stu_name, INSERTED.stu_id, INSERTED.enrolment_year, INSERTED.enrolment_intake, INSERTED.stu_gender, INSERTED.dis_uuid
+                OUTPUT INSERTED.*
                 VALUES (
                     @stu_fire_id,
+                    @spec_uuid,
                     @stu_email,
                     @stu_name,
                     @stu_id,
-                    @enrolment_year,
-                    @enrolment_intake,
                     @stu_gender,
-                    @dis_uuid
+                    @enrolment_year,
+                    @enrolment_intake
                 )
             `)
 		res.json(create.recordset)
@@ -52,22 +52,22 @@ export const updateStudentController = async (
 		const update: mssql.IResult<StudentWithFireId> = await connection
 			.request()
 			.input("stu_fire_id", mssql.VarChar, req.params.id)
+			.input("spec_uuid", mssql.UniqueIdentifier, req.body.spec_uuid)
 			.input("stu_email", mssql.VarChar, req.body.stu_email)
 			.input("stu_name", mssql.VarChar, req.body.stu_name)
 			.input("stu_id", mssql.Int, req.body.stu_id)
+			.input("stu_gender", mssql.Int, req.body.stu_gender)
 			.input("enrolment_year", mssql.Date, req.body.enrolment_year)
 			.input("enrolment_intake", mssql.Int, req.body.enrolment_intake)
-			.input("stu_gender", mssql.Int, req.body.stu_gender)
-			.input("dis_uuid", mssql.UniqueIdentifier, req.body.dis_uuid)
 			.query(`
             UPDATE ${DbTables.STUDENT} SET
                 [stu_email]=@stu_email,
+                [spec_uuid]=@spec_uuid,
                 [stu_name]=@stu_name,
                 [stu_id]=@stu_id,
-                [enrolment_year]=@enrolment_year,
-                [enrolment_intake]=@enrolment_intake,
                 [stu_gender]=@stu_gender,
-                [dis_uuid]=@dis_uuid
+                [enrolment_year]=@enrolment_year,
+                [enrolment_intake]=@enrolment_intake
             OUTPUT INSERTED.*
             WHERE [stu_fire_id]=@stu_fire_id
         `)

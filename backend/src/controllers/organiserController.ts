@@ -54,8 +54,7 @@ export const updateOrganiserController = async (
                         [organiser_name] = @organiser_name,
                         [stu_fire_id] = @stu_fire_id
 				OUTPUT INSERTED.*
-			    WHERE [organiser_uuid] = @organiser_uuid
-			`
+			    WHERE [organiser_uuid] = @organiser_uuid`
 			)
 		res.json(updated.recordset)
 		connection.close()
@@ -77,13 +76,13 @@ export const getOrganiserController = async (
             parent_uuid,
             organiser_name,
             s.stu_fire_id,
+            spec_uuid,
             stu_email,
             stu_name,
             stu_id,
-            enrolment_year,
-            enrolment_intake,
             stu_gender,
-            dis_uuid
+            enrolment_year,
+            enrolment_intake
         FROM ${DbTables.ORGANISER} o join ${DbTables.STUDENT} s ON o.stu_fire_id=s.stu_fire_id`)
 		res.status(StatusCodes.OK).json(organisers.recordset)
 		connection.close()
@@ -101,21 +100,22 @@ export const getOrganiserByIDController = async (
 		const connection = await pool.connect()
 		const organiser: mssql.IResult<OrganiserWithStudent> = await connection
 			.request()
-			.input("organiser_uuid", mssql.VarChar, req.params.id)
+			.input("organiser_uuid", mssql.UniqueIdentifier, req.params.id)
 			.query(
 				`SELECT 
                 organiser_uuid,
                 parent_uuid,
                 organiser_name,
                 s.stu_fire_id,
+                spec_uuid,
                 stu_email,
                 stu_name,
                 stu_id,
-                enrolment_year,
-                enrolment_intake,
                 stu_gender,
-                dis_uuid
-            FROM ${DbTables.ORGANISER} o join ${DbTables.STUDENT} s ON o.stu_fire_id=s.stu_fire_id WHERE organiser_uuid = @organiser_uuid`
+                enrolment_year,
+                enrolment_intake
+            FROM ${DbTables.ORGANISER} o join ${DbTables.STUDENT} s ON o.stu_fire_id=s.stu_fire_id 
+			WHERE organiser_uuid = @organiser_uuid`
 			)
 		res.json(organiser.recordset)
 		connection.close()

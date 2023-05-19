@@ -1,5 +1,5 @@
 import mssql from "mssql"
-import { readFile, promises as fs } from "fs"
+import { readFile } from "fs"
 import { DbTables } from "./constant"
 import { pool } from "./dbConfig"
 
@@ -75,15 +75,19 @@ export const populateTableSchool = async () => {
 	}
 }
 
-const populateTableDiscipline = async () => {
-	const engineeringDisciplines = [
-		"Chemical Engineering",
-		"Civil Engineering",
-		"Common Year",
-		"Electrical and Computer Systems Engineering",
-		"Mechanical Engineering",
-		"Robotics and Mechatronics Engineering",
-		"Software Engineering",
+const populateTableSpecialisation = async () => {
+	const engineeringSpecialisation = [
+		{ name: "Chemical Engineering", level: "UG" },
+		{ name: "Civil Engineering", level: "UG" },
+		{ name: "Common Year", level: "UG" },
+		{
+			name: "Electrical and Computer Systems Engineering",
+			level: "UG",
+		},
+		{ name: "Mechanical Engineering", level: "UG" },
+		{ name: "Robotics and Mechatronics Engineering", level: "UG" },
+		{ name: "Software Engineering", level: "UG" },
+		{ name: "Postgraduate Programs", level: "PG" },
 	]
 
 	try {
@@ -95,18 +99,19 @@ const populateTableDiscipline = async () => {
 				`SELECT [school_uuid] FROM ${DbTables.SCHOOL} WHERE [school_name] = @school_name`
 			)
 		const engineeringUUID: string = engineering.recordset[0].school_uuid
-		const table = new mssql.Table(DbTables.DISCIPLINE)
+		const table = new mssql.Table(DbTables.SPECIALISATION)
 		table.create = false
-		table.columns.add("dis_uuid", mssql.UniqueIdentifier, {
+		table.columns.add("spec_uuid", mssql.UniqueIdentifier, {
 			nullable: false,
 			primary: true,
 		})
-		table.columns.add("dis_name", mssql.VarChar, { nullable: false })
 		table.columns.add("school_uuid", mssql.UniqueIdentifier, {
 			nullable: false,
 		})
-		engineeringDisciplines.forEach((discipline) =>
-			table.rows.add(null, discipline, engineeringUUID)
+		table.columns.add("spec_level", mssql.Char, { nullable: false })
+		table.columns.add("spec_name", mssql.VarChar, { nullable: false })
+		engineeringSpecialisation.forEach((spec) =>
+			table.rows.add(null, engineeringUUID, spec.level, spec.name)
 		)
 		const res = await connection.request().bulk(table)
 		console.log(res)
@@ -121,12 +126,12 @@ const populateTableStudent = async () => {
 		const connection = await pool.connect()
 		const softwareEngineering = await connection
 			.request()
-			.input("dis_name", mssql.VarChar, "Software Engineering")
+			.input("spec_name", mssql.VarChar, "Software Engineering")
 			.query(
-				`SELECT [dis_uuid] FROM ${DbTables.DISCIPLINE} where [dis_name]=@dis_name`
+				`SELECT [spec_uuid] FROM ${DbTables.SPECIALISATION} where [spec_name]=@spec_name`
 			)
 		const softwareEngineeringUUID: string =
-			softwareEngineering.recordset[0].dis_uuid
+			softwareEngineering.recordset[0].spec_uuid
 
 		const students = [
 			{
@@ -137,7 +142,7 @@ const populateTableStudent = async () => {
 				enrolment_year: "2023",
 				enrolment_intake: 2,
 				stu_gender: 0,
-				dis_uuid: softwareEngineeringUUID,
+				spec_uuid: softwareEngineeringUUID,
 			},
 			{
 				stu_fire_id: "L1on3lP3ps1",
@@ -147,7 +152,7 @@ const populateTableStudent = async () => {
 				enrolment_year: "2021",
 				enrolment_intake: 7,
 				stu_gender: 1,
-				dis_uuid: softwareEngineeringUUID,
+				spec_uuid: softwareEngineeringUUID,
 			},
 		]
 
@@ -163,7 +168,7 @@ const populateTableStudent = async () => {
 		table.columns.add("enrolment_year", mssql.Date)
 		table.columns.add("enrolment_intake", mssql.Int)
 		table.columns.add("stu_gender", mssql.Int)
-		table.columns.add("dis_uuid", mssql.UniqueIdentifier)
+		table.columns.add("spec_uuid", mssql.UniqueIdentifier)
 		students.forEach(
 			({
 				stu_fire_id,
@@ -173,7 +178,7 @@ const populateTableStudent = async () => {
 				enrolment_year,
 				enrolment_intake,
 				stu_gender,
-				dis_uuid,
+				spec_uuid,
 			}) =>
 				table.rows.add(
 					stu_fire_id,
@@ -183,7 +188,7 @@ const populateTableStudent = async () => {
 					enrolment_year,
 					enrolment_intake,
 					stu_gender,
-					dis_uuid
+					spec_uuid
 				)
 		)
 		const result = await connection.request().bulk(table)
@@ -231,10 +236,10 @@ const populateTableEvent = async () => {
 			nullable: false,
 			primary: true,
 		})
-		table.columns.add("event_ems_no", mssql.VarChar, { nullable: true })
 		table.columns.add("organiser_uuid", mssql.UniqueIdentifier, {
 			nullable: false,
 		})
+		table.columns.add("event_ems_no", mssql.VarChar, { nullable: true })
 		table.columns.add("event_start_date", mssql.SmallDateTime, {
 			nullable: false,
 		})
@@ -243,25 +248,25 @@ const populateTableEvent = async () => {
 		})
 		table.columns.add("event_title", mssql.VarChar, { nullable: false })
 		table.columns.add("event_desc", mssql.VarChar, { nullable: false })
+		table.columns.add("event_mode", mssql.Char, { nullable: false })
 		table.columns.add("event_venue", mssql.VarChar, { nullable: false })
 		table.columns.add("event_capacity", mssql.Int, { nullable: false })
 		table.columns.add("event_status", mssql.VarChar, { nullable: false })
 		table.columns.add("event_reg_start_date", mssql.SmallDateTime)
 		table.columns.add("event_reg_end_date", mssql.SmallDateTime)
-		table.columns.add("event_reg_google_form", mssql.VarChar, {
-			nullable: false,
-		})
+		table.columns.add("event_reg_google_form", mssql.VarChar)
 		table.rows.add(
 			null,
-			null,
 			organiserUUID,
+			null,
 			"2023-05-11 18:00",
 			"2023-05-11 20:00",
 			"Test event",
 			"Test",
+			"P",
 			"Building 5",
 			100,
-			"DRAFT",
+			"D",
 			"2023-04-01",
 			"2023-05-10",
 			"www.test-form.com"
@@ -308,7 +313,7 @@ const delay = 3000
 
 // * 2. Run these individually 1 by 1
 // populateTableSchool()
-// populateTableDiscipline()
+// populateTableSpecialisation()
 // populateTableStudent()
 // populateTableOrganiser()
 // populateTableEvent()
