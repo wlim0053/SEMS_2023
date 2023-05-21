@@ -8,7 +8,10 @@ const Page2 = () => {
   const [email, setEmail] = useState("");
   const [personInCharge, setPersonInCharge] = useState("");
   const [contactNumber, setContactNumber] = useState("");
-
+  const handleButtonClick = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm3';
+  };
   const handleSubmit = () => {
     // Handle form submission
     // You can access the form data using the state variables
@@ -84,8 +87,8 @@ const Page2 = () => {
         />
       </FormControl>
 
-      <Button onClick={handleSubmit} colorScheme="blue" mt={4}>
-        Submit
+      <Button onClick={handleButtonClick} colorScheme="blue" mt={4}>
+        Next Page
       </Button>
     </Box>
   );
