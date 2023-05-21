@@ -10,6 +10,15 @@ import {
 import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import BulletList from "./BulletList.js";
 
+interface EventData {
+  id: string;
+  event: string;
+  venue: string;
+  club: string;
+  participants: string;
+  date: string;
+}
+
 const monthNames = [
   "January",
   "February",
@@ -25,50 +34,12 @@ const monthNames = [
   "December",
 ];
 
-const eventData = [
-  {
-    event: "EXE - IMechE",
-    venue: "Monash University Malaysia",
-    club: "IMechE",
-    participants: "5/200",
-    date: "2023-05-25"
-  },
-  {
-    event: "EXE - ICE",
-    venue: "Monash University Malaysia",
-    club: "ICE",
-    participants: "4/200",
-    date: "2023-05-25"
-  },
-  {
-    event: "EXE - SEM",
-    venue: "Monash University Malaysia",
-    club: "SEM",
-    participants: "6/200",
-    date: "2023-05-25"
-  }
-];
-
-function getDaysInMonth(year: number, month: number) {
-  return new Date(year, month + 1, 0).getDate();
-}
-
-function getFirstDayOfMonth(year: number, month: number) {
-  return new Date(year, month, 1).getDay();
-}
-
-function getLastDayOfMonth(year: number, month: number) {
-  const previousMonth = new Date(year, month - 1, 1);
-  const lastDayOfMonth = new Date(year, month, 0).getDate();
-  return lastDayOfMonth;
-}
-
-
 interface EventCalendarProps {
   handleSelectedEvents: (events: any[]) => void;
+  eventData: EventData[];
 }
 
-const EventCalendar: React.FC<EventCalendarProps> = ({ handleSelectedEvents }) => {
+const EventCalendar: React.FC<EventCalendarProps> = ({ handleSelectedEvents, eventData }) => {
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -87,6 +58,20 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ handleSelectedEvents }) =
   const handleNextMonth = () => {
     const newDate = new Date(date.getFullYear(), date.getMonth() + 1, 1);
     setDate(newDate);
+  };
+
+  const getDaysInMonth = (year: number, month: number) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
+
+  const getFirstDayOfMonth = (year: number, month: number) => {
+    return new Date(year, month, 1).getDay();
+  };
+
+  const getLastDayOfMonth = (year: number, month: number) => {
+    const previousMonth = new Date(year, month - 1, 1);
+    const lastDayOfMonth = new Date(year, month, 0).getDate();
+    return lastDayOfMonth;
   };
 
   const daysInMonth = getDaysInMonth(date.getFullYear(), date.getMonth());
@@ -125,55 +110,40 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ handleSelectedEvents }) =
         ))}
 
         {startingBlanks.map((i) => (
-          <Box key={i} bg={"gray.100"} borderRadius="md"/>
+          <Box key={i} bg={"gray.100"} borderRadius="md" />
         ))}
 
         {days.map((day) => {
-        const events = eventData.filter((event) => {
+          const events = eventData.filter((event) => {
             const eventDate = new Date(event.date);
-
-            // BUG!!:: This code started to run before days even finished executing its array yet, so some values are ignored (i.e. Up until day 15 is ignored)
-            
-            /*
-            console.log("days=", days)
-            console.log("event name=", event.event)
-            console.log("event date=", eventDate.getDate())
-            console.log("current day=", day)
-            console.log("event month", eventDate.getMonth() + 1)
-            console.log("current month", currentMonth)
-            console.log("-----------------------------------------------------")
-            */
-
-            // BUG!!:: This code repeats for other months even though the months don't match, might have to use useState to switch states when clicked previous or next month.
             return eventDate.getDate() === day && (eventDate.getMonth() + 1) === currentMonth;
-        });
-        return (
-            <Box key={day}
-            borderRadius="md"
-            pl={2}
-            pr={2}
-            pt={2}
-            pb={"12px"}
-            onClick={() => handleDateClick(day, events)}
-            bg={selectedDate.getDate() === day ? "blue.500" : "white"}
-            color={selectedDate.getDate() === day ? "white" : ""}
-            _hover={{ cursor: "pointer", bg: "gray.300" }}
-            h={"100px"}
+          });
+          return (
+            <Box
+              key={day}
+              borderRadius="md"
+              pl={2}
+              pr={2}
+              pt={2}
+              pb={"12px"}
+              onClick={() => handleDateClick(day, events)}
+              bg={selectedDate.getDate() === day ? "blue.500" : "white"}
+              color={selectedDate.getDate() === day ? "white" : ""}
+              _hover={{ cursor: "pointer", bg: "gray.300" }}
+              h={"100px"}
             >
-            <Text>{day}</Text>
-            {events.length > 0? <BulletList bulletPoints={events}/>:""}
+              <Text>{day}</Text>
+              {events.length > 0 ? <BulletList bulletPoints={events} /> : ""}
             </Box>
-        );
+          );
         })}
 
         {endingBlanks.map((i) => (
-          <Box key={i} bg={"gray.100"} borderRadius="md"/>
+          <Box key={i} bg={"gray.100"} borderRadius="md" />
         ))}
-
       </SimpleGrid>
     </Box>
   );
-}
+};
 
 export default EventCalendar;
-

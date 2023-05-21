@@ -26,6 +26,9 @@ import Admin from "../../pages/admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
 import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
+import CreateEventForm from "../../pages/Organiser/CreateEventForm";
+import CreateEventForm2 from "../../pages/Organiser/CreateEventForm2";
+import CreateEventForm3 from "../../pages/Organiser/CreateEventForm3";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -65,7 +68,10 @@ const Navbar = () => {
               <Link to="/ActivityLog">Activity Log</Link>
               <Link to="/StudentHome">Student Home</Link>
               <Link to="/EventHome">Event Home</Link>
-              <Link to="/OrganiserMainPage">Organiser Main Page</Link> {/* Add this line */}
+              <Link to="/OrganiserMainPage">Organiser Main Page</Link>
+              <Link to="/CreateEventForm">Create Event</Link>
+              <Link to="/CreateEventForm2">Create Event 2</Link>
+              <Link to="/CreateEventForm3">Create Event 3</Link>
             </VStack>
           </DrawerBody>
         </DrawerContent>
@@ -79,6 +85,9 @@ const Navbar = () => {
         <Route path="/ActivityLog" element={<ActivityLog />} />
         <Route path="/StudentHome" element={<StudentHome />} />
         <Route path="/EventHome" element={<EventHome />} />
+        <Route path="/CreateEventForm" element={<CreateEventForm />} />
+        <Route path="/CreateEventForm2" element={<CreateEventForm2 />} />
+        <Route path="/CreateEventForm3" element={<CreateEventForm3 />} />
       </Routes>
 
     </>

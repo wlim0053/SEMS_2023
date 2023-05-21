@@ -3,20 +3,15 @@ import { Box, Heading } from '@chakra-ui/react'
 import { Input } from "@chakra-ui/react"
 import { Select } from "@chakra-ui/react"
 import { Text } from "@chakra-ui/react"
-import { Button, ButtonGroup } from "@chakra-ui/react"
-import { IconButton } from "@chakra-ui/react"
-import { CalendarIcon, DeleteIcon, RepeatIcon, ChevronRightIcon, ViewIcon } from "@chakra-ui/icons";
-import CustomGridIcon from '../../components/Organizer/CustomGridIcon'
+import { Button } from "@chakra-ui/react"
 import CalendarViewButton from '../../components/Organizer/CalendarViewButton'
-import { Flex, Spacer } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
-import { Grid, GridItem } from "@chakra-ui/react";
 import { useState } from 'react';
 import CalendarDashboard from '../../components/Organizer/CalendarDashboard'
 import GridViewButton from '../../components/Organizer/GridViewButton'
 import GridEventDashboard from '../../components/Organizer/GridEventDashboard'
 import GridEventDashboardPageNavigator from '../../components/Organizer/GridEventDashboardPageNavigator'
-import Navbar from '../../components/shared/Navbar'
 
 
 
@@ -28,6 +23,7 @@ function OrganiserMainPage() {
     setCalendarViewFlag(!calendarViewFlag)
   }
   interface EventData {
+    id: string;
     event: string;
     venue: string;
     club: string;
@@ -38,33 +34,58 @@ function OrganiserMainPage() {
   const [selectedEvent, setSelectedEvent] = useState<EventData[] | null>(null); // Initialize state to be null or an array of EventData
   
   const eventData: EventData[] = [
-      {
-        event: "EXE - IMechE",
-        venue: "Monash University Malaysia",
-        club: "IMechE",
-        participants: "5/200",
-        date: "2023-05-25"
-      },
-      {
-        event: "EXE - ICE",
-        venue: "Monash University Malaysia",
-        club: "ICE",
-        participants: "4/200",
-        date: "2023-05-25"
-      },
-      {
-        event: "EXE - SEM",
-        venue: "Monash University Malaysia",
-        club: "SEM",
-        participants: "6/200",
-        date: "2023-05-25"
-      }
-    ];
+    {
+      id: "ed-1",
+      event: "EXE - IMechE",
+      venue: "Monash University Malaysia",
+      club: "IMechE",
+      participants: "5/200",
+      date: "2023-05-25"
+    },
+    {
+      id: "ed2",
+      event: "EXE - ICE",
+      venue: "Monash University Malaysia",
+      club: "ICE",
+      participants: "4/200",
+      date: "2023-05-25"
+    },
+    {
+      id: "ed-3",
+      event: "EXE - SEM",
+      venue: "Monash University Malaysia",
+      club: "SEM",
+      participants: "6/200",
+      date: "2023-05-25"
+    },
+    {
+      id: "ed-4",
+      event: "Monash Hack",
+      venue: "Monash University Malaysia",
+      club: "SOE",
+      participants: "25/60",
+      date: "2023-05-28",
+    },
+    {
+      id: "ed-5",
+      event: "Mingle Night",
+      venue: "Monash University Malaysia",
+      club: "MUSA",
+      participants: "25/60",
+      date: "2023-05-25",
+    },
+    {
+      id: "ed-6",
+      event: "Cultural Festival",
+      venue: "Monash University Malaysia",
+      club: "MUSA",
+      participants: "25/60",
+      date: "2023-05-25",
+    }
+  ];
   
   const getSelectedEvents = (selectedEventsArr: EventData[]): void => {
     setSelectedEvent(selectedEventsArr);
-    console.log("click1");
-    console.log(selectedEventsArr);
   }
   
   return (
@@ -84,7 +105,11 @@ function OrganiserMainPage() {
         <Text as="p" noOfLines={1}>Sort by:</Text>
 
         <Select placeholder="Please select" width={"200px"} ml={"10px"} mr={"10px"}>
-          <option value="option1">Name</option>
+          <option value="sort_by_event">Event</option>
+          <option value="sort_by_venue">Venue</option>
+          <option value="sort_by_club">Club</option>
+          <option value="sort_by_participants_number">Number of Participants</option>
+          <option value="sort_by_date">Date</option>
         </Select>
 
         <Button colorScheme="blue" variant="solid">
@@ -106,14 +131,14 @@ function OrganiserMainPage() {
   </TabList>
   <TabPanels>
     <TabPanel p={0}>
-      {calendarViewFlag ? <CalendarDashboard getSelectedEvents={getSelectedEvents}/> : <>
-        <GridEventDashboard />
+      {calendarViewFlag ? <CalendarDashboard getSelectedEvents={getSelectedEvents} eventData={eventData}/> : <>
+        <GridEventDashboard data={eventData}/>
         <GridEventDashboardPageNavigator />
       </>}
     </TabPanel>
     <TabPanel p={0}>
-      {calendarViewFlag ? <CalendarDashboard getSelectedEvents={getSelectedEvents}/> : <>
-        <GridEventDashboard />
+      {calendarViewFlag ? <CalendarDashboard getSelectedEvents={getSelectedEvents} eventData={eventData}/> : <>
+        <GridEventDashboard data={eventData}/>
         <GridEventDashboardPageNavigator />
       </>}
     </TabPanel>

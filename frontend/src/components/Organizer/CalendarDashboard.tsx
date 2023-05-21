@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Heading } from '@chakra-ui/react';
 import CalendarEventNavigator from './CalendarEventNavigator';
 
-
 interface EventData {
   id: string;
   event: string;
@@ -15,49 +14,17 @@ interface EventData {
   date: string;
 }
 
-const eventData: EventData[] = [
-  {
-    id: "ed-1",
-    event: "EXE - IMechE",
-    venue: "Monash University Malaysia",
-    club: "IMechE",
-    participants: "5/200",
-    date: "2023-05-25"
-  },
-  {
-    id: "ed2",
-    event: "EXE - ICE",
-    venue: "Monash University Malaysia",
-    club: "ICE",
-    participants: "4/200",
-    date: "2023-05-25"
-  },
-  {
-    id: "ed-3",
-    event: "EXE - SEM",
-    venue: "Monash University Malaysia",
-    club: "SEM",
-    participants: "6/200",
-    date: "2023-05-25"
-  }
-];
-
-interface Props {
-  selectedEvents: EventData[];
-}
-
 interface CalendarDashboardProps {
   getSelectedEvents: (selectedEventsArr: EventData[]) => void;
+  eventData: EventData[]; 
 }
 
-const CalendarDashboard: React.FC<CalendarDashboardProps> = ({ getSelectedEvents }) => {
-  const [selectedEvents, setSelectedEvents] = useState<EventData[]>([]); // Initialize as an empty array
-
+const CalendarDashboard: React.FC<CalendarDashboardProps> = ({ getSelectedEvents, eventData }) => {
+  const [selectedEvents, setSelectedEvents] = useState<EventData[]>([]);
 
   const handleSelectedEvents = (newEvents: EventData[]) => {
     setSelectedEvents(newEvents);
   }
-
 
   return (
     <Grid
@@ -76,7 +43,7 @@ const CalendarDashboard: React.FC<CalendarDashboardProps> = ({ getSelectedEvents
       <Divider borderColor="gray.200" borderWidth="1px" gridArea="HorizontalDivider2" />
 
       <GridItem area="EventCalendar">
-        <EventCalendar handleSelectedEvents={handleSelectedEvents} />
+        <EventCalendar handleSelectedEvents={handleSelectedEvents} eventData={eventData} />
       </GridItem>
 
       <Divider orientation="vertical" borderWidth="1px" borderColor="gray.200" gridArea="VerticalDivider1" />
@@ -89,8 +56,8 @@ const CalendarDashboard: React.FC<CalendarDashboardProps> = ({ getSelectedEvents
       </GridItem>
       
       <GridItem area="CalendarEventNavigator" bg="white" overflowY="scroll" maxHeight="760px" display={'flex'} justifyContent={'center'}>
-      <CalendarEventNavigator events={selectedEvents} />
-    </GridItem>
+        <CalendarEventNavigator events={selectedEvents} />
+      </GridItem>
     </Grid>
   );
 }
