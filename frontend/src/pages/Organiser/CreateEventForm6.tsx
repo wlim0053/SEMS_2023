@@ -10,6 +10,15 @@ const CustomLink = chakra('a', {
   },
 });
 
+const handleButtonClick = () => {
+  // Redirect to another page
+  window.location.href = '/CreateEventForm7';
+};
+
+const handleButtonClick2 = () => {
+  // Redirect to another page
+  window.location.href = '/CreateEventForm8';
+};
 const NextPage: React.FC = () => {
   const [hasVIP, setHasVIP] = useState<boolean>(false);
   const [externalVendor, setExternalVendor] = useState<boolean>(false);
@@ -57,29 +66,29 @@ const NextPage: React.FC = () => {
               2. External Speaker Profile
             </FormLabel>
             <VStack align="start" spacing={2}>
-            <Box>
-              <label htmlFor="sarah-risk-assessment" className="file-input-label">
-                <Button as="span" variant="outline" size="sm" mb={2}>
-                  Choose File
-                </Button>
-                <Text fontSize="sm" ml={2}>
-                  {sarahRiskAssessment ? sarahRiskAssessment.name : 'No file chosen'}
+              <Box>
+                <label htmlFor="sarah-risk-assessment" className="file-input-label">
+                  <Button as="span" variant="outline" size="sm" mb={2}>
+                    Choose File
+                  </Button>
+                  <Text fontSize="sm" ml={2}>
+                    {sarahRiskAssessment ? sarahRiskAssessment.name : 'No file chosen'}
+                  </Text>
+                </label>
+                <input id="sarah-risk-assessment" type="file" accept=".pdf" onChange={handleSarahRiskAssessmentUpload} style={{ display: 'none' }} />
+                <Text fontSize="sm" color="gray.500" mt={1}>
+                  Download the template{' '}
+                  <CustomLink
+                    href="https://docs.google.com/document/d/1NFGiEpsiTPsPugY2f2S_1qmpLKGZQxpG/edit?usp=sharing&ouid=109039236319263624802&rtpof=true&sd=true"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    here
+                  </CustomLink>
+                  .
                 </Text>
-              </label>
-              <input id="sarah-risk-assessment" type="file" accept=".pdf" onChange={handleSarahRiskAssessmentUpload} style={{ display: 'none' }} />
-              <Text fontSize="sm" color="gray.500" mt={1}>
-                Download the template{' '}
-                <CustomLink
-                  href="https://docs.google.com/document/d/1NFGiEpsiTPsPugY2f2S_1qmpLKGZQxpG/edit?usp=sharing&ouid=109039236319263624802&rtpof=true&sd=true"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  here
-                </CustomLink>
-                .
-              </Text>
-            
-            </Box>
+
+              </Box>
 
             </VStack>
           </FormControl>
@@ -95,19 +104,21 @@ const NextPage: React.FC = () => {
             <FormLabel>
               1. Will there be external vendors/caterers?
             </FormLabel>
-            <Checkbox
+            {/* <Checkbox
               isChecked={externalVendor}
               onChange={handleExternalVendorChange}
             >
               Yes
-            </Checkbox>
+            </Checkbox> */}
+            <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
+              yes
+            </Button>
           </FormControl>
+          <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
+            no
+          </Button>
         </VStack>
       </Box>
-
-      <Button mt={8} colorScheme="blue" alignSelf="flex-end">
-        Next
-      </Button>
     </Box>
   );
 };
