@@ -204,10 +204,6 @@ const Page3 = () => {
 
       <Box mb={4}>
         <FormLabel>11. Event Proposal</FormLabel>
-        <p>
-          This isn't a question, just a section to tell users to click on the link below to download the event proposal
-          template:
-        </p>
         <a
           href="https://docs.google.com/document/d/1LmxXij2Es3W5FJslif-pyWEiX0dqD7KF/edit?usp=sharing&ouid=109039236319263624802&rtpof=true&sd=true"
           target="_blank"
