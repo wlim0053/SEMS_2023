@@ -90,7 +90,7 @@ const Page3 = () => {
   return (
     <Box p={4}>
       <Heading as="h2" mb={4}>
-        Page 3: Event Details
+      Event Details
       </Heading>
 
       <FormControl mb={4}>
