@@ -1,4 +1,4 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Center } from '@chakra-ui/react';
+import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Center, Grid } from '@chakra-ui/react';
 import { left } from '@popperjs/core';
 import { useState, ChangeEvent } from 'react';
 
@@ -30,9 +30,6 @@ const OrganizerPage: React.FC = () => {
 
   return (
     <Box mt={4} p={4}
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
     >
       <Box width="50%">
         <Heading as="h2" size="lg" mb={4}>
@@ -92,9 +89,8 @@ const OrganizerPage: React.FC = () => {
           <FormControl>
             <FormLabel>
               1. Proposed Venue
-            </FormLabel>
-            <VStack spacing={1} align="start" ml={2}>
-              {/* <Checkbox
+              </FormLabel>
+                {/* <Checkbox
                 value="On Campus"
                 isChecked={proposedVenue.includes('On Campus')}
                 onChange={(e) =>
@@ -105,10 +101,12 @@ const OrganizerPage: React.FC = () => {
               >
                 On Campus
               </Checkbox> */}
-              <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
-                On Campus
-              </Button>
-              {/* <Checkbox
+                <Grid templateColumns="repeat(2, minmax(0, 2fr))" gap={4}>  
+
+                <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
+                  On Campus
+                </Button>
+                {/* <Checkbox
                 value="Off Campus"
                 isChecked={proposedVenue.includes('Off Campus')}
                 onChange={(e) =>
@@ -119,10 +117,11 @@ const OrganizerPage: React.FC = () => {
               >
                 Off Campus
               </Checkbox> */}
-              <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
-                Off Campus
-              </Button>
-            </VStack>
+                <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
+                  Off Campus
+                </Button>
+              
+            </Grid>
           </FormControl>
         </VStack>
       </Box>
