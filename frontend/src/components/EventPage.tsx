@@ -324,10 +324,13 @@ function EventPage() {
         <ModalContent>
           <ModalHeader>Sign Up</ModalHeader>
           <ModalCloseButton />
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            console.log("Submit clicked");
-          }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              setIsSignUpModalOpen(false);
+              console.log("Submit clicked");
+            }}
+          >
             <ModalBody pb={6}>
               <FormControl isRequired>
                 <FormLabel>Name</FormLabel>
@@ -350,10 +353,7 @@ function EventPage() {
               pr={6}
               pb={4}
             >
-              <Button
-                type="submit"
-                colorScheme="blue"
-              >
+              <Button type="submit" colorScheme="blue">
                 Submit
               </Button>
             </Box>
