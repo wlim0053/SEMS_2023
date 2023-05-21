@@ -70,8 +70,6 @@ const Navbar = () => {
               <Link to="/EventHome">Event Home</Link>
               <Link to="/OrganiserMainPage">Organiser Main Page</Link>
               <Link to="/CreateEventForm">Create Event</Link>
-              <Link to="/CreateEventForm2">Create Event 2</Link>
-              <Link to="/CreateEventForm3">Create Event 3</Link>
             </VStack>
           </DrawerBody>
         </DrawerContent>
