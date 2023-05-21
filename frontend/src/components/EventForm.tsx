@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Box,
+  Button,
   Heading,
   Input,
   Select,
@@ -8,9 +9,10 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
+import api from "../utils/api";
 
 const EventForm = () => {
-  const [title, setTitle] = React.useState("");
+  const [eventTitle, setEventTitle] = React.useState("");
   const [startDate, setStartDate] = React.useState("");
   const [endDate, setEndDate] = React.useState("");
   const [eventDesc, setEventDesc] = React.useState("");
@@ -20,6 +22,44 @@ const EventForm = () => {
   const [regStartDate, setRegStartDate] = React.useState("");
   const [regEndDate, setRegEndDate] = React.useState("");
   const [regGoogleForm, setRegGoogleForm] = React.useState("");
+
+  const body = {
+    event_ems_no: "ems_no_testing",
+    organiser_uuid: "CC35B4AF-9534-4DD3-ADCD-FAA37407B9F9",
+    event_start_date: startDate,
+    event_end_date: endDate,
+    event_title: eventTitle,
+    event_desc: eventDesc,
+    event_mode: eventMode,
+    event_venue: eventVenue,
+    event_capacity: eventCapacity,
+    event_status: "P",
+    event_reg_start_date: regStartDate,
+    event_reg_end_date: regEndDate,
+    event_reg_google_form: regGoogleForm,
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(body);
+    try {
+      const response = await api.post("/event", body);
+      let data = response.data;
+      console.log(data);
+      setEventTitle("");
+      setStartDate("");
+      setEndDate("");
+      setEventDesc("");
+      setEventMode("");
+      setEventVenue("");
+      setEventCapacity("");
+      setRegStartDate("");
+      setRegEndDate("");
+      setRegGoogleForm("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <>
@@ -40,8 +80,8 @@ const EventForm = () => {
         <Stack spacing={4} fontFamily={"Arial"}>
           <Text fontSize="md"> Event Title</Text>
           <Input
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            value={eventTitle}
+            onChange={(event) => setEventTitle(event.target.value)}
           ></Input>
           <Text fontSize="md">Start date</Text>
           <Input
@@ -91,6 +131,7 @@ const EventForm = () => {
             value={regStartDate}
             onChange={(event) => setRegStartDate(event.target.value)}
           ></Input>
+          <Text>{regStartDate}</Text>
           <Text fontSize="md">Registering End date</Text>
           <Input
             type="datetime-local"
@@ -103,6 +144,15 @@ const EventForm = () => {
             onChange={(event) => setRegGoogleForm(event.target.value)}
           ></Input>
         </Stack>
+        <Button
+          colorScheme="teal"
+          size="md"
+          marginTop={10}
+          bgColor={"#006DAE"}
+          onClick={handleSubmit}
+        >
+          Submit
+        </Button>
       </Box>
     </>
   );
