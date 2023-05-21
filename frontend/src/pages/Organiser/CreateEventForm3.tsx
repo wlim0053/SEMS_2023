@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Box, Button, Checkbox, FormControl, FormLabel, Grid, GridItem, Input, Textarea, Heading, Stack } from "@chakra-ui/react";
+import { Box, Button, Checkbox, FormControl, FormLabel, Grid, GridItem, Input, Textarea, Heading, Text, Stack } from "@chakra-ui/react";
+
 
 const eventCategories = [
   "Exhibition",
@@ -44,12 +45,18 @@ const Page3 = () => {
   const [eventFrequency, setEventFrequency] = useState("");
   const [remarks, setRemarks] = useState("");
   const [eventMode, setEventMode] = useState<string[]>([]);
+  const [eventProposal, setEventProposal] = useState<File | undefined>(undefined);
 
   const handleActivityAssessmentChange = (factor: string, checked: boolean) => {
     setActivityAssessment((prevAssessment) => ({
       ...prevAssessment,
       [factor]: checked,
     }));
+  };
+
+  const handleEventProposalUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    setEventProposal(file);
   };
 
   const handleSubmit = () => {
@@ -69,6 +76,7 @@ const Page3 = () => {
       eventFrequency,
       remarks,
       eventMode,
+      eventProposal,
     });
   };
 
@@ -118,7 +126,9 @@ const Page3 = () => {
                 if (e.target.checked) {
                   setEventCategory((prevCategories) => [...prevCategories, category]);
                 } else {
-                  setEventCategory((prevCategories) => prevCategories.filter((c) => c !== category));
+                  setEventCategory((prevCategories) =>
+                    prevCategories.filter((c) => c !== category)
+                  );
                 }
               }}
             >
@@ -127,7 +137,6 @@ const Page3 = () => {
           ))}
         </Grid>
       </FormControl>
-
 
       <FormControl mb={4}>
         <FormLabel>5. Assessment of activities</FormLabel>
@@ -202,39 +211,57 @@ const Page3 = () => {
         )}
       </FormControl>
 
-      <Box mb={4}>
+      <FormControl mb={4}>
         <FormLabel>11. Event Proposal</FormLabel>
-        <a
-          href="https://docs.google.com/document/d/1LmxXij2Es3W5FJslif-pyWEiX0dqD7KF/edit?usp=sharing&ouid=109039236319263624802&rtpof=true&sd=true"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Download the template here
-        </a>
-      </Box>
+        <Stack direction="row" align="center">
+          <FormControl>
+            <Button as="label" htmlFor="eventProposal" size="sm">
+              Choose File
+            </Button>
+            <input
+              id="eventProposal"
+              type="file"
+              onChange={handleEventProposalUpload}
+              style={{ display: "none" }}
+            />
+          </FormControl>
+          <Text size={"sm"}>{eventProposal?.name || "No file chosen"}</Text>
+        </Stack>
+      </FormControl>
+
 
       <FormControl mb={4}>
-        <FormLabel>13. Please select the mode of event</FormLabel>
+        <FormLabel>12. Remarks</FormLabel>
+        <Textarea
+          value={remarks}
+          onChange={(e) => setRemarks(e.target.value)}
+          placeholder="Enter remarks"
+          rows={4}
+        />
+      </FormControl>
+
+      <FormControl mb={4}>
+        <FormLabel>13. Mode of Event</FormLabel>
         <Grid templateColumns="repeat(2, minmax(0, 1fr))" gap={4}>
           <Checkbox
-            isChecked={eventMode.includes('Physical')}
+            isChecked={eventMode.includes("Physical")}
             onChange={(e) => {
               if (e.target.checked) {
-                setEventMode((prevModes) => [...prevModes, 'Physical']);
+                setEventMode((prevModes) => [...prevModes, "Physical"]);
               } else {
-                setEventMode((prevModes) => prevModes.filter((m) => m !== 'Physical'));
+                setEventMode((prevModes) => prevModes.filter((m) => m !== "Physical"));
               }
             }}
           >
             Physical
           </Checkbox>
           <Checkbox
-            isChecked={eventMode.includes('Virtual')}
+            isChecked={eventMode.includes("Virtual")}
             onChange={(e) => {
               if (e.target.checked) {
-                setEventMode((prevModes) => [...prevModes, 'Virtual']);
+                setEventMode((prevModes) => [...prevModes, "Virtual"]);
               } else {
-                setEventMode((prevModes) => prevModes.filter((m) => m !== 'Virtual'));
+                setEventMode((prevModes) => prevModes.filter((m) => m !== "Virtual"));
               }
             }}
           >
@@ -243,10 +270,8 @@ const Page3 = () => {
         </Grid>
       </FormControl>
 
-
-
-      <Button onClick={handleSubmit} colorScheme="blue" mt={4}>
-        Submit
+      <Button colorScheme="teal" onClick={handleSubmit}>
+        Next Page
       </Button>
     </Box>
   );
