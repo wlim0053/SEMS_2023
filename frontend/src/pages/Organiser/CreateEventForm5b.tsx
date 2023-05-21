@@ -15,6 +15,16 @@ const NextPage: React.FC = () => {
     setVenueName(e.target.value);
   };
 
+  const handleButtonClick = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm6';
+  };
+
+  const handleButtonClick2 = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm7';
+  };
+
   return (
     <Box mt={4} p={4}>
       <Box width="50%" mb={20}>
@@ -22,7 +32,7 @@ const NextPage: React.FC = () => {
           On Campus Venue
         </Heading>
         <Tooltip label="A separate venue approval will be sent to you by the respective venue owners" aria-label="information-tooltip" placement="right-end" closeDelay={1000}>
-            <InfoIcon boxSize={4} ml={4} color="gray.500" cursor="help" />
+          <InfoIcon boxSize={4} ml={4} color="gray.500" cursor="help" />
         </Tooltip>
         <VStack spacing={4} align="start">
           <FormControl>
@@ -58,26 +68,28 @@ const NextPage: React.FC = () => {
               1. Will there be external guests?
             </FormLabel>
             <VStack spacing={2} align="start" ml={4}>
-              <Checkbox
+              {/* <Checkbox
                 isChecked={hasExternalGuests}
                 onChange={(e) => setHasExternalGuests(e.target.checked)}
               >
                 Yes
-              </Checkbox>
-              <Checkbox
+              </Checkbox> */}
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
+                yes
+              </Button>
+              {/* <Checkbox
                 isChecked={!hasExternalGuests}
                 onChange={(e) => setHasExternalGuests(!e.target.checked)}
               >
                 No
-              </Checkbox>
+              </Checkbox> */}
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
+                no
+              </Button>
             </VStack>
           </FormControl>
         </VStack>
       </Box>
-
-      <Button mt={8} colorScheme="blue" alignSelf="flex-end">
-        Next
-      </Button>
     </Box>
   );
 };
