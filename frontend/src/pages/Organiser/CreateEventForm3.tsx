@@ -14,7 +14,14 @@ const eventCategories = [
   "Virtual",
   "Other",
 ];
-
+const handleButtonClick = () => {
+  // Redirect to another page
+  window.location.href = '/CreateEventForm4a';
+};
+const handleButtonClick2 = () => {
+  // Redirect to another page
+  window.location.href = '/CreateEventForm4b';
+};
 const activityFactors: string[] = [
   "Loud noise",
   "Water activity",
@@ -243,7 +250,7 @@ const Page3 = () => {
       <FormControl mb={4}>
         <FormLabel>13. Mode of Event</FormLabel>
         <Grid templateColumns="repeat(2, minmax(0, 1fr))" gap={4}>
-          <Checkbox
+          {/* <Checkbox
             isChecked={eventMode.includes("Physical")}
             onChange={(e) => {
               if (e.target.checked) {
@@ -254,8 +261,11 @@ const Page3 = () => {
             }}
           >
             Physical
-          </Checkbox>
-          <Checkbox
+          </Checkbox> */}
+          <Button colorScheme="blue" onClick={handleButtonClick}>
+            Physical
+          </Button>
+          {/* <Checkbox
             isChecked={eventMode.includes("Virtual")}
             onChange={(e) => {
               if (e.target.checked) {
@@ -266,13 +276,15 @@ const Page3 = () => {
             }}
           >
             Virtual
-          </Checkbox>
+          </Checkbox> */}
+          <Button colorScheme="blue" onClick={handleButtonClick2}>
+            Virtual
+          </Button>
         </Grid>
       </FormControl>
 
-      <Button colorScheme="teal" onClick={handleSubmit}>
-        Next Page
-      </Button>
+
+
     </Box>
   );
 };
