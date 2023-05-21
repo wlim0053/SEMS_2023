@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Box, Button, FormControl, FormLabel, Input, Image, Heading } from "@chakra-ui/react";
 
+// Define the shape of the form data for TypeScript
 interface RegisterPageFormData {
   email: string;
   password: string;
   confirmPassword: string;
 }
 
+// The RegisterPage component
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<RegisterPageFormData>({
     email: "",
@@ -14,6 +16,7 @@ const RegisterPage: React.FC = () => {
     confirmPassword: "",
   });
 
+  // Event handler for input changes. Updates the form data state.
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -21,11 +24,13 @@ const RegisterPage: React.FC = () => {
     });
   };
 
+  // Event handler for form submission. Prevents default form submission event.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Implement form submission logic here
   };
 
+  // Render the form
   return (
     <Box p={5}>
       <Box textAlign="center" mb={5}>
