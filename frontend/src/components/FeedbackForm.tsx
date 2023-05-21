@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import React from "react";
+import axios from "axios";
 import {
   Box,
   Button,
@@ -17,6 +19,7 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import api from "../utils/api";
 
 const FeedbackForm = () => {
   const [communication, setCommunication] = React.useState("0");
@@ -25,6 +28,32 @@ const FeedbackForm = () => {
   const [teamwork, setTeamwork] = React.useState("0");
   const [reflection, setReflection] = React.useState("");
   const changeReflection = (event) => setReflection(event.target.value);
+
+  const body = {
+    participation_uuid: "8AEB18BB-4A51-4366-8ACC-C86A9CFA3F0F",
+    feedback_comm: Number(communication),
+    feedback_proj: Number(PM),
+    feedback_solve: Number(PS),
+    feedback_teamwork: Number(teamwork),
+    feedback_reflection: reflection,
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(body);
+    try {
+      const response = await api.post("/feedback", body);
+      let data = response.data;
+      console.log(data);
+      setCommunication("0");
+      setPM("0");
+      setPS("0");
+      setTeamwork("0");
+      setReflection("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <>
@@ -140,7 +169,13 @@ const FeedbackForm = () => {
             onChange={changeReflection}
           />
         </Stack>
-        <Button colorScheme="teal" size="md" marginTop={10} bgColor={"#006DAE"}>
+        <Button
+          colorScheme="teal"
+          size="md"
+          marginTop={10}
+          bgColor={"#006DAE"}
+          onClick={handleSubmit}
+        >
           Submit
         </Button>
       </Box>
