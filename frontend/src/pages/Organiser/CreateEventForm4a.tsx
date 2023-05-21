@@ -1,4 +1,5 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text } from '@chakra-ui/react';
+import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Center } from '@chakra-ui/react';
+import { left } from '@popperjs/core';
 import { useState, ChangeEvent } from 'react';
 
 const OrganizerPage: React.FC = () => {
@@ -17,45 +18,22 @@ const OrganizerPage: React.FC = () => {
     setSarahRiskAssessment(file);
   };
 
-  return (
-    <Box mt={4} p={4}>
-      <Box width="50%" mb={20}>
-        <Heading as="h2" size="lg" mb={4}>
-          Venue Description
-        </Heading>
-        <VStack spacing={4} align="start">
-          <FormControl>
-            <FormLabel>
-              1. Proposed Venue
-            </FormLabel>
-            <VStack spacing={2} align="start" ml={4}>
-              <Checkbox
-                value="On Campus"
-                isChecked={proposedVenue.includes('On Campus')}
-                onChange={(e) =>
-                  setProposedVenue((prev) =>
-                    e.target.checked ? [...prev, 'On Campus'] : prev.filter((value) => value !== 'On Campus')
-                  )
-                }
-              >
-                On Campus
-              </Checkbox>
-              <Checkbox
-                value="Off Campus"
-                isChecked={proposedVenue.includes('Off Campus')}
-                onChange={(e) =>
-                  setProposedVenue((prev) =>
-                    e.target.checked ? [...prev, 'Off Campus'] : prev.filter((value) => value !== 'Off Campus')
-                  )
-                }
-              >
-                Off Campus
-              </Checkbox>
-            </VStack>
-          </FormControl>
-        </VStack>
-      </Box>
+  const handleButtonClick = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm5a';
+  };
 
+  const handleButtonClick2 = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm5b';
+  };
+
+  return (
+    <Box mt={4} p={4}
+    display="flex"
+    justifyContent="center"
+    alignItems="center"
+    >
       <Box width="50%">
         <Heading as="h2" size="lg" mb={4}>
           Event Details
@@ -106,10 +84,48 @@ const OrganizerPage: React.FC = () => {
           </FormControl>
         </VStack>
       </Box>
-
-      <Button mt={8} colorScheme="blue" alignSelf="flex-end">
-        Next
-      </Button>
+      <Box width="50%" mb={20}>
+        <Heading as="h2" size="lg" mb={4}>
+          Venue Description
+        </Heading>
+        <VStack spacing={4} align="start">
+          <FormControl>
+            <FormLabel>
+              1. Proposed Venue
+            </FormLabel>
+            <VStack spacing={1} align="start" ml={2}>
+              {/* <Checkbox
+                value="On Campus"
+                isChecked={proposedVenue.includes('On Campus')}
+                onChange={(e) =>
+                  setProposedVenue((prev) =>
+                    e.target.checked ? [...prev, 'On Campus'] : prev.filter((value) => value !== 'On Campus')
+                  )
+                }
+              >
+                On Campus
+              </Checkbox> */}
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
+                On Campus
+              </Button>
+              {/* <Checkbox
+                value="Off Campus"
+                isChecked={proposedVenue.includes('Off Campus')}
+                onChange={(e) =>
+                  setProposedVenue((prev) =>
+                    e.target.checked ? [...prev, 'Off Campus'] : prev.filter((value) => value !== 'Off Campus')
+                  )
+                }
+              >
+                Off Campus
+              </Checkbox> */}
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
+                Off Campus
+              </Button>
+            </VStack>
+          </FormControl>
+        </VStack>
+      </Box>
     </Box>
   );
 };
