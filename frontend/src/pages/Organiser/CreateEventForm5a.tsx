@@ -1,4 +1,4 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Input } from '@chakra-ui/react';
+import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Input, Grid } from '@chakra-ui/react';
 import { useState, ChangeEvent } from 'react';
 
 const NextPage: React.FC = () => {
@@ -52,25 +52,29 @@ const NextPage: React.FC = () => {
         </VStack>
       </Box>
 
-      <Box width="50%">
+      <Box width="50%" mt={20}>
         <Heading as="h2" size="lg" mb={4}>
           External Guests
         </Heading>
         <VStack spacing={4} align="start">
+
           <FormControl>
             <FormLabel>
               1. Will there be external guests?
             </FormLabel>
-              {/* <Checkbox
+
+            {/* <Checkbox
                 isChecked={hasExternalGuests}
                 onChange={(e) => setHasExternalGuests(e.target.checked)}
               >
                 Yes
               </Checkbox> */}
+            <Grid templateColumns="repeat(2, minmax(0, 2fr))" gap={4}>
+
               <Button mt={8} colorScheme="blue" onClick={handleButtonClick} >
                 yes
               </Button>
-              
+
               {/* <Checkbox
                 isChecked={!hasExternalGuests}
                 onChange={(e) => setHasExternalGuests(!e.target.checked)}
@@ -80,6 +84,7 @@ const NextPage: React.FC = () => {
               <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
                 no
               </Button>
+              </Grid>
           </FormControl>
         </VStack>
       </Box>
