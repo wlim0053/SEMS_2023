@@ -1,4 +1,4 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, chakra } from '@chakra-ui/react';
+import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, chakra, Grid } from '@chakra-ui/react';
 import { useState, ChangeEvent } from 'react';
 
 const CustomLink = chakra('a', {
@@ -95,7 +95,7 @@ const NextPage: React.FC = () => {
         </VStack>
       </Box>
 
-      <Box width="50%">
+      <Box width="50%" mt={20}>
         <Heading as="h2" size="lg" mb={4}>
           External Vendor
         </Heading>
@@ -110,13 +110,17 @@ const NextPage: React.FC = () => {
             >
               Yes
             </Checkbox> */}
-            <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
-              yes
-            </Button>
+            <Grid templateColumns="repeat(2, minmax(0, 2fr))" gap={4}>
+
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
+                yes
+              </Button>
+
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
+                no
+              </Button>
+            </Grid>
           </FormControl>
-          <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
-            no
-          </Button>
         </VStack>
       </Box>
     </Box>
