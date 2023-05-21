@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Checkbox, FormControl, FormLabel, Input, Stack, Heading } from "@chakra-ui/react";
+import { Box, Button, Checkbox, FormControl, FormLabel, Input, Stack, Heading, Grid } from "@chakra-ui/react";
 
 const clubs = [
   { value: "S", label: "SoIT" },
@@ -19,6 +19,10 @@ const Page1 = () => {
   const handleButtonClick = () => {
     // Redirect to another page
     window.location.href = '/CreateEventForm2';
+  };
+  const handleButtonClick2 = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm3';
   };
   const handleSubmit = () => {
     // Handle form submission
@@ -106,14 +110,22 @@ const Page1 = () => {
 
       <FormControl mb={4}>
         <FormLabel>6. Is this event held in collaboration with another club/team/institution?</FormLabel>
-        <Checkbox isChecked={collaboration} onChange={() => setCollaboration(!collaboration)}>
+        
+        {/* <Checkbox isChecked={collaboration} onChange={() => setCollaboration(!collaboration)}>
           Yes
-        </Checkbox>
+        </Checkbox> */}
+        <Grid templateColumns="repeat(2, minmax(0, 1fr))" gap={4}>  
+        <Button onClick={handleButtonClick} colorScheme="blue" mt={4}>
+          yes
+        </Button>
+        <Button onClick={handleButtonClick2} colorScheme="blue" mt={4}>
+          no
+        </Button> 
+        </Grid>
       </FormControl>
+      
 
-      <Button onClick={handleButtonClick} colorScheme="blue" mt={4}>
-        Next Page
-      </Button>
+
     </Box>
   );
 };
