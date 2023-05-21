@@ -16,7 +16,10 @@ const Page1 = () => {
   const [personInCharge, setPersonInCharge] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [collaboration, setCollaboration] = useState(false);
-
+  const handleButtonClick = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm2';
+  };
   const handleSubmit = () => {
     // Handle form submission
     // You can access the form data using the state variables
@@ -30,6 +33,7 @@ const Page1 = () => {
       collaboration,
     });
   };
+
 
   return (
     <Box p={4}>
@@ -107,11 +111,12 @@ const Page1 = () => {
         </Checkbox>
       </FormControl>
 
-      <Button onClick={handleSubmit} colorScheme="blue" mt={4}>
-        Submit
+      <Button onClick={handleButtonClick} colorScheme="blue" mt={4}>
+        Next Page
       </Button>
     </Box>
   );
 };
 
 export default Page1;
+
