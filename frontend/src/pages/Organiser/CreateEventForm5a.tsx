@@ -13,6 +13,14 @@ const NextPage: React.FC = () => {
   const handleTravelModeChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTravelMode(e.target.value);
   };
+  const handleButtonClick = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm6';
+  };
+  const handleButtonClick2 = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm8';
+  };
 
   return (
     <Box mt={4} p={4}>
@@ -53,27 +61,28 @@ const NextPage: React.FC = () => {
             <FormLabel>
               1. Will there be external guests?
             </FormLabel>
-            <VStack spacing={2} align="start" ml={4}>
-              <Checkbox
+              {/* <Checkbox
                 isChecked={hasExternalGuests}
                 onChange={(e) => setHasExternalGuests(e.target.checked)}
               >
                 Yes
-              </Checkbox>
-              <Checkbox
+              </Checkbox> */}
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick} >
+                yes
+              </Button>
+              
+              {/* <Checkbox
                 isChecked={!hasExternalGuests}
                 onChange={(e) => setHasExternalGuests(!e.target.checked)}
               >
                 No
-              </Checkbox>
-            </VStack>
+              </Checkbox> */}
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
+                no
+              </Button>
           </FormControl>
         </VStack>
       </Box>
-
-      <Button mt={8} colorScheme="blue" alignSelf="flex-end">
-        Next
-      </Button>
     </Box>
   );
 };
