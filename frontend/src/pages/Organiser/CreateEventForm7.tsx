@@ -5,6 +5,12 @@ const NextPage: React.FC = () => {
   const [companyName, setCompanyName] = useState<string>("");
   const [contactNumber, setContactNumber] = useState<string>("");
 
+  const handleButtonClick = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm8';
+  };
+
+
   const handleCompanyNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCompanyName(e.target.value);
   };
@@ -43,7 +49,7 @@ const NextPage: React.FC = () => {
         </VStack>
       </Box>
 
-      <Button mt={8} colorScheme="blue" alignSelf="flex-end">
+      <Button mt={8} colorScheme="blue" alignSelf="flex-end" onClick={handleButtonClick}>
         Next
       </Button>
     </Box>
