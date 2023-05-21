@@ -1,4 +1,4 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Input } from '@chakra-ui/react';
+import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Input, Grid } from '@chakra-ui/react';
 import { useState, ChangeEvent } from 'react';
 
 const OrganizerPage: React.FC = () => {
@@ -135,7 +135,6 @@ const OrganizerPage: React.FC = () => {
             <FormLabel>
               1. Proposed Venue
             </FormLabel>
-            <VStack spacing={2} align="start" ml={4}>
               {/* <Checkbox
                 value="On Campus"
                 isChecked={proposedVenue.includes('On Campus')}
@@ -143,6 +142,7 @@ const OrganizerPage: React.FC = () => {
               >
                 On Campus
               </Checkbox> */}
+              <Grid templateColumns="repeat(2, minmax(0, 2fr))" gap={4}>  
               <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
                 on Campus
               </Button>
@@ -156,7 +156,7 @@ const OrganizerPage: React.FC = () => {
               <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
                 off Campus
               </Button>
-            </VStack>
+            </Grid>
           </FormControl>
         </VStack>
       </Box>
