@@ -9,6 +9,16 @@ const OrganizerPage: React.FC = () => {
   const [sarahRiskAssessment, setSarahRiskAssessment] = useState<File | undefined>(undefined);
   const [proposedVenue, setProposedVenue] = useState<string[]>([]);
 
+  const handleButtonClick = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm5a';
+  };
+
+  const handleButtonClick2 = () => {
+    // Redirect to another page
+    window.location.href = '/CreateEventForm5b';
+  };
+
   const handleOnlinePlatformChange = (e: ChangeEvent<HTMLInputElement>) => {
     setOnlinePlatform(e.target.value);
   };
@@ -126,28 +136,30 @@ const OrganizerPage: React.FC = () => {
               1. Proposed Venue
             </FormLabel>
             <VStack spacing={2} align="start" ml={4}>
-              <Checkbox
+              {/* <Checkbox
                 value="On Campus"
                 isChecked={proposedVenue.includes('On Campus')}
                 onChange={() => handleProposedVenueChange('On Campus')}
               >
                 On Campus
-              </Checkbox>
-              <Checkbox
+              </Checkbox> */}
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
+                on Campus
+              </Button>
+              {/* <Checkbox
                 value="Off Campus"
                 isChecked={proposedVenue.includes('Off Campus')}
                 onChange={() => handleProposedVenueChange('Off Campus')}
               >
                 Off Campus
-              </Checkbox>
+              </Checkbox> */}
+              <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
+                off Campus
+              </Button>
             </VStack>
           </FormControl>
         </VStack>
       </Box>
-
-      <Button mt={8} colorScheme="blue" alignSelf="flex-end">
-        Next
-      </Button>
     </Box>
   );
 };
