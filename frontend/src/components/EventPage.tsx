@@ -1,24 +1,27 @@
 import React, { useState } from "react";
 import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   Box,
-  Text,
   Button,
-  Input,
+  Checkbox,
   Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   IconButton,
-  ModalOverlay,
+  Input,
   Modal,
+  ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  Checkbox,
+  ModalOverlay,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
 } from "@chakra-ui/react";
 import { CSSObject } from "@emotion/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
@@ -63,6 +66,7 @@ function EventPage() {
   const [sortField, setSortField] = useState<SortField>("eventNo");
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
 
   const clubs = [
     { name: "IEMMSS", id: "iemmss" },
@@ -266,7 +270,11 @@ function EventPage() {
               <Td>{event.venue}</Td>
               <Td>{event.description}</Td>
               <Td>
-                <Button colorScheme="blue" size="sm">
+                <Button
+                  colorScheme="blue"
+                  size="sm"
+                  onClick={() => setIsSignUpModalOpen(true)}
+                >
                   Sign Up
                 </Button>
               </Td>
@@ -306,6 +314,50 @@ function EventPage() {
               </Box>
             ))}
           </ModalBody>
+        </ModalContent>
+      </Modal>
+      <Modal
+        isOpen={isSignUpModalOpen}
+        onClose={() => setIsSignUpModalOpen(false)}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Sign Up</ModalHeader>
+          <ModalCloseButton />
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            console.log("Submit clicked");
+          }}>
+            <ModalBody pb={6}>
+              <FormControl isRequired>
+                <FormLabel>Name</FormLabel>
+                <Input />
+                <FormErrorMessage>Name is required.</FormErrorMessage>
+              </FormControl>
+
+              <FormControl mt={4} isRequired>
+                <FormLabel>Email</FormLabel>
+                <Input type="email" />
+                <FormErrorMessage>Email is required.</FormErrorMessage>
+              </FormControl>
+            </ModalBody>
+
+            <Box
+              alignItems="center"
+              display="flex"
+              justifyContent="flex-end"
+              pt={1}
+              pr={6}
+              pb={4}
+            >
+              <Button
+                type="submit"
+                colorScheme="blue"
+              >
+                Submit
+              </Button>
+            </Box>
+          </form>
         </ModalContent>
       </Modal>
     </Box>
