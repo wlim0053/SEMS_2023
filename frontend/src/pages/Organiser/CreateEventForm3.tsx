@@ -1,6 +1,16 @@
 import React, { useState } from "react";
-import { Box, Button, Checkbox, FormControl, FormLabel, Grid, GridItem, Input, Textarea, Heading, Text, Stack } from "@chakra-ui/react";
+import { Box, Button, Checkbox, FormControl, FormLabel, Grid, GridItem, Input, Textarea, Heading, Text, chakra, Stack, Icon } from "@chakra-ui/react";
+import { ChevronLeftIcon} from "@chakra-ui/icons";
 
+
+const CustomLink = chakra('a', {
+  baseStyle: {
+    color: 'blue.500',
+    _hover: {
+      textDecoration: 'underline',
+    },
+  },
+});
 
 const eventCategories = [
   "Exhibition",
@@ -14,14 +24,7 @@ const eventCategories = [
   "Virtual",
   "Other",
 ];
-const handleButtonClick = () => {
-  // Redirect to another page
-  window.location.href = '/CreateEventForm4a';
-};
-const handleButtonClick2 = () => {
-  // Redirect to another page
-  window.location.href = '/CreateEventForm4b';
-};
+
 const activityFactors: string[] = [
   "Loud noise",
   "Water activity",
@@ -42,7 +45,8 @@ const Page3 = () => {
   const [eventName, setEventName] = useState("");
   const [eventObjective, setEventObjective] = useState("");
   const [attendees, setAttendees] = useState("");
-  const [eventCategory, setEventCategory] = useState<string[]>([]);
+  const [selectedEventCategories, setSelectedEventCategories] = useState<string[]>([]);
+  const [eventCategoryOther, setEventCategoryOther] = useState("");
   const [activityAssessment, setActivityAssessment] = useState<ActivityAssessment>({});
   const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -51,7 +55,7 @@ const Page3 = () => {
   const [recurringEvent, setRecurringEvent] = useState(false);
   const [eventFrequency, setEventFrequency] = useState("");
   const [remarks, setRemarks] = useState("");
-  const [eventMode, setEventMode] = useState<string[]>([]);
+  const [eventMode, setEventMode] = useState("Physical");
   const [eventProposal, setEventProposal] = useState<File | undefined>(undefined);
 
   const handleActivityAssessmentChange = (factor: string, checked: boolean) => {
@@ -66,31 +70,48 @@ const Page3 = () => {
     setEventProposal(file);
   };
 
+  const handleCategoryCheckboxChange = (category: string, checked: boolean) => {
+    if (checked) {
+      setSelectedEventCategories((prevCategories) => [...prevCategories, category]);
+    } else {
+      setSelectedEventCategories((prevCategories) => prevCategories.filter((c) => c !== category));
+    }
+  };
+
+  const handleCategoryOtherInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEventCategoryOther(event.target.value);
+  };
+
   const handleSubmit = () => {
-    // Handle form submission
-    // You can access the form data using the state variables
-    console.log("Form submitted:", {
-      eventName,
-      eventObjective,
-      attendees,
-      eventCategory,
-      activityAssessment,
-      startDate,
-      startTime,
-      endDate,
-      endTime,
-      recurringEvent,
-      eventFrequency,
-      remarks,
-      eventMode,
-      eventProposal,
-    });
+    if (eventMode === "Physical") {
+      window.location.href = '/CreateEventForm4a';
+    }
+    if (eventMode === "Virtual") {
+      window.location.href = '/CreateEventForm4b';
+    }
+  };
+
+  const handleBackButtonClick = () => {
+    window.location.href = "/CreateEventForm2";
   };
 
   return (
     <Box p={4}>
+
+    <Button
+      variant="unstyled"
+      _hover={{ textDecoration: 'none' }}
+      alignItems="center"
+      
+      onClick={handleBackButtonClick}
+    >
+      <Icon as={ChevronLeftIcon} display="inline-block" mb={1} color="gray.400" />
+      <Text display="inline-block" color="gray.400">
+        Back
+      </Text>
+    </Button>
       <Heading as="h2" mb={4}>
-      Event Details
+        Event Details
       </Heading>
 
       <FormControl mb={4}>
@@ -128,22 +149,25 @@ const Page3 = () => {
           {eventCategories.map((category) => (
             <Checkbox
               key={category}
-              isChecked={eventCategory.includes(category)}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setEventCategory((prevCategories) => [...prevCategories, category]);
-                } else {
-                  setEventCategory((prevCategories) =>
-                    prevCategories.filter((c) => c !== category)
-                  );
-                }
-              }}
+              isChecked={selectedEventCategories.includes(category)}
+              onChange={(e) => handleCategoryCheckboxChange(category, e.target.checked)}
             >
               {category}
             </Checkbox>
           ))}
         </Grid>
       </FormControl>
+
+      {selectedEventCategories.includes("Other") && (
+        <FormControl mb={4}>
+          <FormLabel>Other Event Category</FormLabel>
+          <Input
+            value={eventCategoryOther}
+            onChange={handleCategoryOtherInputChange}
+            placeholder="Enter other event category"
+          />
+        </FormControl>
+      )}
 
       <FormControl mb={4}>
         <FormLabel>5. Assessment of activities</FormLabel>
@@ -220,9 +244,10 @@ const Page3 = () => {
 
       <FormControl mb={4}>
         <FormLabel>11. Event Proposal</FormLabel>
-        <Stack direction="row" align="center">
-          <FormControl>
-            <Button as="label" htmlFor="eventProposal" size="sm">
+        <Stack direction="row" align="center" display={"block"}>
+          <FormControl mb={1}>
+
+            <Button  as="span" variant="outline" size="sm" mb={1}>
               Choose File
             </Button>
             <input
@@ -233,6 +258,17 @@ const Page3 = () => {
             />
           </FormControl>
           <Text size={"sm"}>{eventProposal?.name || "No file chosen"}</Text>
+          <Text fontSize="sm" color="gray.500" mt={1}>
+            Download the template{' '}
+            <CustomLink
+              href="https://docs.google.com/document/d/1LmxXij2Es3W5FJslif-pyWEiX0dqD7KF/edit?usp=sharing&ouid=109039236319263624802&rtpof=true&sd=true"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              here
+            </CustomLink>
+                  .
+          </Text>
         </Stack>
       </FormControl>
 
@@ -249,42 +285,29 @@ const Page3 = () => {
 
       <FormControl mb={4}>
         <FormLabel>13. Mode of Event</FormLabel>
-        <Grid templateColumns="repeat(2, minmax(0, 1fr))" gap={4}>
-          {/* <Checkbox
-            isChecked={eventMode.includes("Physical")}
+        <Stack spacing={2}>
+          <Checkbox
+            isChecked={eventMode === "Physical"}
             onChange={(e) => {
-              if (e.target.checked) {
-                setEventMode((prevModes) => [...prevModes, "Physical"]);
-              } else {
-                setEventMode((prevModes) => prevModes.filter((m) => m !== "Physical"));
-              }
+              setEventMode(e.target.checked ? "Physical" : "");
             }}
           >
             Physical
-          </Checkbox> */}
-          <Button colorScheme="blue" onClick={handleButtonClick}>
-            Physical
-          </Button>
-          {/* <Checkbox
-            isChecked={eventMode.includes("Virtual")}
+          </Checkbox>
+          <Checkbox
+            isChecked={eventMode === "Virtual"}
             onChange={(e) => {
-              if (e.target.checked) {
-                setEventMode((prevModes) => [...prevModes, "Virtual"]);
-              } else {
-                setEventMode((prevModes) => prevModes.filter((m) => m !== "Virtual"));
-              }
+              setEventMode(e.target.checked ? "Virtual" : "");
             }}
           >
             Virtual
-          </Checkbox> */}
-          <Button colorScheme="blue" onClick={handleButtonClick2}>
-            Virtual
-          </Button>
-        </Grid>
+          </Checkbox>
+        </Stack>
       </FormControl>
 
-
-
+      <Button colorScheme="blue" onClick={handleSubmit}>
+        Next
+      </Button>
     </Box>
   );
 };

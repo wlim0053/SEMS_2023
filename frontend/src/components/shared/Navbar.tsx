@@ -36,6 +36,7 @@ import CreateEventForm5b from "../../pages/Organiser/CreateEventForm5b";
 import CreateEventForm6 from "../../pages/Organiser/CreateEventForm6";
 import CreateEventForm7 from "../../pages/Organiser/CreateEventForm7";
 import CreateEventForm8 from "../../pages/Organiser/CreateEventForm8";
+import CreateEventForm9 from "../../pages/Organiser/CreateEventForm9";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -101,6 +102,7 @@ const Navbar = () => {
         <Route path="/CreateEventForm6" element={<CreateEventForm6 />} />
         <Route path="/CreateEventForm7" element={<CreateEventForm7 />} />
         <Route path="/CreateEventForm8" element={<CreateEventForm8 />} />
+        <Route path="/CreateEventForm9" element={<CreateEventForm9 />} />
       </Routes>
 
     </>

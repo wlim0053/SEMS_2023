@@ -1,9 +1,14 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
+import { Box, Heading, VStack, FormControl, FormLabel, Input, Button, Text, Icon } from '@chakra-ui/react';
+import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { useState, ChangeEvent } from 'react';
 
 const NextPage: React.FC = () => {
   const [companyName, setCompanyName] = useState<string>("");
   const [contactNumber, setContactNumber] = useState<string>("");
+
+  const handleBackButtonClick = () => {
+    window.location.href = "/CreateEventForm6";
+  };
 
   const handleButtonClick = () => {
     // Redirect to another page
@@ -20,7 +25,19 @@ const NextPage: React.FC = () => {
   };
 
   return (
-    <Box mt={4} p={4}>
+    <Box p={4}>
+      <Button
+        variant="unstyled"
+        _hover={{ textDecoration: 'none' }}
+        alignItems="center"
+        
+        onClick={handleBackButtonClick}
+      >
+        <Icon as={ChevronLeftIcon} display="inline-block" mb={1} color="gray.400" />
+        <Text display="inline-block" color="gray.400">
+          Back
+        </Text>
+      </Button>
       <Box width="50%" mb={20}>
         <Heading as="h2" size="lg" mb={4}>
           External Vendor/Caterer Details

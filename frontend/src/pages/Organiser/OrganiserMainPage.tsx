@@ -1,10 +1,11 @@
 import React from 'react'
-import { Box, Heading } from '@chakra-ui/react'
+import { Box, Heading, IconButton  } from '@chakra-ui/react'
 import { Input } from "@chakra-ui/react"
 import { Select } from "@chakra-ui/react"
 import { Text } from "@chakra-ui/react"
 import { Button } from "@chakra-ui/react"
 import CalendarViewButton from '../../components/Organizer/CalendarViewButton'
+import { AddIcon } from '@chakra-ui/icons';
 import { Flex } from "@chakra-ui/react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useState } from 'react';
@@ -87,14 +88,30 @@ function OrganiserMainPage() {
   const getSelectedEvents = (selectedEventsArr: EventData[]): void => {
     setSelectedEvent(selectedEventsArr);
   }
+
+  const handleCreateEvent = () => {
+    window.location.href = "/CreateEventForm";
+  };
   
   return (
     <>
     <Box p={"20px"}>
 
-      <Heading fontSize='6VH' fontWeight={400} fontFamily={"Franklin Gothic Medium"} color={"#006cac"} ml={"25px"} mb={"65px"}>
-        Your Events
-      </Heading>
+    <Flex alignItems="center" justifyContent="space-between" mb="15px">
+          <Flex display={'inline-block'} justifyContent={'center'}>
+            <Heading display={'inline-block'} fontSize='6VH' fontWeight={400} fontFamily="Franklin Gothic Medium" color="#006cac" ml="25px" mb="65px">
+              Your Events
+            </Heading>
+          </Flex>
+          <IconButton
+            colorScheme="blue"
+            aria-label="Create Event"
+            icon={<AddIcon />}
+            mr="25px"
+            mb={20}
+            onClick={handleCreateEvent}
+          />
+    </Flex>
 
     <Flex mb={"15px"}>
       <Box flex="1" ml={"25px"}>

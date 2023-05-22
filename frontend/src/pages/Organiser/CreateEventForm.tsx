@@ -16,26 +16,14 @@ const Page1 = () => {
   const [personInCharge, setPersonInCharge] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [collaboration, setCollaboration] = useState(false);
-  const handleButtonClick = () => {
-    // Redirect to another page
-    window.location.href = '/CreateEventForm2';
-  };
-  const handleButtonClick2 = () => {
-    // Redirect to another page
-    window.location.href = '/CreateEventForm3';
-  };
+
   const handleSubmit = () => {
-    // Handle form submission
-    // You can access the form data using the state variables
-    console.log("Form submitted:", {
-      eventID,
-      club,
-      clubName,
-      email,
-      personInCharge,
-      contactNumber,
-      collaboration,
-    });
+    if (collaboration){
+      window.location.href = '/CreateEventForm2';
+    }
+    else{
+      window.location.href = '/CreateEventForm3';
+    }
   };
 
 
@@ -110,22 +98,14 @@ const Page1 = () => {
 
       <FormControl mb={4}>
         <FormLabel>6. Is this event held in collaboration with another club/team/institution?</FormLabel>
-        
-        {/* <Checkbox isChecked={collaboration} onChange={() => setCollaboration(!collaboration)}>
+        <Checkbox isChecked={collaboration} onChange={() => setCollaboration(!collaboration)}>
           Yes
-        </Checkbox> */}
-        <Grid templateColumns="repeat(2, minmax(0, 1fr))" gap={4}>  
-        <Button onClick={handleButtonClick} colorScheme="blue" mt={4}>
-          yes
-        </Button>
-        <Button onClick={handleButtonClick2} colorScheme="blue" mt={4}>
-          no
-        </Button> 
-        </Grid>
+        </Checkbox>
       </FormControl>
-      
 
-
+      <Button onClick={handleSubmit} colorScheme="blue" mt={4}>
+        Next
+      </Button>
     </Box>
   );
 };

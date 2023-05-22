@@ -1,6 +1,6 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Input, Tooltip } from '@chakra-ui/react';
+import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Icon, Input, Tooltip, Text } from '@chakra-ui/react';
 import { useState, ChangeEvent } from 'react';
-import { InfoIcon } from "@chakra-ui/icons";
+import { InfoIcon, ChevronLeftIcon } from "@chakra-ui/icons";
 
 const NextPage: React.FC = () => {
   const [bookingReferenceNumber, setBookingReferenceNumber] = useState<string>("");
@@ -15,19 +15,29 @@ const NextPage: React.FC = () => {
     setVenueName(e.target.value);
   };
 
+  const handleBackButtonClick = () => {
+    window.location.href = "/CreateEventForm4a";
+  };
+
   const handleButtonClick = () => {
-    // Redirect to another page
     window.location.href = '/CreateEventForm6';
   };
 
-  const handleButtonClick2 = () => {
-    // Redirect to another page
-    window.location.href = '/CreateEventForm7';
-  };
-
   return (
-    <Box mt={4} p={4}>
-      <Box width="50%" mb={20}>
+    <Box p={4}>
+      <Button
+        variant="unstyled"
+        _hover={{ textDecoration: 'none' }}
+        alignItems="center"
+        
+        onClick={handleBackButtonClick}
+      >
+        <Icon as={ChevronLeftIcon} display="inline-block" mb={1} color="gray.400" />
+        <Text display="inline-block" color="gray.400">
+          Back
+        </Text>
+      </Button>
+      <Box mb={20}>
         <Heading as="h2" size="lg" mb={4} display={'inline-block'}>
           On Campus Venue
         </Heading>
@@ -58,38 +68,30 @@ const NextPage: React.FC = () => {
         </VStack>
       </Box>
 
-      <Box width="50%">
+      <Box mt={9}>
         <Heading as="h2" size="lg" mb={4}>
           External Guests
         </Heading>
         <VStack spacing={4} align="start">
-          <FormControl>
-            <FormLabel>
-              1. Will there be external guests?
-            </FormLabel>
-            <VStack spacing={2} align="start" ml={4}>
-              {/* <Checkbox
-                isChecked={hasExternalGuests}
-                onChange={(e) => setHasExternalGuests(e.target.checked)}
-              >
-                Yes
-              </Checkbox> */}
-              <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
-                yes
-              </Button>
-              {/* <Checkbox
-                isChecked={!hasExternalGuests}
-                onChange={(e) => setHasExternalGuests(!e.target.checked)}
-              >
-                No
-              </Checkbox> */}
-              <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
-                no
-              </Button>
-            </VStack>
-          </FormControl>
+          <FormLabel>1. Will there be external guests?</FormLabel>
+          <Checkbox
+            isChecked={hasExternalGuests}
+            onChange={(e) => setHasExternalGuests(e.target.checked)}
+          >
+            Yes
+          </Checkbox>
+          <Checkbox
+            isChecked={!hasExternalGuests}
+            onChange={(e) => setHasExternalGuests(!e.target.checked)}
+          >
+            No
+          </Checkbox>
         </VStack>
       </Box>
+
+      <Button  onClick={handleButtonClick} mt={8} colorScheme="blue" alignSelf="flex-end">
+        Next
+      </Button>
     </Box>
   );
 };

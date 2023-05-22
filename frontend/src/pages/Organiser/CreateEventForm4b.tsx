@@ -1,4 +1,5 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Input, Grid } from '@chakra-ui/react';
+import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, Input, Stack, Icon} from '@chakra-ui/react';
+import { ChevronLeftIcon} from "@chakra-ui/icons";
 import { useState, ChangeEvent } from 'react';
 
 const OrganizerPage: React.FC = () => {
@@ -7,16 +8,19 @@ const OrganizerPage: React.FC = () => {
   const [draftProgram, setDraftProgram] = useState<File | undefined>(undefined);
   const [hasSubmittedRiskAssessment, setHasSubmittedRiskAssessment] = useState<boolean>(false);
   const [sarahRiskAssessment, setSarahRiskAssessment] = useState<File | undefined>(undefined);
-  const [proposedVenue, setProposedVenue] = useState<string[]>([]);
+  const [proposedVenue, setProposedVenue] = useState("Off Campus");
 
-  const handleButtonClick = () => {
-    // Redirect to another page
-    window.location.href = '/CreateEventForm5a';
+  const handleBackButtonClick = () => {
+    window.location.href = "/CreateEventForm3";
   };
 
-  const handleButtonClick2 = () => {
-    // Redirect to another page
-    window.location.href = '/CreateEventForm5b';
+  const handleButtonClick = () => {
+    if (proposedVenue == "On Campus"){
+      window.location.href = '/CreateEventForm5b';
+    }
+    if (proposedVenue == "Off Campus"){
+      window.location.href = '/CreateEventForm5a';
+    }
   };
 
   const handleOnlinePlatformChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,16 +41,20 @@ const OrganizerPage: React.FC = () => {
     setSarahRiskAssessment(file);
   };
 
-  const handleProposedVenueChange = (value: string) => {
-    if (proposedVenue.includes(value)) {
-      setProposedVenue(prev => prev.filter(item => item !== value));
-    } else {
-      setProposedVenue(prev => [...prev, value]);
-    }
-  };
-
   return (
-    <Box mt={4} p={4}>
+    <Box p={4}>
+      <Button
+        variant="unstyled"
+        _hover={{ textDecoration: 'none' }}
+        alignItems="center"
+        
+        onClick={handleBackButtonClick}
+      >
+        <Icon as={ChevronLeftIcon} display="inline-block" mb={1} color="gray.400" />
+        <Text display="inline-block" color="gray.400">
+          Back
+        </Text>
+      </Button>
       <Box width="50%" mb={20}>
         <Heading as="h2" size="lg" mb={4}>
           Online Event Details
@@ -126,7 +134,7 @@ const OrganizerPage: React.FC = () => {
         </VStack>
       </Box>
 
-      <Box width="50%" mt={20}>
+      <Box width="50%" mt={10}>
         <Heading as="h2" size="lg" mb={4}>
           Venue Description
         </Heading>
@@ -134,32 +142,35 @@ const OrganizerPage: React.FC = () => {
           <FormControl>
             <FormLabel>
               1. Proposed Venue
-            </FormLabel>
-              {/* <Checkbox
-                value="On Campus"
-                isChecked={proposedVenue.includes('On Campus')}
-                onChange={() => handleProposedVenueChange('On Campus')}
-              >
-                On Campus
-              </Checkbox> */}
-              <Grid templateColumns="repeat(2, minmax(0, 2fr))" gap={4}>  
-              <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
-                on Campus
-              </Button>
-              {/* <Checkbox
-                value="Off Campus"
-                isChecked={proposedVenue.includes('Off Campus')}
-                onChange={() => handleProposedVenueChange('Off Campus')}
-              >
-                Off Campus
-              </Checkbox> */}
-              <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
-                off Campus
-              </Button>
-            </Grid>
+              </FormLabel>
+              <Stack spacing={2}>
+                  <Checkbox
+                  value="On Campus"
+                  isChecked={proposedVenue === "On Campus"}
+                  onChange={(e) => {
+                    setProposedVenue(e.target.checked ? "On Campus" : "");
+                  }}
+                >
+                  On Campus
+                </Checkbox> 
+
+                <Checkbox
+                  value="Off Campus"
+                  isChecked={proposedVenue === "Off Campus"}
+                  onChange={(e) => {
+                    setProposedVenue(e.target.checked ? "Off Campus" : "");
+                  }}
+                >
+                  Off Campus
+                </Checkbox>
+              </Stack>
           </FormControl>
         </VStack>
       </Box>
+
+      <Button  onClick={handleButtonClick} mt={8} colorScheme="blue" alignSelf="flex-end">
+        Next
+      </Button>
     </Box>
   );
 };

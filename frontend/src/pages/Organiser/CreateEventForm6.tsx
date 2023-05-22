@@ -1,4 +1,5 @@
-import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, chakra, Grid } from '@chakra-ui/react';
+import { Box, Heading, VStack, FormControl, FormLabel, Checkbox, Button, Text, chakra, Icon } from '@chakra-ui/react';
+import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { useState, ChangeEvent } from 'react';
 
 const CustomLink = chakra('a', {
@@ -10,20 +11,26 @@ const CustomLink = chakra('a', {
   },
 });
 
-const handleButtonClick = () => {
-  // Redirect to another page
-  window.location.href = '/CreateEventForm7';
-};
 
-const handleButtonClick2 = () => {
-  // Redirect to another page
-  window.location.href = '/CreateEventForm8';
-};
+
 const NextPage: React.FC = () => {
   const [hasVIP, setHasVIP] = useState<boolean>(false);
   const [externalVendor, setExternalVendor] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [sarahRiskAssessment, setSarahRiskAssessment] = useState<File | null>(null);
+
+  const handleBackButtonClick = () => {
+    window.location.href = "/CreateEventForm5a";
+  };
+
+  const handleButtonClick = () => {
+    if (externalVendor){
+      window.location.href = '/CreateEventForm7';
+    }
+    else{
+      window.location.href = '/CreateEventForm8';
+    }
+  };
 
   const handleHasVIPChange = (e: ChangeEvent<HTMLInputElement>) => {
     setHasVIP(e.target.checked);
@@ -44,7 +51,19 @@ const NextPage: React.FC = () => {
   };
 
   return (
-    <Box mt={4} p={4}>
+    <Box p={4}>
+      <Button
+        variant="unstyled"
+        _hover={{ textDecoration: 'none' }}
+        alignItems="center"
+        
+        onClick={handleBackButtonClick}
+      >
+        <Icon as={ChevronLeftIcon} display="inline-block" mb={1} color="gray.400" />
+        <Text display="inline-block" color="gray.400">
+          Back
+        </Text>
+      </Button>
       <Box width="50%" mb={20}>
         <Heading as="h2" size="lg" mb={4}>
           External Guest Details
@@ -104,25 +123,18 @@ const NextPage: React.FC = () => {
             <FormLabel>
               1. Will there be external vendors/caterers?
             </FormLabel>
-            {/* <Checkbox
+            <Checkbox
               isChecked={externalVendor}
               onChange={handleExternalVendorChange}
             >
               Yes
-            </Checkbox> */}
-            <Grid templateColumns="repeat(2, minmax(0, 2fr))" gap={4}>
-
-              <Button mt={8} colorScheme="blue" onClick={handleButtonClick}>
-                yes
-              </Button>
-
-              <Button mt={8} colorScheme="blue" onClick={handleButtonClick2}>
-                no
-              </Button>
-            </Grid>
+            </Checkbox> 
           </FormControl>
         </VStack>
       </Box>
+      <Button  onClick={handleButtonClick} mt={8} colorScheme="blue" alignSelf="flex-end">
+        Next
+      </Button>
     </Box>
   );
 };
