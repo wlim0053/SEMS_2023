@@ -18,6 +18,9 @@ import {
   Td,
   Thead,
   Tr,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
 } from "@chakra-ui/react";
 import api from "../utils/api";
 
@@ -27,7 +30,14 @@ const FeedbackForm = () => {
   const [PS, setPS] = React.useState("0");
   const [teamwork, setTeamwork] = React.useState("0");
   const [reflection, setReflection] = React.useState("");
+  const [buttonClicked, setButtonClicked] = React.useState(false);
+
   const changeReflection = (event) => setReflection(event.target.value);
+  const communicationEmpty = communication == "0";
+  const PMEmpty = PM == "0";
+  const PSEmpty = PS == "0";
+  const teamworkEmpty = teamwork == "0";
+  const reflectionEmpty = reflection == "";
 
   const body = {
     participation_uuid: "8AEB18BB-4A51-4366-8ACC-C86A9CFA3F0F",
@@ -39,19 +49,31 @@ const FeedbackForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log(body);
-    try {
-      const response = await api.post("/feedback", body);
-      let data = response.data;
-      console.log(data);
-      setCommunication("0");
-      setPM("0");
-      setPS("0");
-      setTeamwork("0");
-      setReflection("");
-    } catch (err) {
-      console.log(err);
+    if (
+      !communicationEmpty &&
+      !PMEmpty &&
+      !PSEmpty &&
+      !teamworkEmpty &&
+      !reflectionEmpty
+    ) {
+      e.preventDefault();
+      console.log(body);
+      try {
+        setCommunication("0");
+        setPM("0");
+        setPS("0");
+        setTeamwork("0");
+        setReflection("");
+        setButtonClicked(false);
+
+        const response = await api.post("/feedback", body);
+        let data = response.data;
+        console.log(data);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      setButtonClicked(true);
     }
   };
 
@@ -99,75 +121,92 @@ const FeedbackForm = () => {
                 <Tr>
                   <Td paddingRight={20}>Communication</Td>
                   <Td colSpan={3}>
-                    <RadioGroup
-                      onChange={setCommunication}
-                      value={communication}
-                      marginLeft={4}
+                    <FormControl
+                      isInvalid={buttonClicked && communicationEmpty}
                     >
-                      <Stack direction="row" spacing={180}>
-                        <Radio value="1"></Radio>
-                        <Radio value="2"></Radio>
-                        <Radio value="3"></Radio>
-                      </Stack>
-                    </RadioGroup>
+                      <RadioGroup
+                        onChange={setCommunication}
+                        value={communication}
+                        marginLeft={4}
+                      >
+                        <Stack direction="row" spacing={180}>
+                          <Radio value="1"></Radio>
+                          <Radio value="2"></Radio>
+                          <Radio value="3"></Radio>
+                        </Stack>
+                      </RadioGroup>
+                      <FormErrorMessage>Input is required.</FormErrorMessage>
+                    </FormControl>
                   </Td>
                 </Tr>
                 <Tr>
                   <Td>Project Management</Td>
                   <Td colSpan={3}>
-                    <RadioGroup onChange={setPM} value={PM} marginLeft={4}>
-                      <Stack direction="row" spacing={180}>
-                        <Radio value="1"></Radio>
-                        <Radio value="2"></Radio>
-                        <Radio value="3"></Radio>
-                      </Stack>
-                    </RadioGroup>
+                    <FormControl isInvalid={buttonClicked && PMEmpty}>
+                      <RadioGroup onChange={setPM} value={PM} marginLeft={4}>
+                        <Stack direction="row" spacing={180}>
+                          <Radio value="1"></Radio>
+                          <Radio value="2"></Radio>
+                          <Radio value="3"></Radio>
+                        </Stack>
+                      </RadioGroup>
+                      <FormErrorMessage>Input is required.</FormErrorMessage>
+                    </FormControl>
                   </Td>
                 </Tr>
                 <Tr>
                   <Td>Problem Solving</Td>
                   <Td colSpan={3}>
-                    <RadioGroup onChange={setPS} value={PS} marginLeft={4}>
-                      <Stack direction="row" spacing={180}>
-                        <Radio value="1"></Radio>
-                        <Radio value="2"></Radio>
-                        <Radio value="3"></Radio>
-                      </Stack>
-                    </RadioGroup>
+                    <FormControl isInvalid={buttonClicked && PSEmpty}>
+                      <RadioGroup onChange={setPS} value={PS} marginLeft={4}>
+                        <Stack direction="row" spacing={180}>
+                          <Radio value="1"></Radio>
+                          <Radio value="2"></Radio>
+                          <Radio value="3"></Radio>
+                        </Stack>
+                      </RadioGroup>
+                      <FormErrorMessage>Input is required.</FormErrorMessage>
+                    </FormControl>
                   </Td>
                 </Tr>
                 <Tr>
                   <Td>Teamwork</Td>
                   <Td colSpan={3}>
-                    <RadioGroup
-                      onChange={setTeamwork}
-                      value={teamwork}
-                      marginLeft={4}
-                    >
-                      <Stack direction="row" spacing={180}>
-                        <Radio value="1"></Radio>
-                        <Radio value="2"></Radio>
-                        <Radio value="3"></Radio>
-                      </Stack>
-                    </RadioGroup>
+                    <FormControl isInvalid={buttonClicked && teamworkEmpty}>
+                      <RadioGroup
+                        onChange={setTeamwork}
+                        value={teamwork}
+                        marginLeft={4}
+                      >
+                        <Stack direction="row" spacing={180}>
+                          <Radio value="1"></Radio>
+                          <Radio value="2"></Radio>
+                          <Radio value="3"></Radio>
+                        </Stack>
+                      </RadioGroup>
+                      <FormErrorMessage>Input is required.</FormErrorMessage>
+                    </FormControl>
                   </Td>
                 </Tr>
               </Tbody>
             </Table>
           </TableContainer>
 
-          <Text fontSize="md" paddingTop={10}>
-            REFLECTION - Please reflect on your experiences during this activity
-            and identify how each component of the activity has helped you to
-            develop your employability skills.
-          </Text>
-          <Textarea
-            size="md"
-            minHeight={100}
-            placeholder="Your answer"
-            value={reflection}
-            onChange={changeReflection}
-          />
+          <FormControl isInvalid={buttonClicked && reflectionEmpty}>
+            <FormLabel fontSize="md" paddingTop={10} paddingBottom={5}>
+              REFLECTION - Please reflect on your experiences during this
+              activity and identify how each component of the activity has
+              helped you to develop your employability skills.
+            </FormLabel>
+            <Textarea
+              size="md"
+              minHeight={100}
+              placeholder="Your answer"
+              value={reflection}
+              onChange={changeReflection}
+            />
+            <FormErrorMessage>Input is required.</FormErrorMessage>
+          </FormControl>
         </Stack>
         <Button
           colorScheme="teal"
