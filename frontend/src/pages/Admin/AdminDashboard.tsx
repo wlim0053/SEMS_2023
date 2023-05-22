@@ -97,28 +97,29 @@ const dataPie = [
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-  index,
+const renderCustomizedLabel = (props: {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
+  percent: number;
+  index: number;
 }) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  const radius =
+    props.innerRadius + (props.outerRadius - props.innerRadius) * 0.5;
+  const x = props.cx + radius * Math.cos(-props.midAngle * RADIAN);
+  const y = props.cy + radius * Math.sin(-props.midAngle * RADIAN);
 
   return (
     <text
       x={x}
       y={y}
       fill="white"
-      textAnchor={x > cx ? "start" : "end"}
+      textAnchor={x > props.cx ? "start" : "end"}
       dominantBaseline="central"
     >
-      {`${(percent * 100).toFixed(0)}%`}
+      {`${(props.percent * 100).toFixed(0)}%`}
     </text>
   );
 };
