@@ -174,6 +174,11 @@ function EventPage() {
     }
   });
 
+  const [signUpStatus, setSignUpStatus] = useState(
+    Array(sortedEvents.length).fill(false)
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   return (
     <Box width="100%" p={5} overflowX="auto">
       <Box
@@ -257,7 +262,7 @@ function EventPage() {
           </Tr>
         </Thead>
         <Tbody>
-          {sortedEvents.map((event) => (
+          {sortedEvents.map((event, index) => (
             <Tr key={event.eventNo}>
               <Td>{event.eventNo}</Td>
               <Td>{event.eventName}</Td>
@@ -273,7 +278,11 @@ function EventPage() {
                 <Button
                   colorScheme="blue"
                   size="sm"
-                  onClick={() => setIsSignUpModalOpen(true)}
+                  onClick={() => {
+                    setIsSignUpModalOpen(true);
+                    setCurrentIndex(index);
+                  }}
+                  isDisabled={signUpStatus[index]}
                 >
                   Sign Up
                 </Button>
@@ -328,6 +337,11 @@ function EventPage() {
             onSubmit={(e) => {
               e.preventDefault();
               setIsSignUpModalOpen(false);
+              setSignUpStatus((prevStatus) =>
+                prevStatus.map((status, i) =>
+                  i === currentIndex ? true : status
+                )
+              );
               console.log("Submit clicked");
             }}
           >
