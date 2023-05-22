@@ -2,13 +2,12 @@ import { NextFunction, Request, Response } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
-import { Event, EventWithUUID } from "../interfaces/event"
-import { SuccessResponse } from "../interfaces/response"
+import { Event, EventWithOrganiser, EventWithUUID } from "../interfaces/event"
 import { ParticipationWithUUID } from "../interfaces/participation"
 
 export const createEventController = async (
-	req: Request<{}, SuccessResponse<EventWithUUID>, Event>,
-	res: Response<SuccessResponse<EventWithUUID>>,
+	req: Request<{}, EventWithUUID[], Event>,
+	res: Response<EventWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -35,7 +34,22 @@ export const createEventController = async (
 			.input("event_desc", mssql.VarChar, req.body.event_desc)
 			.input("event_venue", mssql.VarChar, req.body.event_venue)
 			.input("event_capacity", mssql.Int, req.body.event_capacity)
-			.input("event_status", mssql.VarChar, req.body.event_status).query(`
+			.input("event_status", mssql.VarChar, req.body.event_status)
+			.input(
+				"event_reg_start_date",
+				mssql.SmallDateTime,
+				req.body.event_reg_start_date
+			)
+			.input(
+				"event_reg_end_date",
+				mssql.SmallDateTime,
+				req.body.event_reg_end_date
+			)
+			.input(
+				"event_reg_google_form",
+				mssql.VarChar,
+				req.body.event_reg_google_form
+			).query(`
                 INSERT INTO ${DbTables.EVENT} (event_ems_no, organiser_uuid, event_start_date, event_end_date, event_title, event_desc, event_venue, event_capacity, event_status)  
 				OUTPUT INSERTED.*
 				VALUES (
@@ -48,8 +62,11 @@ export const createEventController = async (
                     @event_venue,
                     @event_capacity,
                     @event_status
+                    @event_reg_start_date,
+                    @event_reg_end_date,
+                    @event_reg_google_form
                 )`)
-		res.json({ data: create.recordset })
+		res.json(create.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -57,8 +74,8 @@ export const createEventController = async (
 }
 
 export const updateOrganiserController = async (
-	req: Request<{ id: string }, SuccessResponse<EventWithUUID>, Event>,
-	res: Response<SuccessResponse<EventWithUUID>>,
+	req: Request<{ id: string }, EventWithUUID[], Event>,
+	res: Response<EventWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -102,7 +119,7 @@ export const updateOrganiserController = async (
 			    WHERE [event_uuid] = @event_uuid
 			`
 			)
-		res.json({ data: updated.recordset })
+		res.json(updated.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -110,16 +127,35 @@ export const updateOrganiserController = async (
 }
 
 export const getEventController = async (
-	req: Request<{}, SuccessResponse<EventWithUUID>, {}>,
-	res: Response<SuccessResponse<EventWithUUID>>,
+	req: Request<{}, EventWithOrganiser[], {}>,
+	res: Response<EventWithOrganiser[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const events: mssql.IResult<EventWithUUID> = await connection.query(
-			`SELECT * FROM ${DbTables.EVENT}`
-		)
-		res.json({ data: events.recordset })
+		const events: mssql.IResult<EventWithOrganiser> =
+			await connection.query(
+				`SELECT 
+                event_uuid,
+                event_ems_no,
+                event_start_date,
+                event_end_date,
+                event_title,
+                event_desc,
+                event_venue,
+                event_capacity,
+                event_status,
+                event_reg_start_date,
+                event_reg_end_date,
+                event_reg_google_form,
+                o.organiser_uuid,
+                parent_uuid,
+                organiser_name,
+                stu_fire_id
+            FROM ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o 
+            ON e.organiser_uuid=o.organiser_uuid`
+			)
+		res.json(events.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -127,19 +163,38 @@ export const getEventController = async (
 }
 
 export const getEventByIDController = async (
-	req: Request<{ id: string }, SuccessResponse<EventWithUUID>, {}>,
-	res: Response<SuccessResponse<EventWithUUID>>,
+	req: Request<{ id: string }, EventWithOrganiser[], {}>,
+	res: Response<EventWithOrganiser[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const organiser: mssql.IResult<EventWithUUID> = await connection
+		const organiser: mssql.IResult<EventWithOrganiser> = await connection
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, req.params.id)
 			.query(
-				`SELECT * FROM ${DbTables.EVENT} WHERE [event_uuid] = @event_uuid`
+				`SELECT 
+                event_uuid,
+                event_ems_no,
+                event_start_date,
+                event_end_date,
+                event_title,
+                event_desc,
+                event_venue,
+                event_capacity,
+                event_status,
+                event_reg_start_date,
+                event_reg_end_date,
+                event_reg_google_form,
+                o.organiser_uuid,
+                parent_uuid,
+                organiser_name,
+                stu_fire_id
+            FROM ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o 
+            ON e.organiser_uuid=o.organiser_uuid
+            WHERE [event_uuid] = @event_uuid`
 			)
-		res.json({ data: organiser.recordset })
+		res.json(organiser.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -167,8 +222,8 @@ export const deleteEventController = async (
 }
 
 export const getEventParticipationController = async (
-	req: Request<{ id: string }, SuccessResponse<ParticipationWithUUID>, {}>,
-	res: Response<SuccessResponse<ParticipationWithUUID>>,
+	req: Request<{ id: string }, ParticipationWithUUID[], {}>,
+	res: Response<ParticipationWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -180,7 +235,7 @@ export const getEventParticipationController = async (
 				.query(
 					`SELECT * FROM ${DbTables.PARTICIPATION} WHERE event_uuid=@event_uuid`
 				)
-		res.send({ data: participants.recordset })
+		res.send(participants.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)

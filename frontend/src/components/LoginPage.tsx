@@ -51,7 +51,7 @@ const loginWithGoogle= () =>{
     }
 
     const body2 = {
-        "stu_fire_id": "L1on3lP3ps1",
+        "stu_fire_id": "test123",
         "stu_email": "lpep1030@student.monash.edu",
         "stu_name": "Lionel Pepsi",
         "stu_id": 30103010,

@@ -1,6 +1,6 @@
 // hooks
 // components
-import Navbar from "./components/Navbar"
+import Navbar from "./components/shared/Navbar"
 import Admin from "./pages/admin/AdminDashboard"
 
 import { ChakraProvider } from "@chakra-ui/react"

@@ -1,5 +1,6 @@
 import express from "express"
 import helmet from "helmet"
+import cors from "cors"
 import { schoolRouter } from "./routes/school"
 import { studentRouter } from "./routes/student"
 import { organiserRouter } from "./routes/organiser"
@@ -12,8 +13,9 @@ const PORT = process.env.PORT || 3000
 const app = express()
 
 // middleware
-app.use(helmet())
+app.use(cors({ origin: "http://127.0.0.1:5173", credentials: true }))
 app.use(express.json())
+// app.use(helmet())
 // app.use(express.urlencoded());
 
 /**

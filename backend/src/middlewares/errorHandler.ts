@@ -10,6 +10,6 @@ export const errorHandler = (
 ) => {
 	const statusCode = res.statusCode !== 200 ? res.statusCode : 500
 	res.status(statusCode)
-	if (err instanceof zod.ZodError) res.send({ error: err.issues })
-	else res.send({ error: err.message })
+	if (err instanceof zod.ZodError) res.send(err.issues)
+	else res.send(err.message)
 }
