@@ -71,6 +71,7 @@ function OrganiserList() {
 
   //const addOrEditOrganiser = (organiser: any) => {};
 
+  //get data from api whenever the organinser list's length changes
   useEffect(() => {
     const fetchOrganiser = async () => {
       try {
@@ -85,12 +86,14 @@ function OrganiserList() {
     fetchOrganiser();
   }, [organisers.length]);
 
+  //json body for adding organiser
   const bodyAdmin = {
     organiser_name: inputName,
     parent_uuid: null,
     stu_fire_id: inputEmail,
   };
 
+  //add organiser to database using post
   const addOrganiser = async (e) => {
     e.preventDefault();
     console.log(bodyAdmin);
