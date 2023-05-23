@@ -153,7 +153,7 @@ const Navbar = () => {
         <Route path="/Historypage" element={<Historypage />} />
         <Route path="/EventHome" element={<EventHome />} />
         <Route path="/FeedbackForm" element={<FeedbackForm />} />
-        {view === "organiser" && (
+        {(view === "organiser" || view === "admin") && (
           <>
             <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
             <Route path="/Event" element={<EventDetailsDashboard name={""} description={""} date={""} time={""} capacity={0} venue={""} recurring={false} eventStatistics={{
