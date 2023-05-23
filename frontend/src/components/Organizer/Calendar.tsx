@@ -87,11 +87,12 @@ function Calendar() {
       end: "2023-05-02T13:00:00",
       description: "This is a MUM event",
     },
+
     {
-      title: "MUM Event 3",
-      start: "2023-05-04T12:26:00",
-      end: "2023-05-04T13:00:00",
-      description: "This is a MUM event",
+      title: "Presentation 3170 ",
+      start: "2023-05-23T15:00:00",
+      end: "2023-05-23T17:00:00",
+      description: "This is the final presentation for this semester's 3170 project.",
     }
   ];
 

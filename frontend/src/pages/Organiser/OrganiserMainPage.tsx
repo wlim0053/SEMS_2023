@@ -36,6 +36,14 @@ function OrganiserMainPage() {
   
   const eventData: EventData[] = [
     {
+      id: "ed3",
+      event: "PI2 Presentation",
+      venue: "Monash University Malaysia",
+      club: "Organizers submodule",
+      participants: "70/200",
+      date: "2023-05-23"
+    },
+    {
       id: "ed-1",
       event: "MUM event",
       venue: "Monash University Malaysia",
@@ -50,15 +58,8 @@ function OrganiserMainPage() {
       club: "ICE",
       participants: "4/200",
       date: "2023-05-02"
-    },
-    {
-      id: "ed-3",
-      event: "MUM event 3",
-      venue: "Monash University Malaysia",
-      club: "SEM",
-      participants: "0/200",
-      date: "2023-05-04"
     }
+
   ];
   
   const getSelectedEvents = (selectedEventsArr: EventData[]): void => {

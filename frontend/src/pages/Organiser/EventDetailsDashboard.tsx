@@ -52,7 +52,7 @@ const EventDetailsDashboard: React.FC<EventDetailsProps> = ({
 
       <Box borderWidth={1} borderRadius="md" boxShadow="md" p={4} mb={4}>
         <Text fontWeight="bold" fontSize="lg" mb={2}>
-          Name: MUM Event 2
+          Name: PI 2 presentation
         </Text>
         <Text>{name}</Text>
 
@@ -66,7 +66,7 @@ const EventDetailsDashboard: React.FC<EventDetailsProps> = ({
           <Text fontWeight="bold" marginRight={2} fontSize="lg">
             Date:
           </Text>
-          <Text fontSize="lg">2023/05/02</Text>
+          <Text fontSize="lg">23/5/2023</Text>
         </Flex>
 
         <Flex alignItems="center">
