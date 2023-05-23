@@ -10,7 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { IconButton } from "@chakra-ui/react";
-import { CalendarIcon, DeleteIcon, RepeatIcon, ChevronRightIcon, ViewIcon } from "@chakra-ui/icons";
+import { DeleteIcon, RepeatIcon, ViewIcon } from "@chakra-ui/icons";
 
 interface EventCardProps {
   eventName: string;

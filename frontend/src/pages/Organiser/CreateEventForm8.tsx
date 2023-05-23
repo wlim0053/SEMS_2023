@@ -12,7 +12,12 @@ const NextPage: React.FC = () => {
   };
 
   const handleButtonClick = () => {
+    if (participantTypes.includes("Discipline specific")) {
       window.location.href = '/CreateEventForm9';
+    }
+    else{
+      window.location.href = '/OrganiserMainPage'
+    }
 
   };
 

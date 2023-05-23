@@ -13,7 +13,7 @@ import CalendarDashboard from '../../components/Organizer/CalendarDashboard'
 import GridViewButton from '../../components/Organizer/GridViewButton'
 import GridEventDashboard from '../../components/Organizer/GridEventDashboard'
 import GridEventDashboardPageNavigator from '../../components/Organizer/GridEventDashboardPageNavigator'
-
+import Calendar from '../../components/Organizer/Calendar'
 
 
 function OrganiserMainPage() {
@@ -37,51 +37,27 @@ function OrganiserMainPage() {
   const eventData: EventData[] = [
     {
       id: "ed-1",
-      event: "EXE - IMechE",
+      event: "MUM event",
       venue: "Monash University Malaysia",
       club: "IMechE",
       participants: "5/200",
-      date: "2023-05-25"
+      date: "2023-04-05"
     },
     {
       id: "ed2",
-      event: "EXE - ICE",
+      event: "MUM event 2",
       venue: "Monash University Malaysia",
       club: "ICE",
       participants: "4/200",
-      date: "2023-05-25"
+      date: "2023-05-02"
     },
     {
       id: "ed-3",
-      event: "EXE - SEM",
+      event: "MUM event 3",
       venue: "Monash University Malaysia",
       club: "SEM",
-      participants: "6/200",
-      date: "2023-05-25"
-    },
-    {
-      id: "ed-4",
-      event: "Monash Hack",
-      venue: "Monash University Malaysia",
-      club: "SOE",
-      participants: "25/60",
-      date: "2023-05-28",
-    },
-    {
-      id: "ed-5",
-      event: "Mingle Night",
-      venue: "Monash University Malaysia",
-      club: "MUSA",
-      participants: "25/60",
-      date: "2023-05-25",
-    },
-    {
-      id: "ed-6",
-      event: "Cultural Festival",
-      venue: "Monash University Malaysia",
-      club: "MUSA",
-      participants: "25/60",
-      date: "2023-05-25",
+      participants: "0/200",
+      date: "2023-05-04"
     }
   ];
   
@@ -148,13 +124,13 @@ function OrganiserMainPage() {
   </TabList>
   <TabPanels>
     <TabPanel p={0}>
-      {calendarViewFlag ? <CalendarDashboard getSelectedEvents={getSelectedEvents} eventData={eventData}/> : <>
+      {calendarViewFlag ? <Calendar/> : <>
         <GridEventDashboard data={eventData}/>
         <GridEventDashboardPageNavigator />
       </>}
     </TabPanel>
     <TabPanel p={0}>
-      {calendarViewFlag ? <CalendarDashboard getSelectedEvents={getSelectedEvents} eventData={eventData}/> : <>
+      {calendarViewFlag ? <Calendar/> : <>
         <GridEventDashboard data={eventData}/>
         <GridEventDashboardPageNavigator />
       </>}

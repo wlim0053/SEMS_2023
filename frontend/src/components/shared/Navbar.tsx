@@ -37,6 +37,7 @@ import CreateEventForm6 from "../../pages/Organiser/CreateEventForm6";
 import CreateEventForm7 from "../../pages/Organiser/CreateEventForm7";
 import CreateEventForm8 from "../../pages/Organiser/CreateEventForm8";
 import CreateEventForm9 from "../../pages/Organiser/CreateEventForm9";
+import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -77,8 +78,6 @@ const Navbar = () => {
               <Link to="/StudentHome">Student Home</Link>
               <Link to="/EventHome">Event Home</Link>
               <Link to="/OrganiserMainPage">Organiser Main Page</Link>
-              <Link to="/CreateEventForm">Create Event</Link>
-
             </VStack>
           </DrawerBody>
         </DrawerContent>
@@ -103,6 +102,7 @@ const Navbar = () => {
         <Route path="/CreateEventForm7" element={<CreateEventForm7 />} />
         <Route path="/CreateEventForm8" element={<CreateEventForm8 />} />
         <Route path="/CreateEventForm9" element={<CreateEventForm9 />} />
+        <Route path="/EventDetailsDashboard" element={<EventDetailsDashboard date="2023-05-21" time="14:00" capacity={100} venue="Example Venue" recurring={false} eventStatistics={{ gender: { male: 50, female: 50 }, specialization: { engineering: 30, medicine: 40, arts: 30 } }} />} />
       </Routes>
 
     </>

@@ -18,7 +18,7 @@ const LastPage: React.FC = () => {
   };
 
   const handleNextClick = () => {
-    console.log(selectedDisciplines);
+    window.location.href = "/OrganiserMainPage";
   };
 
   return (
