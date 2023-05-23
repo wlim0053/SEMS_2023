@@ -6,7 +6,6 @@ const NextPage: React.FC = () => {
   const [bookingReferenceNumber, setBookingReferenceNumber] = useState<string>("");
   const [venueName, setVenueName] = useState<string>("");
   const [hasExternalGuests, setHasExternalGuests] = useState<boolean>(false);
-
   const handleBookingReferenceNumberChange = (e: ChangeEvent<HTMLInputElement>) => {
     setBookingReferenceNumber(e.target.value);
   };
