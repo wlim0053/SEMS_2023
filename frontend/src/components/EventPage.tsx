@@ -211,7 +211,9 @@ function EventPage() {
       <Flex justify="space-between" mb={5}>
         <Box>
           <Button
-            colorScheme="blue"
+            backgroundColor="#006dac"
+            _hover={{ backgroundColor: "#005c8c" }}
+            color={"white"}
             size="sm"
             onClick={() => handleSort("eventName")}
             mr={2}
@@ -220,7 +222,9 @@ function EventPage() {
             {sortField === "eventName" && (sortOrder === "asc" ? "↑" : "↓")}
           </Button>
           <Button
-            colorScheme="blue"
+            backgroundColor="#006dac"
+            _hover={{ backgroundColor: "#005c8c" }}
+            color={"white"}
             size="sm"
             onClick={() => handleSort("dateTime")}
             mr={2}
@@ -229,7 +233,9 @@ function EventPage() {
             {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
           </Button>
           <Button
-            colorScheme="blue"
+            backgroundColor="#006dac"
+            _hover={{ backgroundColor: "#005c8c" }}
+            color={"white"}
             size="sm"
             mr={2}
             onClick={() => setIsModalOpen(true)}
@@ -276,7 +282,9 @@ function EventPage() {
               <Td>{event.description}</Td>
               <Td>
                 <Button
-                  colorScheme="blue"
+                  backgroundColor="#006dac"
+                  _hover={{ backgroundColor: "#005c8c" }}
+                  color={"white"}
                   size="sm"
                   onClick={() => {
                     setIsSignUpModalOpen(true);
@@ -294,7 +302,9 @@ function EventPage() {
       <Button
         size="sm"
         mt={2}
-        colorScheme={"blue"}
+        backgroundColor="#006dac"
+        _hover={{ backgroundColor: "#005c8c" }}
+        color={"white"}
         onClick={handleGoToCalendar}
       >
         Go to Calendar View →

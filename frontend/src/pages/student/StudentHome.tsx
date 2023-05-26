@@ -23,6 +23,9 @@ function StudentHome() {
 		<div>
 			<CountdownTimer />
 			<Button
+				backgroundColor="#006dac"
+				_hover={{ backgroundColor: "#005c8c" }}
+				color={"white"}
 				onClick={handleToggle}
 				ml={{ base: "1rem", md: "2rem" }}
 				mt={{ base: "1rem", md: "2rem" }}
@@ -30,6 +33,9 @@ function StudentHome() {
 				{showCalendar ? "Show My Events" : "Show Calendar"}
 			</Button>
 			<Button
+				backgroundColor="#006dac"
+				_hover={{ backgroundColor: "#005c8c" }}
+				color={"white"}
 				ml={{ base: "1rem", md: "2rem" }}
 				mt={{ base: "1rem", md: "2rem" }}
 				onClick={handleGoToEvent}
