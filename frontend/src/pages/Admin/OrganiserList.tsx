@@ -33,6 +33,9 @@ import {
   IconButton,
   Stack,
   HStack,
+  Alert,
+  AlertIcon,
+  useToast,
 } from "@chakra-ui/react";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import { BiUpload } from "react-icons/bi";
@@ -57,6 +60,7 @@ function OrganiserList() {
 
   const [organisers, setOrganiser] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
   const history = useNavigate();
@@ -69,22 +73,21 @@ function OrganiserList() {
     setSelectedSort(event.target.value as sortField);
   };
 
-  //const addOrEditOrganiser = (organiser: any) => {};
-
   //get data from api whenever the organinser list's length changes
-  useEffect(() => {
-    const fetchOrganiser = async () => {
-      try {
-        const response = await api.get("/organiser");
-        setOrganiser(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const fetchOrganiser = async () => {
+    try {
+      const response = await api.get("/organiser");
+      setOrganiser(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  //run fetchOrganiser when the page loads
+  useEffect(() => {
     fetchOrganiser();
-  }, [organisers.length]);
+  }, []);
 
   //json body for adding organiser
   const bodyAdmin = {
@@ -94,16 +97,40 @@ function OrganiserList() {
   };
 
   //add organiser to database using post
-  const addOrganiser = async (e) => {
+  const addOrganiser = async (e: any) => {
     e.preventDefault();
     console.log(bodyAdmin);
     try {
       const response = await api.post("/organiser", bodyAdmin);
-      const allOrganiser = [...organisers, response.data];
+      const allOrganiser: any = [...organisers, response.data];
       setOrganiser(allOrganiser);
       setInputName("");
       setInputEmail("");
+      toast({
+        title: "Organiser added!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
       console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //function to delete organiser by calling api delete
+  const deleteOrganiser = async (id: any) => {
+    try {
+      if (window.confirm("Are you sure you want to delete this organiser?")) {
+        await api.delete(`/organiser/${id}`);
+        toast({
+          title: "Organiser deleted!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        setTimeout(() => fetchOrganiser(), 300);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -212,7 +239,6 @@ function OrganiserList() {
               onClick={(e) => {
                 e.preventDefault();
                 addOrganiser(e);
-                alert("Organiser added successfully");
                 onClose();
               }}
               colorScheme="blue"
@@ -237,14 +263,14 @@ function OrganiserList() {
         </Thead>
         <Tbody>
           {organisers
-            .filter((organiser) => {
+            .filter((organiser: any) => {
               return searchTerm.toLowerCase() === ""
                 ? organiser
                 : organiser.name
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase());
             })
-            .map((organiser) => (
+            .map((organiser: any) => (
               <Tr>
                 <Td>{organiser.stu_name}</Td>
                 <Td>{organiser.stu_email}</Td>
@@ -258,6 +284,9 @@ function OrganiserList() {
                       icon={<MdOutlineModeEdit />}
                     ></IconButton>
                     <IconButton
+                      onClick={() => {
+                        deleteOrganiser(organiser.organiser_uuid);
+                      }}
                       colorScheme="red"
                       variant="outline"
                       aria-label="Edit Organiser"
