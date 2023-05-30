@@ -32,9 +32,10 @@ export const createEventController = async (
 			)
 			.input("event_title", mssql.VarChar, req.body.event_title)
 			.input("event_desc", mssql.VarChar, req.body.event_desc)
+			.input("event_mode", mssql.Char, req.body.event_mode)
 			.input("event_venue", mssql.VarChar, req.body.event_venue)
 			.input("event_capacity", mssql.Int, req.body.event_capacity)
-			.input("event_status", mssql.VarChar, req.body.event_status)
+			.input("event_status", mssql.Char, req.body.event_status)
 			.input(
 				"event_reg_start_date",
 				mssql.SmallDateTime,
@@ -50,7 +51,7 @@ export const createEventController = async (
 				mssql.VarChar,
 				req.body.event_reg_google_form
 			).query(`
-                INSERT INTO ${DbTables.EVENT} (event_ems_no, organiser_uuid, event_start_date, event_end_date, event_title, event_desc, event_venue, event_capacity, event_status)  
+                INSERT INTO ${DbTables.EVENT} (event_ems_no, organiser_uuid, event_start_date, event_end_date, event_title, event_desc, event_mode, event_venue, event_capacity, event_status, event_reg_start_date, event_reg_end_date, event_reg_google_form)  
 				OUTPUT INSERTED.*
 				VALUES (
                     @event_ems_no,
@@ -59,9 +60,10 @@ export const createEventController = async (
                     @event_end_date,
                     @event_title,
                     @event_desc,
+                    @event_mode,
                     @event_venue,
                     @event_capacity,
-                    @event_status
+                    @event_status,
                     @event_reg_start_date,
                     @event_reg_end_date,
                     @event_reg_google_form
@@ -73,7 +75,7 @@ export const createEventController = async (
 	}
 }
 
-export const updateOrganiserController = async (
+export const updateEventController = async (
 	req: Request<{ id: string }, EventWithUUID[], Event>,
 	res: Response<EventWithUUID[]>,
 	next: NextFunction
@@ -142,6 +144,7 @@ export const getEventController = async (
                 event_end_date,
                 event_title,
                 event_desc,
+                event_mode,
                 event_venue,
                 event_capacity,
                 event_status,
