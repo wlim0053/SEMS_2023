@@ -86,32 +86,6 @@ function EventPage() {
     description: string;
   };
 
-  const headers = [
-    "Event No.",
-    "Event Name",
-    "Club",
-    "Date & Time",
-    "Venue",
-    "Description",
-    "Actions",
-  ];
-
-  const tableStyles: CSSObject = {
-    borderCollapse: "collapse",
-    border: "2px solid #ddd",
-    width: "100%",
-    "& th, td": {
-      border: "1px solid #ddd",
-      padding: "8px",
-      textAlign: "left",
-    },
-    "& th": {
-      whiteSpace: "nowrap",
-      backgroundColor: "#f2f2f2",
-      fontWeight: "bold",
-    },
-  };
-
   const navigate = useNavigate();
 
   const handleGoToCalendar = () => {
