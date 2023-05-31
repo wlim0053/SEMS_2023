@@ -83,6 +83,7 @@ function StudentEvents() {
               </AccordionButton>
             </h2>
             <AccordionPanel pb={4}>
+              <Text>Event No: {event.eventNo}</Text>
               <Text>Club: {event.club}</Text>
               <Text>Venue: {event.venue}</Text>
               <Text>Description: {event.description}</Text>
