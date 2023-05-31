@@ -1,6 +1,12 @@
-//stub code
-import React from "react";
-import { Box, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Box,
+  Text,
+} from "@chakra-ui/react";
 function StudentEvents() {
   type Event = {
     eventNo: number;
@@ -42,8 +48,6 @@ function StudentEvents() {
     },
   ];
 
-  const headers = ["Event Name", "Club", "Date & Time", "Venue", "Description"];
-
   return (
     <Box>
       <Text
@@ -57,47 +61,35 @@ function StudentEvents() {
       >
         My Events
       </Text>
-      <Table
-        variant="simple"
-        size="md"
-        width="auto"
-        mx="auto"
+      <Accordion
+        allowToggle
+        allowMultiple
         ml={{ base: "1rem", md: "2rem" }}
         mr={{ base: "1rem", md: "2rem" }}
-        mb={{ base: "1rem", md: "2rem" }}
       >
-        <Thead>
-          <Tr>
-            {headers.map((header) => (
-              <Th
-                key={header}
-                whiteSpace="nowrap"
-                backgroundColor="#f2f2f2"
-                fontWeight="bold"
-                border="1px solid #ccc"
-                padding="0.5rem"
-              >
-                {header}
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {events.map((event) => (
-            <Tr key={event.eventNo}>
-              <Td border="1px solid #ccc" padding="0.5rem">{event.eventName}</Td>
-              <Td border="1px solid #ccc" padding="0.5rem">{event.club}</Td>
-              <Td border="1px solid #ccc" padding="0.5rem">
-                <Text as="time" dateTime={event.dateTime.toISOString()}>
-                  {event.dateTime.toLocaleString()}
-                </Text>
-              </Td>
-              <Td border="1px solid #ccc" padding="0.5rem">{event.venue}</Td>
-              <Td border="1px solid #ccc" padding="0.5rem">{event.description}</Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
+        {events.map((event) => (
+          <AccordionItem key={event.eventNo}>
+            <h2>
+              <AccordionButton borderBottom="1px solid #ccc" bg="#d9d9d9">
+                <Box flex="3" textAlign="left">
+                  {event.eventName}
+                </Box>
+                <Box flex="1">
+                  <Text as="time" dateTime={event.dateTime.toISOString()}>
+                    {event.dateTime.toLocaleString()}
+                  </Text>
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+            </h2>
+            <AccordionPanel pb={4}>
+              <Text>Club: {event.club}</Text>
+              <Text>Venue: {event.venue}</Text>
+              <Text>Description: {event.description}</Text>
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
     </Box>
   );
 }
