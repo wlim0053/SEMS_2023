@@ -1,36 +1,38 @@
 import React, { useState } from "react";
-import { Box, Button, FormControl, FormLabel, Input, Image, Heading } from "@chakra-ui/react";
+import { Box, Button, FormControl, FormLabel, Input, Image, Heading, Select } from "@chakra-ui/react";
 
-// Define the shape of the form data for TypeScript
 interface RegisterPageFormData {
+  name: string;
   email: string;
-  password: string;
-  confirmPassword: string;
+  studentId: string;
+  enrolmentYear: string;
+  enrolmentIntake: string;
+  gender: string;
+  discipline: string;
 }
 
-// The RegisterPage component
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<RegisterPageFormData>({
+    name: "",
     email: "",
-    password: "",
-    confirmPassword: "",
+    studentId: "",
+    enrolmentYear: "",
+    enrolmentIntake: "",
+    gender: "",
+    discipline: "",
   });
 
-  // Event handler for input changes. Updates the form data state.
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  // Event handler for form submission. Prevents default form submission event.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement form submission logic here
   };
 
-  // Render the form
   return (
     <Box p={5}>
       <Box textAlign="center" mb={5}>
@@ -40,11 +42,22 @@ const RegisterPage: React.FC = () => {
           width="400"
           className="d-inline-block align-top"
           alt="Logo"
+          mx="auto"
         />
         <Heading>Register</Heading>
       </Box>
       <form onSubmit={handleSubmit}>
         <FormControl isRequired>
+          <FormLabel>Name</FormLabel>
+          <Input
+            type="text"
+            name="name"
+            placeholder="Name"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
+        </FormControl>
+        <FormControl isRequired mt={6}>
           <FormLabel>Email</FormLabel>
           <Input
             type="email"
@@ -55,26 +68,56 @@ const RegisterPage: React.FC = () => {
           />
         </FormControl>
         <FormControl isRequired mt={6}>
-          <FormLabel>Password</FormLabel>
+          <FormLabel>Student ID</FormLabel>
           <Input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
+            type="text"
+            name="studentId"
+            placeholder="Student ID"
+            value={formData.studentId}
             onChange={handleInputChange}
           />
         </FormControl>
         <FormControl isRequired mt={6}>
-          <FormLabel>Confirm Password</FormLabel>
-          <Input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleInputChange}
-          />
+          <FormLabel>Enrolment Year</FormLabel>
+          <Select name="enrolmentYear" value={formData.enrolmentYear} onChange={handleInputChange}>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+          </Select>
         </FormControl>
-        <Button colorScheme="teal" type="submit" width="full" mt={6}>
+        <FormControl isRequired mt={6}>
+          <FormLabel>Enrolment Intake</FormLabel>
+          <Select name="enrolmentIntake" value={formData.enrolmentIntake} onChange={handleInputChange}>
+            <option value="February">January</option>
+            <option value="July">February</option>
+            <option value="October">March</option>
+          </Select>
+        </FormControl>
+        <FormControl isRequired mt={6}>
+          <FormLabel>Gender</FormLabel>
+          <Select name="gender" value={formData.gender} onChange={handleInputChange}>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+          </Select>
+        </FormControl>
+        <FormControl isRequired mt={6}>
+          <FormLabel>Discipline</FormLabel>
+          <Select name="discipline" value={formData.discipline} onChange={handleInputChange}>
+            <option value="Chemical">Chemical</option>
+            <option value="Mechanical">Mechanical</option>
+            <option value="Electrical">Electrical</option>
+          </Select>
+        </FormControl>
+        <Button
+          bg="#006DAE"
+          color="white"
+          h="60px"
+          type="submit"
+          width="full"
+          mt={6}
+        >
           Register
         </Button>
       </form>
