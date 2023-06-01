@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
   Checkbox,
@@ -15,13 +20,9 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { CSSObject } from "@emotion/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
@@ -83,32 +84,6 @@ function EventPage() {
     dateTime: Date;
     venue: string;
     description: string;
-  };
-
-  const headers = [
-    "Event No.",
-    "Event Name",
-    "Club",
-    "Date & Time",
-    "Venue",
-    "Description",
-    "Actions",
-  ];
-
-  const tableStyles: CSSObject = {
-    borderCollapse: "collapse",
-    border: "2px solid #ddd",
-    width: "100%",
-    "& th, td": {
-      border: "1px solid #ddd",
-      padding: "8px",
-      textAlign: "left",
-    },
-    "& th": {
-      whiteSpace: "nowrap",
-      backgroundColor: "#f2f2f2",
-      fontWeight: "bold",
-    },
   };
 
   const navigate = useNavigate();
@@ -189,6 +164,7 @@ function EventPage() {
         flexDirection="row"
         alignItems="center"
       >
+        {/* Search and filter controls */}
         <Input
           placeholder="Search for an event"
           value={searchTerm}
@@ -209,92 +185,103 @@ function EventPage() {
       </Box>
 
       <Flex justify="space-between" mb={5}>
-        <Box>
-          <Button
-            colorScheme="blue"
-            size="sm"
-            onClick={() => handleSort("eventName")}
-            mr={2}
-          >
-            Sort by Event Name{" "}
-            {sortField === "eventName" && (sortOrder === "asc" ? "↑" : "↓")}
-          </Button>
-          <Button
-            colorScheme="blue"
-            size="sm"
-            onClick={() => handleSort("dateTime")}
-            mr={2}
-          >
-            Sort by Date & Time{" "}
-            {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
-          </Button>
-          <Button
-            colorScheme="blue"
-            size="sm"
-            mr={2}
-            onClick={() => setIsModalOpen(true)}
-          >
-            Sort Clubs
-          </Button>
-          <Button colorScheme="gray" size="sm" onClick={handleReset}>
-            Reset
-          </Button>
-        </Box>
+        <Wrap spacing={2}>
+          <WrapItem>
+            <Button
+              backgroundColor="#006dac"
+              _hover={{ backgroundColor: "#005c8c" }}
+              color="white"
+              size="sm"
+              onClick={() => handleSort("eventName")}
+            >
+              Sort by Event Name{" "}
+              {sortField === "eventName" && (sortOrder === "asc" ? "↑" : "↓")}
+            </Button>
+          </WrapItem>
+          <WrapItem>
+            <Button
+              backgroundColor="#006dac"
+              _hover={{ backgroundColor: "#005c8c" }}
+              color="white"
+              size="sm"
+              onClick={() => handleSort("dateTime")}
+            >
+              Sort by Date & Time{" "}
+              {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
+            </Button>
+          </WrapItem>
+          <WrapItem>
+            <Button
+              backgroundColor="#006dac"
+              _hover={{ backgroundColor: "#005c8c" }}
+              color="white"
+              size="sm"
+              onClick={() => setIsModalOpen(true)}
+            >
+              Sort Clubs
+            </Button>
+          </WrapItem>
+          <WrapItem>
+            <Button colorScheme="gray" size="sm" onClick={handleReset}>
+              Reset
+            </Button>
+          </WrapItem>
+        </Wrap>
         <Text>Showing {sortedEvents.length} events</Text>
       </Flex>
-      <Table variant="simple" size="md" width="auto" mx="auto" sx={tableStyles}>
-        <Thead>
-          <Tr>
-            {headers.map((header) => (
-              <Th
-                key={header}
-                whiteSpace="nowrap"
-                backgroundColor="#f2f2f2"
-                fontWeight="bold"
-                border="1px solid #ccc"
-                padding="0.5rem"
-                onClick={() => handleSort(header as SortField)}
-              >
-                {header}{" "}
-                {sortField === header && (sortOrder === "asc" ? "↑" : "↓")}
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {sortedEvents.map((event, index) => (
-            <Tr key={event.eventNo}>
-              <Td>{event.eventNo}</Td>
-              <Td>{event.eventName}</Td>
-              <Td>{event.club}</Td>
-              <Td>
+
+      {/* Accordion */}
+      <Accordion allowToggle allowMultiple>
+        {sortedEvents.map((event, index) => (
+          <AccordionItem key={event.eventNo}>
+            {/* Accordion header */}
+            <AccordionButton bg="#d9d9d9" borderBottom="2px solid #ccc">
+              <Box flex="3" textAlign="left">
+                {event.eventName}
+              </Box>
+              <Box flex="1">
                 <Text as="time" dateTime={event.dateTime.toISOString()}>
                   {event.dateTime.toLocaleString()}
                 </Text>
-              </Td>
-              <Td>{event.venue}</Td>
-              <Td>{event.description}</Td>
-              <Td>
-                <Button
-                  colorScheme="blue"
-                  size="sm"
-                  onClick={() => {
-                    setIsSignUpModalOpen(true);
-                    setCurrentIndex(index);
-                  }}
-                  isDisabled={signUpStatus[index]}
-                >
-                  Sign Up
-                </Button>
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
+              </Box>
+              <AccordionIcon />
+            </AccordionButton>
+
+            {/* Accordion panel */}
+            <AccordionPanel pb={4}>
+              {/* Event details */}
+              <Text>Event No: {event.eventNo}</Text>
+              <Text>Club: {event.club}</Text>
+              <Text>Venue: {event.venue}</Text>
+              <Text>Description: {event.description}</Text>
+
+              {/* Sign-up button */}
+              <Button
+                backgroundColor="#006dac"
+                _hover={{ backgroundColor: "#005c8c" }}
+                color={"white"}
+                size="sm"
+                onClick={() => {
+                  setIsSignUpModalOpen(true);
+                  setCurrentIndex(index);
+                }}
+                isDisabled={signUpStatus[index]}
+                mt={4}
+              >
+                Sign Up
+              </Button>
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
+
+      {/* Go to Calendar View button */}
       <Button
         size="sm"
         mt={2}
-        colorScheme={"blue"}
+        backgroundColor="#006dac"
+        _hover={{ backgroundColor: "#005c8c" }}
+        color={"white"}
         onClick={handleGoToCalendar}
       >
         Go to Calendar View →
