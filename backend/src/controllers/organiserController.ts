@@ -20,13 +20,12 @@ export const createOrganiserController = async (
 			.input("parent_uuid", mssql.UniqueIdentifier, req.body.parent_uuid)
 			.input("organiser_name", mssql.VarChar, req.body.organiser_name)
 			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id).query(`
-                INSERT INTO ${DbTables.ORGANISER}  
+                INSERT INTO ${DbTables.ORGANISER} (stu_fire_id, parent_uuid, organiser_name)
 				OUTPUT INSERTED.*
 				VALUES (
-                    DEFAULT,
+                    @stu_fire_id,
                     @parent_uuid,
-                    @organiser_name,
-                    @stu_fire_id
+                    @organiser_name
                 )`)
 		res.json(create.recordset)
 		connection.close()
