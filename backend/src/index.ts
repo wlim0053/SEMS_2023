@@ -2,7 +2,7 @@ import express from "express"
 import helmet from "helmet"
 import cors from "cors"
 import { schoolRouter } from "./routes/school"
-import { studentRouter } from "./routes/student"
+import { userRouter } from "./routes/user"
 import { organiserRouter } from "./routes/organiser"
 import { specialisationRouter } from "./routes/specialisation"
 import { eventRouter } from "./routes/event"
@@ -40,7 +40,7 @@ app.use(express.json())
  * ! DON'T: router.get('/school'), router.post('/school')...
  */
 app.use("/api/school", schoolRouter)
-app.use("/api/student", studentRouter)
+app.use("/api/student", userRouter)
 app.use("/api/organiser", organiserRouter)
 app.use("/api/specialisation", specialisationRouter)
 app.use("/api/event", eventRouter)
