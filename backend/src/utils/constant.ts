@@ -2,7 +2,7 @@ export enum DbTables {
 	SCHOOL = "[sems_demo].[dbo].[tbl_school]",
 	LEVEL = "[sems_demo].[dbo].[tbl_level]",
 	SPECIALISATION = "[sems_demo].[dbo].[tbl_specialisation]",
-	STUDENT = "[sems_demo].[dbo].[tbl_student]",
+	USER = "[sems_demo].[dbo].[tbl_user]",
 	ORGANISER = "[sems_demo].[dbo].[tbl_organiser]",
 	PARTICIPATION = "[sems_demo].[dbo].[tbl_participation]",
 	EVENT = "[sems_demo].[dbo].[tbl_event]",
