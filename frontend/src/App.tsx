@@ -2,10 +2,10 @@
 // components
 import Navbar from "./components/shared/Navbar"
 import Admin from "./pages/admin/AdminDashboard"
+import RegisterPage from "./components/RegisterPage"
 
 import { ChakraProvider } from "@chakra-ui/react"
 // components
-import LoginPage from "./components/LoginPage"
 // css
 import "./App.css"
 import { BrowserRouter as Router, Route, Outlet } from "react-router-dom"
@@ -17,6 +17,7 @@ function App() {
 		<div className="App">
 			<Router>
 				<Navbar />
+				<RegisterPage />
 				<Outlet /> {/* Render nested routes */}
 			</Router>
 		</div>
