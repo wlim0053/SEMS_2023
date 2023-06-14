@@ -13,7 +13,7 @@ export const userRouter = express.Router()
 
 userRouter
 	.route("/")
-	.post(requestValidators({ body: UserWithFireId }), createUserController)
+	.post(requestValidators({ body: UserWithFireId }), createUserController) // TODO: prob need to shift this createUserController to register endpoint
 	.get(getUserController)
 
 userRouter
