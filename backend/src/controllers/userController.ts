@@ -3,6 +3,7 @@ import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 import { User, UserWithFireId } from "../interfaces/user"
+import { EventWithOrganiser } from "../interfaces/event"
 
 export const createUserController = async (
 	req: Request<{}, UserWithFireId[], UserWithFireId>,
@@ -141,6 +142,29 @@ export const getUserByIdController = async (
 				`SELECT * FROM ${DbTables.USER} WHERE user_fire_id=@user_fire_id`
 			)
 		res.json(student.recordset)
+	} catch (error) {
+		next(error)
+	}
+}
+
+export const getUserEventByIdController = async (
+	req: Request<{ id: string }, EventWithOrganiser[], {}>,
+	res: Response<EventWithOrganiser[]>,
+	next: NextFunction
+) => {
+	try {
+		const connection = await pool.connect()
+		const events: mssql.IResult<EventWithOrganiser> = await connection
+			.request()
+			.input("user_fire_id", mssql.VarChar, req.params.id).query(`
+                SELECT e.*, parent_uuid, organiser_name
+                FROM ${DbTables.USER} u 
+                JOIN ${DbTables.PARTICIPATION} p ON u.user_fire_id=p.user_fire_id
+                JOIN ${DbTables.EVENT} e on p.event_uuid=e.event_uuid
+                JOIN ${DbTables.ORGANISER} o on e.organiser_uuid=o.organiser_uuid
+                WHERE u.user_fire_id=@user_fire_id
+            `)
+		res.json(events.recordset)
 	} catch (error) {
 		next(error)
 	}
