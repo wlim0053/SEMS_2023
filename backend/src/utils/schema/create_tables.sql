@@ -8,10 +8,10 @@ BEGIN
         user_fname VARCHAR(255),
         user_lname VARCHAR(255),
         user_id INT,
-        user_gender INT CHECK (user_gender IN (0,1)),
+        user_gender TINYINT CHECK (user_gender IN (0,1)),
         user_access_lvl CHAR(1) NOT NULL CHECK (user_access_lvl IN ('A', 'O', 'S')) DEFAULT 'S',
         enrolment_year DATE,
-        enrolment_intake INT CHECK (enrolment_intake IN (2, 7, 10)),
+        enrolment_intake TINYINT CHECK (enrolment_intake IN (2, 7, 10)),
     )
 END
 
@@ -55,10 +55,10 @@ BEGIN
         event_end_date SMALLDATETIME NOT NULL,
         event_title VARCHAR(255) NOT NULL,
         event_desc VARCHAR(255) NOT NULL,
-        event_mode CHAR(1) NOT NULL CHECK (event_mode IN ('P', 'V', 'H')),
+        event_mode CHAR(1) NOT NULL CHECK (event_mode IN ('P', 'V', 'H')), -- physical, virtual, hybrid
         event_venue VARCHAR(255) NOT NULL,
         event_capacity INT NOT NULL,
-        event_status CHAR(1) NOT NULL CHECK(event_status IN ('D', 'P', 'A', 'R')),
+        event_status CHAR(1) NOT NULL CHECK(event_status IN ('D', 'P', 'A', 'R')), -- draft, pending, approved, rejected
         event_reg_start_date SMALLDATETIME,
         event_reg_end_date SMALLDATETIME,
         event_reg_google_form VARCHAR(255)
@@ -71,6 +71,7 @@ BEGIN
         participation_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         event_uuid UNIQUEIDENTIFIER NOT NULL,
         user_fire_id VARCHAR(255) NOT NULL,
+        participation_attendance BIT NOT NULL DEFAULT 0,
         CONSTRAINT UC_tbl_participation UNIQUE (event_uuid, user_fire_id)
     )
 END
@@ -80,10 +81,10 @@ BEGIN
     CREATE TABLE tbl_feedback(
         feedback_uuid UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         participation_uuid UNIQUEIDENTIFIER NOT NULL UNIQUE,
-        feedback_comm INT NOT NULL,
-        feedback_proj INT NOT NULL,
-        feedback_solve INT NOT NULL,
-        feedback_teamwork INT NOT NULL,
+        feedback_comm TINYINT NOT NULL,
+        feedback_proj TINYINT NOT NULL,
+        feedback_solve TINYINT NOT NULL,
+        feedback_teamwork TINYINT NOT NULL,
         feedback_reflection VARCHAR(255) NOT NULL
     )
 END

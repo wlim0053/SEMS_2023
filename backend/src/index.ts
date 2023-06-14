@@ -13,7 +13,6 @@ import { feedbackRouter } from "./routes/feedback"
 const PORT = process.env.PORT || 3000
 const app = express()
 
-// middleware
 // TODO add deployment website later
 // * Note: remember to comment cors when using ThunderClient, haven't figured out a way to add ThunderClient to CORS
 const whitelist = ["http://localhost:5173", "http://127.0.0.1:5173"]

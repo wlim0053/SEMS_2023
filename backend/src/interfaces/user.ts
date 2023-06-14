@@ -7,7 +7,7 @@ export const User = zod.object({
 	user_lname: zod.string(),
 	user_id: zod.number(),
 	user_gender: zod.number().refine((value) => value === 0 || value === 1, {
-		message: "Invalid number. Expected 0 or 1",
+		message: "Invalid number. Expected 0 or 1.",
 	}),
 	user_access_lvl: zod.enum(["A", "O", "S"]).optional(),
 	enrolment_year: zod.string().datetime(),
