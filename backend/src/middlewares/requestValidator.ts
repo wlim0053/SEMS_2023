@@ -22,7 +22,7 @@ export const requestValidators = (validators: RequestValidators) => {
 			next()
 		} catch (error) {
 			if (error instanceof zod.ZodError) {
-				res.status(422)
+				res.status(422) // sets the response status to 422 and error messages will be handled by the errorHandler
 			}
 			next(error)
 		}
