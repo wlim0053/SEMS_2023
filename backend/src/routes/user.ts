@@ -5,6 +5,7 @@ import {
 	getUserByIdController,
 	getUserController,
 	deleteUserController,
+	getUserEventByIdController,
 } from "../controllers/userController"
 import { User, UserWithFireId } from "../interfaces/user"
 import { requestValidators } from "../middlewares/requestValidator"
@@ -15,6 +16,9 @@ userRouter
 	.route("/")
 	.post(requestValidators({ body: UserWithFireId }), createUserController) // TODO: prob need to shift this createUserController to register endpoint
 	.get(getUserController)
+
+// endpoint to get all the user's participated events
+userRouter.route("/:id/event").get(getUserEventByIdController)
 
 userRouter
 	.route("/:id")
