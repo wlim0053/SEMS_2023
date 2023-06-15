@@ -10,27 +10,6 @@ function CountdownTimer() {
   const [, setIsMobile] = useState(false);
   const [futureEvent, setFutureEvent] = useState(true);
 
-  const events = [
-    {
-      title: "MUM Event",
-      start: "2023-04-05T08:00:00",
-      end: "2023-04-05T09:00:00",
-      description: "This is a MUM event",
-    },
-    {
-      title: "MUM Event 2",
-      start: "2023-05-02T12:24:00",
-      end: "2023-05-02T13:00:00",
-      description: "This is a MUM event",
-    },
-    {
-      title: "MUM Event 3",
-      start: "2023-05-16T12:26:00",
-      end: "2023-05-16T13:00:00",
-      description: "This is a MUM event",
-    },
-  ];
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 845);
@@ -41,42 +20,55 @@ function CountdownTimer() {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const currentDate = new Date();
-      let nearestEvent = null;
-      for (const element of events) {
-        const eventDate = new Date(element.start);
-        const timeLeft = eventDate.getTime() - currentDate.getTime();
-        if (
-          timeLeft > 0 &&
-          (!nearestEvent || timeLeft < nearestEvent.timeLeft)
-        ) {
-          nearestEvent = {
-            timeLeft,
-            eventDate,
-            startTime: eventDate.toLocaleTimeString([], {
-              hour: "numeric",
-              minute: "numeric",
-            }),
-            endTime: new Date(element.end).toLocaleTimeString([], {
-              hour: "numeric",
-              minute: "numeric",
-            }),
-            title: element.title,
-          };
+    const fetchEventsFromDatabase = async () => {
+      // Fetch events from the database
+      try {
+        const response = await fetch("http://localhost:3000/api/event");
+        const data = await response.json();
+
+        // Process the data and find the nearest event
+        const currentDate = new Date();
+        let nearestEvent = null;
+
+        for (const element of data) {
+          const eventDate = new Date(element.event_start_date);
+          const timeLeft = eventDate.getTime() - currentDate.getTime();
+
+          if (
+            timeLeft > 0 &&
+            (!nearestEvent || timeLeft < nearestEvent.timeLeft)
+          ) {
+            nearestEvent = {
+              timeLeft,
+              eventDate,
+              startTime: eventDate.toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "numeric",
+              }),
+              endTime: new Date(element.event_end_date).toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "numeric",
+              }),
+              title: element.event_title,
+            };
+          }
         }
+
+        if (nearestEvent) {
+          setTimeLeft(nearestEvent.timeLeft);
+          setEventDate(nearestEvent.eventDate.toLocaleDateString());
+          setStartTime(nearestEvent.startTime);
+          setEndTime(nearestEvent.endTime);
+          setTitle(nearestEvent.title);
+        } else {
+          setFutureEvent(false);
+        }
+      } catch (error) {
+        console.error("Error fetching events:", error);
       }
-      if (nearestEvent) {
-        setTimeLeft(nearestEvent.timeLeft);
-        setEventDate(nearestEvent.eventDate.toLocaleDateString());
-        setStartTime(nearestEvent.startTime);
-        setEndTime(nearestEvent.endTime);
-        setTitle(nearestEvent.title);
-      } else {
-        setFutureEvent(false);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
+    };
+
+    fetchEventsFromDatabase().catch((error) => console.error(error));
   }, []);
 
   // get current date of today in "DD(th/st/nd/rd) MMM YYYY" format

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionButton,
@@ -24,50 +24,45 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import { CSSObject } from "@emotion/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 
 function EventPage() {
-  const events: Event[] = [
-    {
-      eventNo: 1,
-      eventName: "Sustainability, Safety, Chem or Not?",
-      club: "IEMMSS",
-      dateTime: new Date("2023-05-06T10:00:00"),
-      venue: "Zoom Meeting",
-      description:
-        "This webinar will introduce different aspects of engineering, with a focus on chemical engineering. We will explore the principles and applications of this interdisciplinary field, including the design of complex processes and the development of renewable energy sources.",
-    },
-    {
-      eventNo: 2,
-      eventName:
-        "Beyond the Blue Skies: The Exciting Frontier of Aerospace Engineering",
-      club: "IEMMSS",
-      dateTime: new Date("2023-05-13T14:00:00"),
-      venue: "Zoom Meeting",
-      description:
-        "This event is focused on exploring the promising advancements in space exploration and the significance of collaboration with various engineering industries in the future of aerospace engineering. Attendees will delve into the exciting possibilities that lie ahead, including commercial satellites, interstellar travel, and sustainable solutions that will shape the aircraft and spacecraft of tomorrow. Join us for a journey into the thrilling future of space exploration that promises to take us beyond our wildest dreams.",
-    },
-    {
-      eventNo: 3,
-      eventName: "ChemE Car Workshop",
-      club: "CHEMECAR",
-      dateTime: new Date("2023-05-06T09:00:00"),
-      venue: "The Porch",
-      description:
-        "This workshop aims to provide students with hands-on experience in building a ChemE Car. Students will construct a simple chemically operated (to start and stop from chemical reaction(s)) A4-sized car",
-    },
-  ];
+  interface Event {
+    event_uuid: string;
+    event_ems_no: string | null;
+    event_start_date: string;
+    event_end_date: string;
+    event_title: string;
+    event_desc: string;
+    event_mode: string;
+    event_venue: string;
+    event_capacity: number;
+    event_status: string;
+    event_reg_start_date: string;
+    event_reg_end_date: string;
+    event_reg_google_form: string;
+    organiser_uuid: string;
+    parent_uuid: string | null;
+    organiser_name: string;
+    stu_fire_id: string;
+  }
 
-  type SortField = "eventNo" | "eventName" | "dateTime" | "club";
+  type SortField =
+    | "event_start_date"
+    | "event_title"
+    | "event_venue"
+    | "organiser_name";
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [sortField, setSortField] = useState<SortField>("eventNo");
+  const [sortField, setSortField] = useState<SortField>("event_start_date");
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [sortedEvents, setSortedEvents] = useState<Event[]>([]);
 
   const clubs = [
     { name: "IEMMSS", id: "iemmss" },
@@ -75,16 +70,24 @@ function EventPage() {
     { name: "OP", id: "messi" },
     { name: "CSM", id: "cr7" },
     { name: "JJK", id: "jjk" },
+    { name: "MUMTEC", id: "mumtec" },
   ];
 
-  type Event = {
-    eventNo: number;
-    eventName: string;
-    club: string;
-    dateTime: Date;
-    venue: string;
-    description: string;
-  };
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/event");
+        const data = await response.json();
+        setEvents(data);
+        setSortedEvents(data);
+        setSignUpStatus(new Array(data.length).fill(false));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchEvents().catch((error) => console.error(error));
+  }, []);
 
   const navigate = useNavigate();
 
@@ -95,6 +98,7 @@ function EventPage() {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
+
   const handleSort = (field: SortField) => {
     if (field === sortField) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -105,14 +109,13 @@ function EventPage() {
   };
 
   const handleReset = () => {
-    setSortField("eventNo");
+    setSortField("event_start_date");
     setSortOrder("asc");
     setSelectedClubs([]);
   };
 
   const handleClubFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     const club = event.target.value;
-    console.log(club);
     if (event.target.checked) {
       setSelectedClubs([...selectedClubs, club]);
     } else {
@@ -121,38 +124,46 @@ function EventPage() {
   };
 
   const filteredEvents = events.filter((event) => {
-    const matchesSearchTerm = event.eventName
+    const matchesSearchTerm = event.event_title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesSelectedClubs =
-      selectedClubs.length === 0 || selectedClubs.includes(event.club);
+      selectedClubs.length === 0 ||
+      selectedClubs.includes(event.organiser_name);
     return matchesSearchTerm && matchesSelectedClubs;
   });
 
-  const sortedEvents = [...filteredEvents].sort((a, b) => {
-    if (sortField === "eventNo") {
-      return sortOrder === "asc"
-        ? a.eventNo - b.eventNo
-        : b.eventNo - a.eventNo;
-    } else if (sortField === "eventName") {
-      return sortOrder === "asc"
-        ? a.eventName.localeCompare(b.eventName)
-        : b.eventName.localeCompare(a.eventName);
-    } else if (sortField === "dateTime") {
-      return sortOrder === "asc"
-        ? a.dateTime.getTime() - b.dateTime.getTime()
-        : b.dateTime.getTime() - a.dateTime.getTime();
-    } else {
-      return sortOrder === "asc"
-        ? a.club.localeCompare(b.club)
-        : b.club.localeCompare(a.club);
-    }
-  });
+  useEffect(() => {
+    const sortEvents = (a: Event, b: Event) => {
+      switch (sortField) {
+        case "event_start_date":
+          return sortOrder === "asc"
+            ? new Date(a.event_start_date).getTime() -
+                new Date(b.event_start_date).getTime()
+            : new Date(b.event_start_date).getTime() -
+                new Date(a.event_start_date).getTime();
+        case "event_title":
+          return sortOrder === "asc"
+            ? a.event_title.localeCompare(b.event_title)
+            : b.event_title.localeCompare(a.event_title);
+        case "event_venue":
+          return sortOrder === "asc"
+            ? a.event_venue.localeCompare(b.event_venue)
+            : b.event_venue.localeCompare(a.event_venue);
+        default:
+          return sortOrder === "asc"
+            ? a.organiser_name.localeCompare(b.organiser_name)
+            : b.organiser_name.localeCompare(a.organiser_name);
+      }
+    };
 
-  const [signUpStatus, setSignUpStatus] = useState(
+    const sorted = [...filteredEvents].sort(sortEvents);
+    setSortedEvents(sorted);
+  }, [filteredEvents, sortField, sortOrder]);
+
+  const [signUpStatus, setSignUpStatus] = useState<boolean[]>(
     Array(sortedEvents.length).fill(false)
   );
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   return (
     <Box width="100%" p={5} overflowX="auto">
@@ -192,10 +203,10 @@ function EventPage() {
               _hover={{ backgroundColor: "#005c8c" }}
               color="white"
               size="sm"
-              onClick={() => handleSort("eventName")}
+              onClick={() => handleSort("event_title")}
             >
               Sort by Event Name{" "}
-              {sortField === "eventName" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortField === "event_title" && (sortOrder === "asc" ? "↑" : "↓")}
             </Button>
           </WrapItem>
           <WrapItem>
@@ -204,10 +215,11 @@ function EventPage() {
               _hover={{ backgroundColor: "#005c8c" }}
               color="white"
               size="sm"
-              onClick={() => handleSort("dateTime")}
+              onClick={() => handleSort("event_start_date")}
             >
               Sort by Date & Time{" "}
-              {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortField === "event_start_date" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
             </Button>
           </WrapItem>
           <WrapItem>
@@ -231,48 +243,90 @@ function EventPage() {
       </Flex>
 
       {/* Accordion */}
-      <Accordion allowToggle allowMultiple>
-        {sortedEvents.map((event, index) => (
-          <AccordionItem key={event.eventNo}>
-            {/* Accordion header */}
-            <AccordionButton bg="#d9d9d9" borderBottom="2px solid #ccc">
-              <Box flex="3" textAlign="left">
-                {event.eventName}
-              </Box>
-              <Box flex="1">
-                <Text as="time" dateTime={event.dateTime.toISOString()}>
-                  {event.dateTime.toLocaleString()}
+      <Accordion allowMultiple>
+        {sortedEvents.map((event, index) => {
+          const startDate = new Date(event.event_start_date);
+          const endDate = new Date(event.event_end_date);
+          const startTime = startDate.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const endTime = endDate.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+          return (
+            <AccordionItem key={event.event_uuid}>
+              <h2>
+                <AccordionButton
+                  borderBottom="1px solid #ccc"
+                  bg="#d9d9d9"
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  p={2}
+                >
+                  <Box flex="3" textAlign="left" mr={2}>
+                    {event.event_title}
+                  </Box>
+                  <Box flex="1">
+                    <Text>
+                      {startDate.toLocaleString("en-US", {
+                        month: "numeric",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </Text>
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4} pt={2} pl={2} pr={4}>
+                <Text>Description: {event.event_desc}</Text>
+                <Text>Club: {event.organiser_name}</Text>
+                <Text>
+                  Start Date:{" "}
+                  {startDate.toLocaleDateString("en-US", {
+                    month: "numeric",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
                 </Text>
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
+                <Text>
+                  End Date:{" "}
+                  {endDate.toLocaleDateString("en-US", {
+                    month: "numeric",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </Text>
+                <Text>Start Time: {startTime}</Text>
+                <Text>End Time: {endTime}</Text>
+                <Text>Venue: {event.event_venue}</Text>
 
-            {/* Accordion panel */}
-            <AccordionPanel pb={4}>
-              {/* Event details */}
-              <Text>Event No: {event.eventNo}</Text>
-              <Text>Club: {event.club}</Text>
-              <Text>Venue: {event.venue}</Text>
-              <Text>Description: {event.description}</Text>
-
-              {/* Sign-up button */}
-              <Button
-                backgroundColor="#006dac"
-                _hover={{ backgroundColor: "#005c8c" }}
-                color={"white"}
-                size="sm"
-                onClick={() => {
-                  setIsSignUpModalOpen(true);
-                  setCurrentIndex(index);
-                }}
-                isDisabled={signUpStatus[index]}
-                mt={4}
-              >
-                Sign Up
-              </Button>
-            </AccordionPanel>
-          </AccordionItem>
-        ))}
+                {/* Sign-up button */}
+                <Button
+                  backgroundColor="#006dac"
+                  _hover={{ backgroundColor: "#005c8c" }}
+                  color={"white"}
+                  size="sm"
+                  onClick={() => {
+                    setIsSignUpModalOpen(true);
+                    setCurrentIndex(index);
+                  }}
+                  isDisabled={signUpStatus[index]}
+                  mt={4}
+                >
+                  Sign Up
+                </Button>
+              </AccordionPanel>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
 
       {/* Go to Calendar View button */}
