@@ -45,6 +45,38 @@ const alterTables = async () => {
 	})
 }
 
+const createTriggers = async () => {
+	try {
+		const connection = await pool.connect()
+		await connection.query("USE sems_demo")
+		const res = await connection.query(`
+        CREATE OR ALTER TRIGGER trg_UpdateUserAccessLvl
+        ON tbl_organiser
+        AFTER INSERT, UPDATE
+        AS
+        BEGIN
+            IF UPDATE(user_fire_id)
+            BEGIN
+                --update user_access_lvl to 'O' for new/updated user
+                UPDATE tbl_user
+                SET user_access_lvl='O'
+                WHERE user_fire_id=(SELECT user_fire_id FROM inserted)
+                AND user_access_lvl<>'O'; --only update if access level is not already updated
+        
+                --update user_access_lvl to 'S' for old user
+                UPDATE tbl_user
+                SET user_access_lvl='S'
+                WHERE user_fire_id=(SELECT user_fire_id FROM deleted)
+            END
+        END
+        `)
+		console.log(res)
+		connection.close()
+	} catch (error) {
+		console.log(error)
+	}
+}
+
 // ! Use bulk insert when populating the initial db
 export const populateTableSchool = async () => {
 	const schoolNames = [
@@ -121,7 +153,7 @@ const populateTableSpecialisation = async () => {
 	}
 }
 
-const populateTableStudent = async () => {
+const populateTableUser = async () => {
 	try {
 		const connection = await pool.connect()
 		const softwareEngineering = await connection
@@ -135,60 +167,65 @@ const populateTableStudent = async () => {
 
 		const students = [
 			{
-				stu_fire_id: "L4zyHaha",
-				stu_email: "lhah6969@student.monash.edu",
-				stu_name: "Lazy Haha",
-				stu_id: 34206969,
+				user_fire_id: "L4zyHaha",
+				spec_uuid: softwareEngineeringUUID,
+				user_email: "lhah6969@student.monash.edu",
+				user_fname: "Lazy",
+				user_lname: "Haha",
+				user_id: 34206969,
+				user_gender: 0,
 				enrolment_year: "2023",
 				enrolment_intake: 2,
-				stu_gender: 0,
-				spec_uuid: softwareEngineeringUUID,
 			},
 			{
-				stu_fire_id: "L1on3lP3ps1",
-				stu_email: "lpep1030@student.monash.edu",
-				stu_name: "Lionel Pepsi",
-				stu_id: 30103010,
+				user_fire_id: "L1on3lP3ps1",
+				spec_uuid: softwareEngineeringUUID,
+				user_email: "lpep1030@student.monash.edu",
+				user_fname: "Lionel",
+				user_lname: "Pepsi",
+				user_id: 30103010,
+				user_gender: 1,
 				enrolment_year: "2021",
 				enrolment_intake: 7,
-				stu_gender: 1,
-				spec_uuid: softwareEngineeringUUID,
 			},
 		]
 
-		const table = new mssql.Table(DbTables.STUDENT)
+		const table = new mssql.Table(DbTables.USER)
 		table.create = false
-		table.columns.add("stu_fire_id", mssql.VarChar, {
+		table.columns.add("user_fire_id", mssql.VarChar, {
 			nullable: false,
 			primary: true,
 		})
-		table.columns.add("stu_email", mssql.VarChar, { nullable: false })
-		table.columns.add("stu_name", mssql.VarChar, { nullable: false })
-		table.columns.add("stu_id", mssql.Int)
+		table.columns.add("spec_uuid", mssql.UniqueIdentifier)
+		table.columns.add("user_email", mssql.VarChar, { nullable: false })
+		table.columns.add("user_fname", mssql.VarChar)
+		table.columns.add("user_lname", mssql.VarChar)
+		table.columns.add("user_id", mssql.Int)
+		table.columns.add("user_gender", mssql.Int)
 		table.columns.add("enrolment_year", mssql.Date)
 		table.columns.add("enrolment_intake", mssql.Int)
-		table.columns.add("stu_gender", mssql.Int)
-		table.columns.add("spec_uuid", mssql.UniqueIdentifier)
 		students.forEach(
 			({
-				stu_fire_id,
-				stu_email,
-				stu_name,
-				stu_id,
+				user_fire_id,
+				spec_uuid,
+				user_email,
+				user_fname,
+				user_lname,
+				user_id,
+				user_gender,
 				enrolment_year,
 				enrolment_intake,
-				stu_gender,
-				spec_uuid,
 			}) =>
 				table.rows.add(
-					stu_fire_id,
-					stu_email,
-					stu_name,
-					stu_id,
+					user_fire_id,
+					spec_uuid,
+					user_email,
+					user_fname,
+					user_lname,
+					user_id,
+					user_gender,
 					enrolment_year,
-					enrolment_intake,
-					stu_gender,
-					spec_uuid
+					enrolment_intake
 				)
 		)
 		const result = await connection.request().bulk(table)
@@ -202,20 +239,14 @@ const populateTableStudent = async () => {
 const populateTableOrganiser = async () => {
 	try {
 		const connection = await pool.connect()
-		const stu_fire_id = "L1on3lP3ps1"
-		const table = new mssql.Table(DbTables.ORGANISER)
-		table.create = false
-		table.columns.add("organiser_uuid", mssql.UniqueIdentifier, {
-			nullable: false,
-			primary: true,
-		})
-		table.columns.add("parent_uuid", mssql.UniqueIdentifier, {
-			nullable: true,
-		})
-		table.columns.add("organiser_name", mssql.VarChar, { nullable: false })
-		table.columns.add("stu_fire_id", mssql.VarChar)
-		table.rows.add(null, null, "MUMTEC", stu_fire_id)
-		const res = await connection.request().bulk(table)
+		const res = await connection.query(`
+            INSERT INTO ${DbTables.ORGANISER} VALUES(
+                DEFAULT,
+                'L1on3lP3ps1',
+                NULL,
+                'MUMTEC'
+            )
+        `)
 		console.log(res)
 	} catch (error) {
 		console.log(error)
@@ -281,7 +312,7 @@ const populateTableEvent = async () => {
 const populateTableParticipation = async () => {
 	try {
 		const connection = await pool.connect()
-		const stu_fire_id = "L4zyHaha"
+		const user_fire_id = "L4zyHaha"
 		const event = await connection
 			.request()
 			.input("event_title", mssql.VarChar, "Test event")
@@ -292,9 +323,9 @@ const populateTableParticipation = async () => {
 		const res = await connection
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, eventUUID)
-			.input("stu_fire_id", mssql.VarChar, stu_fire_id)
+			.input("user_fire_id", mssql.VarChar, user_fire_id)
 			.query(
-				`INSERT INTO ${DbTables.PARTICIPATION} (event_uuid, stu_fire_id) VALUES (@event_uuid, @stu_fire_id)`
+				`INSERT INTO ${DbTables.PARTICIPATION} (event_uuid, user_fire_id) VALUES (@event_uuid, @user_fire_id)`
 			)
 		console.log(res)
 		connection.close()
@@ -310,11 +341,12 @@ const delay = 3000
 // createDatabase()
 // setTimeout(createTables, timer)
 // setTimeout(alterTables, (timer += delay))
+// setTimeout(createTriggers, (timer += delay))
 
 // * 2. Run these individually 1 by 1
 // populateTableSchool()
 // populateTableSpecialisation()
-// populateTableStudent()
+// populateTableUser()
 // populateTableOrganiser()
 // populateTableEvent()
 // populateTableParticipation()

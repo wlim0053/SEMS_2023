@@ -27,7 +27,7 @@
   background-color: #00344f;
 }
 
-.calendar {
+.calendar-container {
   font-family: "Arial Narrow", sans-serif;
   padding: 0;
   margin: 20px 30px;
@@ -58,5 +58,13 @@
   .css-pv22qu {
     /* make some space from all sides */
     margin: 0 30px;
+  }
+
+  .fc-header-toolbar {
+    flex-direction: column;
+  }
+
+  .fc-header-toolbar > * {
+    margin-bottom: 1em;
   }
 }
