@@ -31,6 +31,7 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(formData.discipline);
   };
 
   return (

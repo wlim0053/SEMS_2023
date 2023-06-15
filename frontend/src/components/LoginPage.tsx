@@ -17,6 +17,8 @@ Center,
 } from '@chakra-ui/react';
 import { EmailIcon } from '@chakra-ui/icons';
 import axios from 'axios';
+import { Link, Route, Routes } from "react-router-dom"
+import RegisterPage from "./RegisterPage";
 
 
 interface LoginProps {
@@ -76,7 +78,46 @@ const loginWithGoogle= () =>{
         console.log("POST Request sent")
     }
     
-    doPostRequest();
+    // doPostRequest();
+
+
+    // IdP data available using getAdditionalUserInfo(result)
+    // ...
+  }).then((response)=>{console.log(response)})
+  .catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+}
+
+const signUpWithGoogle= () =>{
+
+    signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    if (credential != null){
+        const token = credential.accessToken;
+    }
+    
+    // The signed-in user info.
+    const user = result.user;
+    console.log(user);
+    console.log(user.uid);
+    console.log(user.displayName)
+
+    const body = {uid: user.uid, email: user.email, name: user.displayName}
+
+    if (user.email != null){
+        localStorage.setItem(user.email, JSON.stringify(body))
+    }
+    
 
 
     // IdP data available using getAdditionalUserInfo(result)
@@ -122,6 +163,9 @@ return (
             </Text>
             <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon/>} onClick={loginWithGoogle}>
             Login
+            </Button>
+            <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon/>} onClick={signUpWithGoogle}>
+            Sign Up
             </Button>
         </VStack>
     </Box>
