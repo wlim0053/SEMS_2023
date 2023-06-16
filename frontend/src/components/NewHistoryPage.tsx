@@ -1,0 +1,146 @@
+
+import { CSSObject } from "@emotion/react";
+import { useState } from "react";
+import {
+    Table,
+    Thead,
+    Tbody,
+    Tr,
+    Th,
+    Td,
+    Box,
+    Text,
+    Button,
+    Input,
+    Flex,
+    IconButton,
+    ModalOverlay,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalCloseButton,
+    ModalBody,
+    Checkbox,
+  } from "@chakra-ui/react";
+import { SearchIcon, CloseIcon } from "@chakra-ui/icons";
+function NewHistoryPage (){
+    const events: PastEvent[] = [
+        {
+          eventNo: 1,
+          eventName: "Sustainability, Safety, Chem or Not?",
+          club: "IEMMSS",
+          dateTime: new Date("2023-05-06T10:00:00"),
+        },
+        {
+          eventNo: 2,
+          eventName:
+            "Beyond the Blue Skies: The Exciting Frontier of Aerospace Engineering",
+          club: "IEMMSS",
+          dateTime: new Date("2023-05-13T14:00:00"),
+        },
+        {
+          eventNo: 3,
+          eventName: "ChemE Car Workshop",
+          club: "CHEMECAR",
+          dateTime: new Date("2023-05-06T09:00:00"),
+        },
+      ];
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+    const [sortField, setSortField] = useState<
+    "eventNo" | "eventName" | "dateTime" | "club"
+    >("eventNo");
+
+    type PastEvent = {
+        eventNo: number;
+        eventName: string;
+        club: string;
+        dateTime: Date;
+    };
+
+    const clubs = [
+        { name: "IEMMSS", id: "iemmss" },
+        { name: "CHEMECAR", id: "chemecar" },
+        { name: "OP", id: "messi" },
+        { name: "CSM", id: "cr7" },
+        { name: "JJK", id: "jjk" },
+      ];
+
+    const tableStyles: CSSObject = {
+        borderCollapse: "collapse",
+        border: "2px solid #ddd",
+        width: "100%",
+        "& th, td": {
+          border: "1px solid #ddd",
+          padding: "8px",
+          textAlign: "left",
+        },
+        "& th": {
+          whiteSpace: "nowrap",
+          backgroundColor: "#f2f2f2",
+          fontWeight: "bold",
+        },
+      };
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+    };
+    
+    const handleClubFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const club = event.target.value;
+        console.log(club);
+        if (event.target.checked) {
+          setSelectedClubs([...selectedClubs, club]);
+        } else {
+          setSelectedClubs(selectedClubs.filter((c) => c !== club));
+        }
+      };
+
+    const filteredEvents = events.filter((event) => {
+        const matchesSearchTerm = event.eventName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+        const matchesSelectedClubs =
+          selectedClubs.length === 0 || selectedClubs.includes(event.club);
+        return matchesSearchTerm && matchesSelectedClubs;
+      });
+
+    const handleSort = (field: "eventNo" | "eventName" | "dateTime" | "club") => {
+        if (field === sortField) {
+          setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+        } else {
+          setSortField(field);
+          setSortOrder("asc");
+        }
+      };
+    
+    const sortedEvents = filteredEvents.sort((a, b) => {
+        if (sortField === "eventNo") {
+          return sortOrder === "asc"
+            ? a.eventNo - b.eventNo
+            : b.eventNo - a.eventNo;
+        } else if (sortField === "eventName") {
+          return sortOrder === "asc"
+            ? a.eventName.localeCompare(b.eventName)
+            : b.eventName.localeCompare(a.eventName);
+        } else if (sortField === "dateTime") {
+          return sortOrder === "asc"
+            ? a.dateTime.getTime() - b.dateTime.getTime()
+            : b.dateTime.getTime() - a.dateTime.getTime();
+        } else {
+          return sortOrder === "asc"
+            ? a.club.localeCompare(b.club)
+            : b.club.localeCompare(a.club);
+        }
+      });
+
+    return (
+        pass
+    );
+
+}
+
+export default NewHistoryPage
