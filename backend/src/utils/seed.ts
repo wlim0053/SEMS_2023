@@ -48,7 +48,7 @@ const alterTables = async () => {
 const createTriggers = async () => {
 	try {
 		const connection = await pool.connect()
-		await connection.query("USE sems_demo")
+		connection.query("USE sems_demo")
 		const res = await connection.query(`
         CREATE OR ALTER TRIGGER trg_UpdateUserAccessLvl
         ON tbl_organiser

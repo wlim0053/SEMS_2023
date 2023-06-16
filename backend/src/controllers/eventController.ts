@@ -225,6 +225,7 @@ export const deleteEventController = async (
 	}
 }
 
+// todo join with user table
 export const getEventParticipationController = async (
 	req: Request<{ id: string }, ParticipationWithUUID[], {}>,
 	res: Response<ParticipationWithUUID[]>,
