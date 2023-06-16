@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Text, Flex } from "@chakra-ui/react";
+import axios from "axios";
 
 function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState(0);
@@ -23,8 +24,8 @@ function CountdownTimer() {
     const fetchEventsFromDatabase = async () => {
       // Fetch events from the database
       try {
-        const response = await fetch("http://localhost:3000/api/event");
-        const data = await response.json();
+        const response = await axios.get("http://localhost:3000/api/event");
+        const data = response.data;
 
         // Process the data and find the nearest event
         const currentDate = new Date();

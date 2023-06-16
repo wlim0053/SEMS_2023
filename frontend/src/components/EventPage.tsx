@@ -26,6 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function EventPage() {
   interface Event {
@@ -76,8 +77,8 @@ function EventPage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/event");
-        const data = await response.json();
+        const response = await axios.get("http://localhost:3000/api/event");
+        const data = response.data;
         setEvents(data);
         setSortedEvents(data);
         setSignUpStatus(new Array(data.length).fill(false));
