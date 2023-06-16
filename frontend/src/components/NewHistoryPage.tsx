@@ -138,7 +138,109 @@ function NewHistoryPage (){
       });
 
     return (
-        pass
+        <Box width="100%" p={5} overflowX="auto">
+      <Box
+        width="100%"
+        pb={4}
+        overflowX="auto"
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+      >
+        <Input
+          placeholder="Search for an event"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          mr={2}
+        />
+        <IconButton
+          aria-label="Search events"
+          icon={<SearchIcon />}
+          onClick={() => console.log("Search clicked")}
+          mr={2}
+        />
+        <IconButton
+          aria-label={"Clear search"}
+          icon={<CloseIcon />}
+          onClick={() => setSearchTerm("")}
+        />
+      </Box>
+
+      <Flex justify="space-between" mb={5}>
+        <Box>
+          <Button
+            colorScheme="blue"
+            size="sm"
+            mr={2}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Sort Clubs
+          </Button>
+        </Box>
+      </Flex>
+      <Table variant="simple" size="md" width="auto" mx="auto" sx={tableStyles}>
+        <Thead>
+          <Tr>
+            <Th>Event No.</Th>
+            <Th onClick={() => handleSort("eventName")}>
+              Event Name{" "}
+              {sortField === "eventName" && (sortOrder === "asc" ? "↑" : "↓")}
+            </Th>
+            <Th>Club</Th>
+            <Th onClick={() => handleSort("dateTime")}>
+              Date & Time{" "}
+              {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
+            </Th>
+            <Th>Action</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {sortedEvents.map((event) => (
+            <Tr key={event.eventNo}>
+              <Td>{event.eventNo}</Td>
+              <Td>{event.eventName}</Td>
+              <Td>{event.club}</Td>
+              <Td>
+                <Text as="time" dateTime={event.dateTime.toISOString()}>
+                  {event.dateTime.toLocaleString()}
+                </Text>
+              </Td>
+              <Td>
+                <Button colorScheme="blue" size="sm">
+                  Provide Feedback
+                </Button>
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader mb={-1}>Sort Clubs</ModalHeader>
+          <ModalCloseButton />
+          <Box borderBottom="1px solid" borderColor="gray.400" />
+          <ModalBody mt={2}>
+            {clubs.map((club) => (
+              <Box
+                key={club.id}
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                mb={2}
+              >
+                <Checkbox
+                  value={club.name}
+                  isChecked={selectedClubs.includes(club.name)}
+                  onChange={handleClubFilter}
+                />
+                <Text ml={3}>{club.name}</Text>
+              </Box>
+            ))}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Box>
     );
 
 }
