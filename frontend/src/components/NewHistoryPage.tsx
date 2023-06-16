@@ -25,6 +25,7 @@ import {
   } from "@chakra-ui/react";
 import { SearchIcon, CloseIcon } from "@chakra-ui/icons";
 function NewHistoryPage (){
+    // Example event data
     const events: PastEvent[] = [
         {
           eventNo: 1,
@@ -46,7 +47,7 @@ function NewHistoryPage (){
           dateTime: new Date("2023-05-06T09:00:00"),
         },
       ];
-
+    // State variables 
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,13 +56,14 @@ function NewHistoryPage (){
     "eventNo" | "eventName" | "dateTime" | "club"
     >("eventNo");
 
+    // Defining Past events
     type PastEvent = {
         eventNo: number;
         eventName: string;
         club: string;
         dateTime: Date;
     };
-
+    // Example club data
     const clubs = [
         { name: "IEMMSS", id: "iemmss" },
         { name: "CHEMECAR", id: "chemecar" },
@@ -70,6 +72,7 @@ function NewHistoryPage (){
         { name: "JJK", id: "jjk" },
       ];
 
+    // Table Styling 
     const tableStyles: CSSObject = {
         borderCollapse: "collapse",
         border: "2px solid #ddd",
@@ -85,11 +88,11 @@ function NewHistoryPage (){
           fontWeight: "bold",
         },
       };
-
+    // Responsible for handling search input 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     };
-    
+    // Responsible for club filtering
     const handleClubFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
         const club = event.target.value;
         console.log(club);
@@ -100,6 +103,7 @@ function NewHistoryPage (){
         }
       };
 
+     // Filter events based on search term and selected clubs
     const filteredEvents = events.filter((event) => {
         const matchesSearchTerm = event.eventName
           .toLowerCase()
@@ -109,6 +113,7 @@ function NewHistoryPage (){
         return matchesSearchTerm && matchesSelectedClubs;
       });
 
+    // Handle sorting by specific fields
     const handleSort = (field: "eventNo" | "eventName" | "dateTime" | "club") => {
         if (field === sortField) {
           setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -117,7 +122,8 @@ function NewHistoryPage (){
           setSortOrder("asc");
         }
       };
-    
+  
+      // Sort filtered events based on sort field and order
     const sortedEvents = filteredEvents.sort((a, b) => {
         if (sortField === "eventNo") {
           return sortOrder === "asc"
@@ -138,7 +144,10 @@ function NewHistoryPage (){
         }
       });
 
+    // Toast to replace a pop up window 
     const toast = useToast()
+
+    // Table frontend 
     return (
         <Box width="100%" p={5} overflowX="auto">
       <Box
