@@ -1,6 +1,7 @@
 
 import { CSSObject } from "@emotion/react";
 import { useState } from "react";
+import { useToast } from '@chakra-ui/react'
 import {
     Table,
     Thead,
@@ -137,6 +138,7 @@ function NewHistoryPage (){
         }
       });
 
+    const toast = useToast()
     return (
         <Box width="100%" p={5} overflowX="auto">
       <Box
@@ -206,7 +208,14 @@ function NewHistoryPage (){
                 </Text>
               </Td>
               <Td>
-                <Button colorScheme="blue" size="sm">
+                <Button colorScheme="blue" size="sm" onClick={() =>toast({
+                  title: 'Feedback Received',
+                  description: "Thank you for your feedback :)",
+                  status: 'success',
+                  duration: 9000,
+                  isClosable: true,
+                })
+                }>
                   Provide Feedback
                 </Button>
               </Td>
