@@ -17,7 +17,7 @@ function App() {
 		<div className="App">
 			<Router>
 				<Navbar />
-				<RegisterPage />
+				{/* <RegisterPage /> */}
 				<Outlet /> {/* Render nested routes */}
 			</Router>
 		</div>

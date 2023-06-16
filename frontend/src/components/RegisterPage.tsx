@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Box, Button, FormControl, FormLabel, Input, Image, Heading, Select } from "@chakra-ui/react";
+import axios from 'axios';
 
 interface RegisterPageFormData {
-  name: string;
-  email: string;
+  firstName: string;
+  lastName: string;
   studentId: string;
   enrolmentYear: string;
   enrolmentIntake: string;
@@ -13,8 +14,8 @@ interface RegisterPageFormData {
 
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<RegisterPageFormData>({
-    name: "",
-    email: "",
+    firstName: "",
+    lastName: "",
     studentId: "",
     enrolmentYear: "",
     enrolmentIntake: "",
@@ -31,8 +32,59 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData.discipline);
+    for( var key in formData ) {
+      if( key === "" ) {
+        alert("Please fill in all fields!");
+        return;
+      }
+    }
+
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const body = {
+      "stu_fire_id": user.uid,
+      "stu_email": user.email,
+      "stu_name": formData.firstName, //TODO: change to first name and last name
+      "stu_id": formData.studentId,
+      "enrolment_year": formData.enrolmentYear,
+      "enrolment_intake": formData.enrolmentIntake,
+      "stu_gender": formData.gender,
+      "dis_uuid": formData.discipline,
+  }
+
+    console.log(body);
+    async function doPostRequest() {
+
+      let payload = body;
+
+      console.log(payload);
+  
+      let res = await axios.post('http://localhost:3000/api/user', payload);
+  
+      let data = res.data;
+      console.log(data);
+      console.log("POST Request sent")
+  }
+    // doPostRequest();
   };
+
+
+// we have an array
+const discArray = [{ key: "Chemical", value: "C" }, { key: "Mechanical", value: "M" }, { key: "Electrical", value: "E"}, { key: "Software", value: "S"}];
+
+// call the function we made. more readable
+const discOptions = discArray.map((discItem) => 
+  <option value={discItem.value}>{discItem.key}</option>
+);
+
+
+  // const generateDropDown = () => {
+  //   const options = [{ key: "Chemical", value: "C" }, { key: "Mechanical", value: "M" }, { key: "Electrical", value: "E"}];
+  //   return options.map((option) => {
+  //      <option value={option.value}>{option.key}</option>;
+  //   });
+
+    
+  // };
 
   return (
     <Box p={5}>
@@ -49,29 +101,29 @@ const RegisterPage: React.FC = () => {
       </Box>
       <form onSubmit={handleSubmit}>
         <FormControl isRequired>
-          <FormLabel>Name</FormLabel>
+          <FormLabel>First Name</FormLabel>
           <Input
             type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
+            name="firstName"
+            placeholder="First Name"
+            value={formData.firstName}
             onChange={handleInputChange}
           />
         </FormControl>
         <FormControl isRequired mt={6}>
-          <FormLabel>Email</FormLabel>
+          <FormLabel>Last Name</FormLabel>
           <Input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={formData.lastName}
             onChange={handleInputChange}
           />
         </FormControl>
         <FormControl isRequired mt={6}>
           <FormLabel>Student ID</FormLabel>
           <Input
-            type="text"
+            type="number"
             name="studentId"
             placeholder="Student ID"
             value={formData.studentId}
@@ -80,35 +132,36 @@ const RegisterPage: React.FC = () => {
         </FormControl>
         <FormControl isRequired mt={6}>
           <FormLabel>Enrolment Year</FormLabel>
-          <Select name="enrolmentYear" value={formData.enrolmentYear} onChange={handleInputChange}>
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-          </Select>
+          <Input
+            type="number"
+            name="enrolmentYear"
+            placeholder="Enrolment Year"
+            value={formData.enrolmentYear}
+            onChange={handleInputChange}
+          />
         </FormControl>
         <FormControl isRequired mt={6}>
           <FormLabel>Enrolment Intake</FormLabel>
           <Select name="enrolmentIntake" value={formData.enrolmentIntake} onChange={handleInputChange}>
-            <option value="February">January</option>
-            <option value="July">February</option>
-            <option value="October">March</option>
+            <option value="2">February</option>
+            <option value="7">July</option>
+            <option value="10">October</option>
           </Select>
         </FormControl>
         <FormControl isRequired mt={6}>
           <FormLabel>Gender</FormLabel>
           <Select name="gender" value={formData.gender} onChange={handleInputChange}>
-            <option value="Female">Female</option>
-            <option value="Male">Male</option>
+            <option value="0">Female</option>
+            <option value="1">Male</option>
           </Select>
         </FormControl>
         <FormControl isRequired mt={6}>
           <FormLabel>Discipline</FormLabel>
           <Select name="discipline" value={formData.discipline} onChange={handleInputChange}>
-            <option value="Chemical">Chemical</option>
+            {/* <option value="Chemical">Chemical</option>
             <option value="Mechanical">Mechanical</option>
-            <option value="Electrical">Electrical</option>
+            <option value="Electrical">Electrical</option> */}
+            {discOptions}
           </Select>
         </FormControl>
         <Button

@@ -27,6 +27,7 @@ import Admin from "../../pages/Admin/AdminDashboard"
 import StudentHome from "../../pages/student/StudentHome"
 import EventHome from "../../pages/student/EventHome"
 import LoginPage from "../LoginPage"
+import RegisterPage from "../RegisterPage"
 
 const Navbar = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure()
@@ -107,6 +108,7 @@ const Navbar = () => {
 				<Route path="/StudentHome" element={<StudentHome />} />
 				<Route path="/EventHome" element={<EventHome />} />
 				<Route path="/LoginPage" element={<LoginPage />} />
+				<Route path="/RegisterPage" element={<RegisterPage />} />
 			</Routes>
 		</>
 	)
