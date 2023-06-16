@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -20,9 +20,12 @@ import {
   Image,
   Flex,
   Spacer,
+  IconButton,
+  Icon
 } from "@chakra-ui/react";
+import { FiUser } from "react-icons/fi";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import { Link, Route, Routes, Navigate } from "react-router-dom";
+import { Link, Route, Routes, Navigate, useNavigate, useLocation, Outlet } from "react-router-dom";
 import OrganiserList from "../../pages/Admin/OrganiserList";
 import ActivityLog from "../../pages/Admin/ActivityLog";
 import Admin from "../../pages/Admin/AdminDashboard";
@@ -42,11 +45,28 @@ const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const buttonRef = React.useRef(null);
   const [view, setView] = useState("student");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Navigate to the appropriate landing page based on the selected view
+    switch (view) {
+      case "student":
+        navigate("/TestLandingPage");
+        break;
+      case "organiser":
+        navigate("/OrganiserMainPage");
+        break;
+      case "admin":
+        navigate("/Admin");
+        break;
+      default:
+        break;
+    }
+  }, [view]);
 
   const handleViewChange = (selectedView) => {
     setView(selectedView);
-    onClose();
-
   };
   return (
     <>
@@ -63,20 +83,18 @@ const Navbar = () => {
               cursor: 'pointer'
             }} />
         </Box>
-        {/* <Spacer/> */}
-        <Image src='/monash_logo.png' height='50px'></Image>
-        <Spacer />
-        <Menu>
-          {/* To do: change the sign in sign up to an icon */}
-          <MenuButton ml={4} mr={4} as={Button} variant="ghost">
-            Login
-          </MenuButton>
-          <MenuList>
-            <MenuItem>
-              <Link to="/Login">Login</Link>
-            </MenuItem>
-          </MenuList>
-        </Menu>
+        <Box>
+          <Image src='/monash_logo.png' height='50px'></Image>
+        </Box>
+        <Box ml="auto" mr="20px">
+        <IconButton
+          icon={<Icon as={FiUser} boxSize={6} />}
+          aria-label="Login"
+          variant="ghost"
+          color='#FFFFFF'
+          onClick={() => navigate("/login")}
+        />
+        </Box>
       </Flex>
 
 
@@ -94,25 +112,51 @@ const Navbar = () => {
           <DrawerHeader>Menu</DrawerHeader>
           <DrawerBody>
             <VStack align="start" spacing={4}>
-              <Link to="/Testlandingpage">Home</Link>
-              <Link to="/StudentHome">Student Home</Link>
-              <Link to='/AttendanceHome'>Attendance Home</Link>
-              <Link to="/Historypage">History Page</Link>
-              <Link to="/FeedbackForm">Feedback Form</Link>
-              {(view === "organiser" || view === "admin") && (
-                <>
-              <Link to="/OrganiserMainPage">Organiser Home</Link>
-              <Link to="/Event">View Event Details</Link>
-              <Link to="page1">Event Form</Link>
-                </>
+            {view === "student" && (
+              <>
+                <Link to="/TestLandingPage" onClick={() => handleViewChange("student")}>
+                Home
+                </Link>
+                <Link to="/StudentHome" onClick={() => handleViewChange("student")}>
+                Student Home
+                </Link>
+                <Link to="/AttendanceHome" onClick={() => handleViewChange("student")}>
+                Attendance Home
+                </Link>
+                <Link to="/HistoryPage" onClick={() => handleViewChange("student")}>
+                History Page
+                </Link>
+                <Link to="/FeedbackForm" onClick={() => handleViewChange("student")}>
+                Feedback Form
+                </Link>
+              </>
               )}
-              {view === "admin" && (
-                <>
-                  <Link to="/Admin">Admin Dashboard</Link>
-                  <Link to="/OrganiserList">Organiser List</Link>
-                  <Link to="/ActivityLog">Activity Log</Link>
-                </>
-              )}
+            {view === "organiser" && (
+              <>
+                <Link to="/OrganiserMainPage" onClick={() => handleViewChange("organiser")}>
+                Organiser Home
+                </Link>
+                <Link to="/Event" onClick={() => handleViewChange("organiser")}>
+                View Event Details
+                </Link>
+                <Link to="/page1" onClick={() => handleViewChange("organiser")}>
+                Event Form
+                </Link>
+              </>
+            )}
+            {view === "admin" && (
+              <>
+                <Link to="/Admin" onClick={() => handleViewChange("admin")}>
+                Admin Dashboard
+                </Link>
+                <Link to="/OrganiserList" onClick={() => handleViewChange("admin")}>
+                Organiser List
+                </Link>
+                <Link to="/ActivityLog" onClick={() => handleViewChange("admin")}>
+                Activity Log
+                </Link>
+              </>
+            )}
             </VStack>
           </DrawerBody>
           <DrawerFooter>
@@ -146,17 +190,18 @@ const Navbar = () => {
       </Drawer>
 
       <Routes>
-        <Route path="/" element={<Navigate to="/Testlandingpage" replace />} />
-        <Route path="/Testlandingpage" element={<Testlandingpage />} />
-        <Route path="/AttendanceHome" element={<AttendancePage />} />
-        <Route path="/StudentHome" element={<StudentHome />} />
-        <Route path="/Historypage" element={<Historypage />} />
-        <Route path="/EventHome" element={<EventHome />} />
-        <Route path="/FeedbackForm" element={<FeedbackForm />} />
-        {(view === "organiser" || view === "admin") && (
-          <>
-            <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
-            <Route path="/Event" element={<EventDetailsDashboard name={""} description={""} date={""} time={""} capacity={0} venue={""} recurring={false} eventStatistics={{
+      <Route path="/" element={<Outlet />} />
+    
+          <Route path="/" element={<Navigate to="/TestLandingPage" replace />} />
+          <Route path="/TestLandingPage" element={<Testlandingpage />} />
+          <Route path="/AttendanceHome" element={<AttendancePage />} />
+          <Route path="/StudentHome" element={<StudentHome />} />
+          <Route path="/HistoryPage" element={<Historypage />} />
+          <Route path="/EventHome" element={<EventHome />} />
+          <Route path="/FeedbackForm" element={<FeedbackForm />} />
+   
+          <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
+          <Route path="/Event" element={<EventDetailsDashboard name={""} description={""} date={""} time={""} capacity={0} venue={""} recurring={false} eventStatistics={{
               gender: {
                 male: 0,
                 female: 0
@@ -167,16 +212,12 @@ const Navbar = () => {
                 arts: 0
               }
             }} />} />
-            <Route path="/page1" element={<Page1 />} />
-          </>
-          )}             
-        {view === "admin" && (
-          <>
-            <Route path="/Admin" element={<Admin />} />
-            <Route path="/OrganiserList" element={<OrganiserList />} />
-            <Route path="/ActivityLog" element={<ActivityLog />} />
-          </>
-        )}
+          <Route path="/page1" element={<Page1 />} />
+          
+         
+          <Route path="/Admin" element={<Admin />} />
+          <Route path="/OrganiserList" element={<OrganiserList />} />
+          <Route path="/ActivityLog" element={<ActivityLog />} />
       </Routes>
     </>
   );
