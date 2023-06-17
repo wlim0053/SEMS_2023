@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, FormControl, FormLabel, Input, Image, Heading, Select } from "@chakra-ui/react";
 import axios from 'axios';
+import api from '../utils/api';
+import { s } from "@fullcalendar/core/internal-common";
 
 interface RegisterPageFormData {
   firstName: string;
@@ -22,6 +24,8 @@ const RegisterPage: React.FC = () => {
     gender: "",
     discipline: "",
   });
+  const[specs, setSpecs] = useState(false);
+  const[specialise, setSpecialise] = useState<Object[] | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -32,6 +36,7 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("submit")
     for( var key in formData ) {
       if( key === "" ) {
         alert("Please fill in all fields!");
@@ -67,26 +72,45 @@ const RegisterPage: React.FC = () => {
     // doPostRequest();
   };
 
+// // we have an array
+// let discArray = [{ key: "Chemical", value: "C" }, { key: "Mechanical", value: "M" }, { key: "Electrical", value: "E"}, { key: "Software", value: "S"}];
 
-// we have an array
-const discArray = [{ key: "Chemical", value: "C" }, { key: "Mechanical", value: "M" }, { key: "Electrical", value: "E"}, { key: "Software", value: "S"}];
-
-// call the function we made. more readable
-const discOptions = discArray.map((discItem) => 
-  <option value={discItem.value}>{discItem.key}</option>
-);
+// // call the function we made. more readable
+// let discOptions = discArray.map((discItem) => 
+//   <option value={discItem.value} key={discItem.key}>{discItem.key}</option>
+// );
 
 
-  // const generateDropDown = () => {
-  //   const options = [{ key: "Chemical", value: "C" }, { key: "Mechanical", value: "M" }, { key: "Electrical", value: "E"}];
-  //   return options.map((option) => {
-  //      <option value={option.value}>{option.key}</option>;
-  //   });
+let specialisation = <option value="2" key="February">February</option>;
 
-    
-  // };
+async function getDisciplines() {
+    let res = await api.get('/specialisation');
+    let data = res.data;
+    console.log(data);
+    console.log("GET Request sent");
+    specialisation = data.map((specialisationItem: any) =>
+      <option value={specialisationItem.spec_uuid} key={specialisationItem.spec_name}>{specialisationItem.spec_name}</option>
+    )
+    console.log(specialisation);
+}
 
-  return (
+// specialisation = specialise.map((specialisationItem: any) =>
+//   <option value={specialisationItem.spec_uuid} key={specialisationItem.spec_name}>{specialisationItem.spec_name}</option>
+// )
+
+// useEffect(() => {
+//   // Perform your API call here
+//   getDisciplines().then(specs => setSpecs(true)).then(specs => console.log(specialisation));
+// }, []); // Empty dependency array to ensure the effect runs only once on component mount
+
+useEffect(() => {
+  // Perform your API call here
+  api.get('/specialisation')
+  .then((response) => {setSpecialise(response.data)})
+  .then(special => console.log(specialise));
+}, []); // Empty dependency array to ensure the effect runs only once on component mount
+
+   return (
     <Box p={5}>
       <Box textAlign="center" mb={5}>
         <Image
@@ -143,25 +167,25 @@ const discOptions = discArray.map((discItem) =>
         <FormControl isRequired mt={6}>
           <FormLabel>Enrolment Intake</FormLabel>
           <Select name="enrolmentIntake" value={formData.enrolmentIntake} onChange={handleInputChange}>
-            <option value="2">February</option>
-            <option value="7">July</option>
-            <option value="10">October</option>
+            <option value="2" key="February">February</option>
+            <option value="7" key="July">July</option>
+            <option value="10" key="October">October</option>
           </Select>
         </FormControl>
         <FormControl isRequired mt={6}>
           <FormLabel>Gender</FormLabel>
           <Select name="gender" value={formData.gender} onChange={handleInputChange}>
-            <option value="0">Female</option>
-            <option value="1">Male</option>
+            <option value="0" key="Female">Female</option>
+            <option value="1" key="Male">Male</option>
           </Select>
         </FormControl>
         <FormControl isRequired mt={6}>
           <FormLabel>Discipline</FormLabel>
           <Select name="discipline" value={formData.discipline} onChange={handleInputChange}>
-            {/* <option value="Chemical">Chemical</option>
-            <option value="Mechanical">Mechanical</option>
-            <option value="Electrical">Electrical</option> */}
-            {discOptions}
+            {specialise ? specialise.map((specialisationItem: any) =>
+              <option value={specialisationItem.spec_uuid} key={specialisationItem.spec_name}>{specialisationItem.spec_name}</option>
+            ): <option value="0" key="Loading">Loading...</option>}
+
           </Select>
         </FormControl>
         <Button

@@ -142,10 +142,6 @@ const handleSubmit = (e: FormEvent) => {
       
   
       
-      
-      
-  
-  
       // IdP data available using getAdditionalUserInfo(result)
       // ...
     }).then((response)=>{console.log(response)})
