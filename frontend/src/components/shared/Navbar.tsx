@@ -26,7 +26,10 @@ import Admin from "../../pages/admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
 import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
-import CreateEventForm from "../../pages/Organiser/CreateEventForm";
+
+import CreateNewEventForm from "../../pages/Organiser/CreateNewEventForm";
+
+import CreateEventForm from "../../pages/Organiser/CreateEventForm1";
 import CreateEventForm2 from "../../pages/Organiser/CreateEventForm2";
 import CreateEventForm3 from "../../pages/Organiser/CreateEventForm3";
 import CreateEventForm4a from "../../pages/Organiser/CreateEventForm4a";
@@ -91,6 +94,9 @@ const Navbar = () => {
         <Route path="/ActivityLog" element={<ActivityLog />} />
         <Route path="/StudentHome" element={<StudentHome />} />
         <Route path="/EventHome" element={<EventHome />} />
+
+        <Route path="/CreateNewEventForm" element={<CreateNewEventForm />} />
+
         <Route path="/CreateEventForm" element={<CreateEventForm />} />
         <Route path="/CreateEventForm2" element={<CreateEventForm2 />} />
         <Route path="/CreateEventForm3" element={<CreateEventForm3 />} />

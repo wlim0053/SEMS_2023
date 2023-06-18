@@ -14,11 +14,15 @@ import GridViewButton from '../../components/Organizer/GridViewButton'
 import GridEventDashboard from '../../components/Organizer/GridEventDashboard'
 import GridEventDashboardPageNavigator from '../../components/Organizer/GridEventDashboardPageNavigator'
 import Calendar from '../../components/Organizer/Calendar'
+import { useNavigate } from 'react-router-dom';
+
 
 
 function OrganiserMainPage() {
   const [calendarViewFlag, setCalendarViewFlag] = useState(false);
   const [selectedEvents, setSelectedEvents] = useState(-1);
+  const navigate = useNavigate();
+
 
   function toggleView(){
     setCalendarViewFlag(!calendarViewFlag)
@@ -67,7 +71,7 @@ function OrganiserMainPage() {
   }
 
   const handleCreateEvent = () => {
-    window.location.href = "/CreateEventForm";
+    navigate('/CreateEventForm');
   };
   
   return (
