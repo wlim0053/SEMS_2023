@@ -3,6 +3,7 @@ import { Box, Button, FormControl, FormLabel, Input, Image, Heading, Select } fr
 import axios from 'axios';
 import api from '../utils/api';
 import { s } from "@fullcalendar/core/internal-common";
+import { useNavigate } from "react-router-dom"
 
 interface RegisterPageFormData {
   firstName: string;
@@ -15,6 +16,7 @@ interface RegisterPageFormData {
 }
 
 const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<RegisterPageFormData>({
     firstName: "",
     lastName: "",
@@ -24,7 +26,6 @@ const RegisterPage: React.FC = () => {
     gender: "",
     discipline: "",
   });
-  const[specs, setSpecs] = useState(false);
   const[specialise, setSpecialise] = useState<Object[] | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -44,16 +45,19 @@ const RegisterPage: React.FC = () => {
       }
     }
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    const user = JSON.parse(localStorage.getItem('RegUser') || '{}');
     const body = {
-      "stu_fire_id": user.uid,
-      "stu_email": user.email,
-      "stu_name": formData.firstName, //TODO: change to first name and last name
-      "stu_id": formData.studentId,
-      "enrolment_year": formData.enrolmentYear,
-      "enrolment_intake": formData.enrolmentIntake,
-      "stu_gender": formData.gender,
-      "dis_uuid": formData.discipline,
+      "user_fire_id": user.uid,
+      "spec_uuid": formData.discipline,
+      "user_email": user.email,
+      "user_fname": formData.firstName,
+      "user_lname": formData.lastName,
+      "user_id": parseInt(formData.studentId),
+      "user_gender": parseInt(formData.gender),
+      "enrolment_year": new Date(formData.enrolmentYear).toISOString(),
+      "enrolment_intake": parseInt(formData.enrolmentIntake),
+      "user_access_lvl": "S"
   }
 
     console.log(body);
@@ -63,45 +67,16 @@ const RegisterPage: React.FC = () => {
 
       console.log(payload);
   
-      let res = await axios.post('http://localhost:3000/api/user', payload);
+      let res = await api.post('/user', payload);
   
       let data = res.data;
       console.log(data);
       console.log("POST Request sent")
+      navigate('/StudentHome');
   }
-    // doPostRequest();
+    doPostRequest();
   };
 
-// // we have an array
-// let discArray = [{ key: "Chemical", value: "C" }, { key: "Mechanical", value: "M" }, { key: "Electrical", value: "E"}, { key: "Software", value: "S"}];
-
-// // call the function we made. more readable
-// let discOptions = discArray.map((discItem) => 
-//   <option value={discItem.value} key={discItem.key}>{discItem.key}</option>
-// );
-
-
-let specialisation = <option value="2" key="February">February</option>;
-
-async function getDisciplines() {
-    let res = await api.get('/specialisation');
-    let data = res.data;
-    console.log(data);
-    console.log("GET Request sent");
-    specialisation = data.map((specialisationItem: any) =>
-      <option value={specialisationItem.spec_uuid} key={specialisationItem.spec_name}>{specialisationItem.spec_name}</option>
-    )
-    console.log(specialisation);
-}
-
-// specialisation = specialise.map((specialisationItem: any) =>
-//   <option value={specialisationItem.spec_uuid} key={specialisationItem.spec_name}>{specialisationItem.spec_name}</option>
-// )
-
-// useEffect(() => {
-//   // Perform your API call here
-//   getDisciplines().then(specs => setSpecs(true)).then(specs => console.log(specialisation));
-// }, []); // Empty dependency array to ensure the effect runs only once on component mount
 
 useEffect(() => {
   // Perform your API call here
