@@ -45,6 +45,7 @@ const validationSchema = yup.object().shape({
   eventTitle: yup.string().required("Event Title is required"),
   venueLink: yup.string().required("Venue Link is required"),
   description: yup.string().required("Description is required"),
+  checkedBox: yup.string().required("Please fill the EMS form"),
   capacity: yup
     .number()
     .required("Capacity is required")
@@ -105,6 +106,7 @@ function CreateEventForm() {
       registrationStart: null,
       registrationEnd: null,
       signUpFormLink: "",
+      checkedBox:"",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -493,6 +495,9 @@ function CreateEventForm() {
           >
             EMS Form has been filled and submitted above
           </Checkbox>
+          {formik.touched.checkedBox && formik.errors.checkedBox && (
+            <Text color="red">{formik.errors.checkedBox}</Text>
+          )}  
         </FormControl>
         {/* Submit Button */}
         <Button type="submit" disabled={!isChecked}>Submit</Button>
