@@ -1,10 +1,12 @@
 export enum DbTables {
-	DISCIPLINE = "[sems_demo].[dbo].[tbl_discipline]",
-	EVENT = "[sems_demo].[dbo].[tbl_event]",
+	SCHOOL = "[sems_demo].[dbo].[tbl_school]",
+	LEVEL = "[sems_demo].[dbo].[tbl_level]",
+	SPECIALISATION = "[sems_demo].[dbo].[tbl_specialisation]",
+	USER = "[sems_demo].[dbo].[tbl_user]",
 	ORGANISER = "[sems_demo].[dbo].[tbl_organiser]",
 	PARTICIPATION = "[sems_demo].[dbo].[tbl_participation]",
-	SCHOOL = "[sems_demo].[dbo].[tbl_school]",
-	STUDENT = "[sems_demo].[dbo].[tbl_student]",
+	EVENT = "[sems_demo].[dbo].[tbl_event]",
+	FEEDBACK = "[sems_demo].[dbo].[tbl_feedback]",
 }
 
 export enum StatusCodes {
