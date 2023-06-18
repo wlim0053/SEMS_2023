@@ -26,20 +26,7 @@ import Admin from "../../pages/admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
 import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
-
-import CreateNewEventForm from "../../pages/Organiser/CreateNewEventForm";
-
-import CreateEventForm from "../../pages/Organiser/CreateEventForm1";
-import CreateEventForm2 from "../../pages/Organiser/CreateEventForm2";
-import CreateEventForm3 from "../../pages/Organiser/CreateEventForm3";
-import CreateEventForm4a from "../../pages/Organiser/CreateEventForm4a";
-import CreateEventForm4b from "../../pages/Organiser/CreateEventForm4b";
-import CreateEventForm5a from "../../pages/Organiser/CreateEventForm5a";
-import CreateEventForm5b from "../../pages/Organiser/CreateEventForm5b";
-import CreateEventForm6 from "../../pages/Organiser/CreateEventForm6";
-import CreateEventForm7 from "../../pages/Organiser/CreateEventForm7";
-import CreateEventForm8 from "../../pages/Organiser/CreateEventForm8";
-import CreateEventForm9 from "../../pages/Organiser/CreateEventForm9";
+import CreateEventForm from "../../pages/Organiser/CreateEventForm";
 import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 
 const Navbar = () => {
@@ -94,20 +81,7 @@ const Navbar = () => {
         <Route path="/ActivityLog" element={<ActivityLog />} />
         <Route path="/StudentHome" element={<StudentHome />} />
         <Route path="/EventHome" element={<EventHome />} />
-
-        <Route path="/CreateNewEventForm" element={<CreateNewEventForm />} />
-
         <Route path="/CreateEventForm" element={<CreateEventForm />} />
-        <Route path="/CreateEventForm2" element={<CreateEventForm2 />} />
-        <Route path="/CreateEventForm3" element={<CreateEventForm3 />} />
-        <Route path="/CreateEventForm4a" element={<CreateEventForm4a />} />
-        <Route path="/CreateEventForm4b" element={<CreateEventForm4b />} />
-        <Route path="/CreateEventForm5a" element={<CreateEventForm5a />} />
-        <Route path="/CreateEventForm5b" element={<CreateEventForm5b />} />
-        <Route path="/CreateEventForm6" element={<CreateEventForm6 />} />
-        <Route path="/CreateEventForm7" element={<CreateEventForm7 />} />
-        <Route path="/CreateEventForm8" element={<CreateEventForm8 />} />
-        <Route path="/CreateEventForm9" element={<CreateEventForm9 />} />
         <Route path="/EventDetailsDashboard" element={<EventDetailsDashboard date="2023-05-21" time="14:00" capacity={100} venue="Example Venue" recurring={false} eventStatistics={{ gender: { male: 50, female: 50 }, specialization: { engineering: 30, medicine: 40, arts: 30 } }} />} />
       </Routes>
 

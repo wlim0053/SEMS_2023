@@ -86,7 +86,7 @@ const validationSchema = yup.object().shape({
     .url("Invalid Sign Up Form Link"),
 });
 
-function EventForm() {
+function CreateEventForm() {
   const formik = useFormik({
     initialValues: {
       eventTitle: "",
@@ -455,4 +455,4 @@ function EventForm() {
   );
 }
 
-export default EventForm;
+export default CreateEventForm;

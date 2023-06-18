@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Heading, IconButton  } from '@chakra-ui/react'
 import { Input } from "@chakra-ui/react"
 import { Select } from "@chakra-ui/react"
@@ -9,7 +8,6 @@ import { AddIcon } from '@chakra-ui/icons';
 import { Flex } from "@chakra-ui/react";
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useState } from 'react';
-import CalendarDashboard from '../../components/Organizer/CalendarDashboard'
 import GridViewButton from '../../components/Organizer/GridViewButton'
 import GridEventDashboard from '../../components/Organizer/GridEventDashboard'
 import GridEventDashboardPageNavigator from '../../components/Organizer/GridEventDashboardPageNavigator'
