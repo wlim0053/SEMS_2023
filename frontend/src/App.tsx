@@ -11,14 +11,13 @@ import "./App.css"
 import { BrowserRouter as Router, Route, Outlet } from "react-router-dom"
 import OrganiserList from "./pages/admin/OrganiserList"
 import ActivityLog from "./pages/admin/ActivityLog"
+import NewHistoryPage from "./components/NewHistoryPage"
+import Testlandingpage from "./components/Testlandingpage"
 
 function App() {
 	return (
 		<div className="App">
-			<Router>
-				<Navbar />
-				<Outlet /> {/* Render nested routes */}
-			</Router>
+			<NewHistoryPage/>
 		</div>
 	)
 }
