@@ -36,13 +36,14 @@ import {
   Alert,
   AlertIcon,
   useToast,
+  List,
 } from "@chakra-ui/react";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import { BiUpload } from "react-icons/bi";
 import { MdOutlineModeEdit } from "react-icons/md";
 import api from "../../utils/api";
 
-function OrganiserList() {
+const OrganiserList = () => {
   const headers = [
     { key: "name", value: "Name" },
     { key: "email", value: "Email" },
@@ -58,8 +59,15 @@ function OrganiserList() {
   const [inputEmail, setInputEmail] = useState("");
   const [inputClub, setInputClub] = useState("");
 
+  const [organiserID, setOrganiserID] = useState("");
+
   const [organisers, setOrganiser] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenEdit,
+    onOpen: onOpenEdit,
+    onClose: onCloseEdit,
+  } = useDisclosure();
   const toast = useToast();
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
@@ -71,6 +79,17 @@ function OrganiserList() {
 
   const handleSort = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSort(event.target.value as sortField);
+  };
+
+  const handleEdit = (id: any) => {
+    onOpenEdit();
+  };
+
+  //json body for adding organiser
+  const bodyAdmin = {
+    organiser_name: inputName,
+    parent_uuid: null,
+    stu_fire_id: inputEmail,
   };
 
   //get data from api whenever the organinser list's length changes
@@ -89,47 +108,95 @@ function OrganiserList() {
     fetchOrganiser();
   }, []);
 
-  //json body for adding organiser
-  const bodyAdmin = {
-    organiser_name: inputName,
-    parent_uuid: null,
-    stu_fire_id: inputEmail,
-  };
-
   //add organiser to database using post
   const addOrganiser = async (e: any) => {
     e.preventDefault();
     console.log(bodyAdmin);
+    /*if (inputName === "" || inputEmail === "" || inputClub === "") {
+      toast({
+        title: "Please fill in all fields!",
+        status: "error",
+        position: "top"
+        duration: 3000,
+        isClosable: true,
+      });
+    */
     try {
       const response = await api.post("/organiser", bodyAdmin);
-      const allOrganiser: any = [...organisers, response.data];
-      setOrganiser(allOrganiser);
-      setInputName("");
-      setInputEmail("");
+      setTimeout(() => fetchOrganiser(), 200);
       toast({
-        title: "Organiser added!",
+        title: "Organiser added successfully!",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      console.log(response.data);
+      //console.log(response.data);
     } catch (error) {
       console.log(error);
     }
   };
 
+  //function to get organiser by id
+  const getOrganiserById = async (id: any) => {
+    try {
+      const response = await api.get(`/organiser/${id}`);
+      setInputName(response.data[0].organiser_name);
+      setInputEmail(response.data[0].stu_fire_id);
+      /**
+       * club should be organiser's parent uuid
+       */
+      //setInputClub(response.data[0].club);
+      //console.log(response.data[0].club);
+      //console.log(response.data);
+      setOrganiserID(id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //update organiser details
+  const updateOrganiser = async (id: any) => {
+    const bodyUpdate = {
+      organiser_name: inputName,
+      parent_uuid: null,
+      stu_fire_id: inputEmail,
+    };
+    try {
+      const response = await api.put(`/organiser/${id}`, bodyUpdate);
+      organisers.map((organiser: any) => {
+        if (organiser.organiser_uuid === id) {
+          organiser.organiser_name = inputName;
+          organiser.stu_fire_id = inputEmail;
+        }
+      });
+      setTimeout(() => fetchOrganiser(), 200);
+      toast({
+        title: "Organiser updated successfully!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      //console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  /**organiser that created event cant be deleted.
+   * Eg IC and Car, Want to sell car, but the car is tie to your IC.
+   * How do u settle the car.*/
   //function to delete organiser by calling api delete
   const deleteOrganiser = async (id: any) => {
     try {
       if (window.confirm("Are you sure you want to delete this organiser?")) {
         await api.delete(`/organiser/${id}`);
+        setTimeout(() => fetchOrganiser(), 300);
         toast({
-          title: "Organiser deleted!",
+          title: "Organiser deleted successfully!",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
-        setTimeout(() => fetchOrganiser(), 300);
       }
     } catch (error) {
       console.log(error);
@@ -177,7 +244,6 @@ function OrganiserList() {
           Add organiser
         </Button>
       </Box>
-
       <Modal
         isOpen={isOpen}
         onClose={onClose}
@@ -266,7 +332,7 @@ function OrganiserList() {
             .filter((organiser: any) => {
               return searchTerm.toLowerCase() === ""
                 ? organiser
-                : organiser.name
+                : organiser.stu_name
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase());
             })
@@ -281,6 +347,10 @@ function OrganiserList() {
                       colorScheme="blue"
                       variant="outline"
                       aria-label="Edit Organiser"
+                      onClick={() => {
+                        getOrganiserById(organiser.organiser_uuid);
+                        onOpenEdit();
+                      }}
                       icon={<MdOutlineModeEdit />}
                     ></IconButton>
                     <IconButton
@@ -296,11 +366,72 @@ function OrganiserList() {
                 </Td>
               </Tr>
             ))}
+          <Modal
+            isOpen={isOpenEdit}
+            onClose={onCloseEdit}
+            initialFocusRef={initialRef}
+            finalFocusRef={finalRef}
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Edit organiser</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                <FormControl>
+                  <FormLabel>Name</FormLabel>
+                  <Input
+                    value={inputName}
+                    placeholder="Name"
+                    onChange={(e) => setInputName(e.target.value)}
+                  />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    value={inputEmail}
+                    placeholder="Email"
+                    onChange={(e) => setInputEmail(e.target.value)}
+                  />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <FormLabel>Club</FormLabel>
+                  <Select
+                    variant="outline"
+                    placeholder="--select an option--"
+                    width="50%"
+                    value={inputClub}
+                    onChange={(e) => setInputClub(e.target.value)}
+                  >
+                    <option value="option1">MUMEC</option>
+                    <option value="option2">MUMTEC</option>
+                    <option value="option3">Monash Staff</option>
+                  </Select>
+                </FormControl>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    updateOrganiser(organiserID);
+                    onCloseEdit();
+                  }}
+                  colorScheme="blue"
+                  mr={3}
+                >
+                  Update
+                </Button>
+                <Button onClick={onCloseEdit}>Cancel</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         </Tbody>
       </Table>
       <Outlet />
     </Box>
   );
-}
+};
 
 export default OrganiserList;
