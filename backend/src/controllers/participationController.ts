@@ -17,10 +17,15 @@ export const createParticipationController = async (
 		const create: mssql.IResult<ParticipationWithUUID> = await connection
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, req.body.event_uuid)
-			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id).query(`
-                INSERT INTO ${DbTables.PARTICIPATION} (event_uuid, stu_fire_id) 
+			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id)
+			.input(
+				"participation_attendance",
+				mssql.Bit,
+				req.body.participation_attendance
+			).query(`
+                INSERT INTO ${DbTables.PARTICIPATION}
                 OUTPUT INSERTED.*
-                VALUES (@event_uuid, @stu_fire_id)
+                VALUES (DEFAULT, @event_uuid, @user_fire_id, @participation_attendance)
             `)
 		res.json(create.recordset)
 		connection.close()
@@ -40,10 +45,11 @@ export const updateParticipationController = async (
 			.request()
 			.input("participation_uuid", mssql.UniqueIdentifier, req.params.id)
 			.input("event_uuid", mssql.UniqueIdentifier, req.body.event_uuid)
-			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id).query(`
+			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id).query(`
                 UPDATE ${DbTables.PARTICIPATION} 
                 SET [event_uuid]=@event_uuid,
-                    [stu_fire_id]=@stu_fire_id
+                    [user_fire_id]=@user_fire_id,
+                    [participation_attendance]=@participation_attendance
                 OUTPUT INSERTED.*
                 WHERE [participation_uuid]=@participation_uuid
             `)
