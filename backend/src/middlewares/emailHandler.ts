@@ -2,6 +2,7 @@ import nodemailer from "nodemailer"
 import { NextFunction, Request, Response } from "express"
 import Mailgen from "mailgen"
 import { StatusCodes } from "../utils/constant"
+import handlebars from "handlebars"
 
 const user = process.env.email_user;
 const pass = process.env.email_password;
@@ -31,8 +32,12 @@ export const registrationEmail = async (req: Request, res: Response, next: NextF
             intro: "You have successfully signed up for an event!",
             table: {
                 data: [ {
-                    event: "event title", // req.body.event_title
-                    description: "event description" // req.body.event_desc
+                    event: "Tech Talk: Exploring the Future of Artificial Intelligence", // req.body.event_title
+                    description: "Join us for an exciting Tech Talk session where we delve into the fascinating \
+                    world of Artificial Intelligence (AI). Discover how AI is transforming industries, learn about \
+                    the latest advancements, and explore the ethical implications of this rapidly evolving technology. \
+                    Whether you're a technology enthusiast or simply curious about AI, this event is an opportunity to \
+                    expand your knowledge and engage in insightful discussions with industry experts." // req.body.event_desc
                 }],
             }, 
             outro: "Thank you and we look forward to seeing you soon!",
@@ -43,7 +48,7 @@ export const registrationEmail = async (req: Request, res: Response, next: NextF
 
     let message = {
         from: user,
-        to: "miaakerlundmia@gmail.com",
+        to: ["eooi0006@student.monash.edu", "wlim0053@student.monash.edu"],
         subject: "Thank you for your registration!",
         html: mail
     }
@@ -136,7 +141,7 @@ export const postEventEmail = async (req: Request, res: Response, next: NextFunc
 
     let message = {
         from: user,
-        to: ["miaakerlundmia@gmail.com", "xlee0024@student.monash.edu"],
+        to: ["ktan0087@student.monash.edu", "wlim0053@student.monash.edu"],
         subject: "Your Feedback Matters! Share Your Experience of [Event Name]",
         html: mail
     }
@@ -148,3 +153,31 @@ export const postEventEmail = async (req: Request, res: Response, next: NextFunc
     });
 }
 
+export const approveEventEmail = async (req: Request, res: Response, next: NextFunction) => {
+
+    let transporter = nodemailer.createTransport(trans_obj);
+
+    const name = 'mimiyazaki'
+    const eventName = 'Tech Talk: Exploring the Future of Artificial Intelligence'
+    let mail = `
+        <p>Dear ${name},</p>
+        <p>We are pleased to inform you that your event, ${eventName}, has been approved and is scheduled to take place as planned.</p>
+        <p>Congratulations on receiving the approval!</p>
+        <p>We look forward to witnessing the success of the event and the positive impact it will have on the participants.</p>
+        <p>Thank you for your contribution to our event community.</p>
+        <p>Sincerly,</p>
+        <p>SEMS</p>`;
+
+    let message = {
+        from: user,
+        to: ["ktan0087@student.monash.edu", "wlim0053@student.monash.edu", "xlee0024@student.monash.edu"],
+        subject: "SEMS - Event Approval Confirmation",
+        html: mail
+    }
+
+    transporter.sendMail(message).then(() => {
+        return res.sendStatus(StatusCodes.OK)
+    }).catch(() => {
+        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
+    });
+}
