@@ -10,6 +10,7 @@ import { participationRouter } from "./routes/participation"
 import { errorHandler } from "./middlewares/errorHandler"
 import { feedbackRouter } from "./routes/feedback"
 import { statsRouter } from "./routes/stats"
+import { emailRouter } from "./routes/email"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -46,6 +47,7 @@ app.use("/api/specialisation", specialisationRouter)
 app.use("/api/event", eventRouter)
 app.use("/api/participation", participationRouter)
 app.use("/api/feedback", feedbackRouter)
+app.use("/api/email", emailRouter)
 
 // Route for retrieving statistical data from tables (group by statements)
 app.use("/api/stats", statsRouter)
