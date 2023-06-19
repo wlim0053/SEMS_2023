@@ -12,7 +12,10 @@ import { requestValidators } from "../middlewares/requestValidator"
 
 export const eventRouter = express.Router()
 
-eventRouter.route("/").post(createEventController).get(getEventController)
+eventRouter
+	.route("/")
+	.post(requestValidators({ body: Event }), createEventController)
+	.get(getEventController)
 
 // * Endpoint to get all the participants for an event
 eventRouter.route("/:id/participation").get(getEventParticipationController)

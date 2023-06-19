@@ -82,19 +82,11 @@ function Calendar() {
       start: "2023-05-04T12:26:00",
       end: "2023-05-04T13:00:00",
       description: "This is a MUM event",
-    }
+    },
   ];
 
   return (
-    <div
-      className="calendar"
-      style={{
-        fontFamily: "Arial Narrow, sans-serif",
-        padding: 0,
-        margin: "20px 30px",
-        lineHeight: 1.5,
-      }}
-    >
+    <div className="calendar-container">
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
