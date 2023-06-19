@@ -89,7 +89,7 @@ const OrganiserList = () => {
   const bodyAdmin = {
     organiser_name: inputName,
     parent_uuid: null,
-    stu_fire_id: inputEmail,
+    user_fire_id: inputEmail,
   };
 
   //get data from api whenever the organinser list's length changes
@@ -338,8 +338,10 @@ const OrganiserList = () => {
             })
             .map((organiser: any) => (
               <Tr>
-                <Td>{organiser.stu_name}</Td>
-                <Td>{organiser.stu_email}</Td>
+                <Td>
+                  {organiser.user_fname} {organiser.user_lname}
+                </Td>
+                <Td>{organiser.user_email}</Td>
                 <Td>{organiser.organiser_name}</Td>
                 <Td>
                   <HStack spacing={3}>
