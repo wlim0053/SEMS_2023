@@ -21,15 +21,10 @@ export const createUserController = async (
 			.input("user_lname", mssql.VarChar, req.body.user_lname)
 			.input("user_id", mssql.Int, req.body.user_id)
 			.input("user_gender", mssql.Int, req.body.user_gender)
-			.input(
-				"user_access_lvl",
-				mssql.Char,
-				req.body.user_access_lvl ?? null
-			)
 			.input("enrolment_year", mssql.Date, req.body.enrolment_year)
 			.input("enrolment_intake", mssql.Int, req.body.enrolment_intake)
 			.query(`
-                INSERT INTO ${DbTables.USER} 
+                INSERT INTO ${DbTables.USER} (user_fire_id, spec_uuid, user_email, user_fname, user_lname, user_id, user_gender, enrolment_year, enrolment_intake)
                 OUTPUT INSERTED.*
                 VALUES (
                     @user_fire_id,
@@ -39,7 +34,6 @@ export const createUserController = async (
                     @user_lname,
                     @user_id,
                     @user_gender,
-                    @user_access_lvl,
                     @enrolment_year,
                     @enrolment_intake
                 )
