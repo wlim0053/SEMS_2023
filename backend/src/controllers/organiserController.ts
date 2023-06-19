@@ -26,7 +26,7 @@ export const createOrganiserController = async (
                     @parent_uuid,
                     @organiser_name
                 )`)
-		res.status(StatusCodes.NO_CONTENT)
+		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -53,7 +53,7 @@ export const updateOrganiserController = async (
                         [user_fire_id] = @user_fire_id
 			    WHERE [organiser_uuid] = @organiser_uuid`
 			)
-		res.status(StatusCodes.NO_CONTENT)
+		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
 		next(error)
