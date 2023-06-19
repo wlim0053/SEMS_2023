@@ -8,6 +8,7 @@ import {
 } from "../controllers/participationController"
 import { Participation } from "../interfaces/participation"
 import { requestValidators } from "../middlewares/requestValidator"
+import { registrationEmail } from "../middlewares/emailHandler"
 
 export const participationRouter = express.Router()
 
@@ -15,7 +16,8 @@ participationRouter
 	.route("/")
 	.post(
 		requestValidators({ body: Participation }),
-		createParticipationController
+		createParticipationController, 
+		registrationEmail
 	)
 	.get(getParticipationController)
 
