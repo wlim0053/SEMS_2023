@@ -106,7 +106,7 @@ function CreateEventForm() {
       registrationStart: null,
       registrationEnd: null,
       signUpFormLink: "",
-      checkedBox:"",
+      checkedBox: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -479,7 +479,8 @@ function CreateEventForm() {
 
           NOTE: Ensure that you have submitted the SARAH Risk Assessment and have completed the venue booking BEFORE you submit this form.</FormLabel>
         <iframe
-          src="https://forms.gle/Rfzed5ZHWXy5RdA68"
+          //src="https://forms.gle/Rfzed5ZHWXy5RdA68"
+          src=" https://forms.gle/yujspP6WVvmHBeoU8"
           width="100%"
           height="1000"
         >
@@ -497,7 +498,7 @@ function CreateEventForm() {
           </Checkbox>
           {formik.touched.checkedBox && formik.errors.checkedBox && (
             <Text color="red">{formik.errors.checkedBox}</Text>
-          )}  
+          )}
         </FormControl>
         {/* Submit Button */}
         <Button type="submit" disabled={!isChecked}>Submit</Button>
