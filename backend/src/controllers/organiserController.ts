@@ -4,7 +4,6 @@ import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 import {
 	Organiser,
-	OrganiserQueryParams,
 	OrganiserWithStudent,
 	OrganiserWithUUID,
 } from "../interfaces/organiser"
@@ -62,7 +61,7 @@ export const updateOrganiserController = async (
 }
 
 export const getOrganiserController = async (
-	req: Request<{}, OrganiserWithStudent[], {}, OrganiserQueryParams>,
+	req: Request<{}, OrganiserWithStudent[], {}, { parent_uuid: string }>,
 	res: Response<OrganiserWithStudent[]>,
 	next: NextFunction
 ) => {
