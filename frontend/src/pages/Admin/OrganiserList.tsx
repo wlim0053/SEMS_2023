@@ -59,6 +59,10 @@ const OrganiserList = () => {
   const [inputEmail, setInputEmail] = useState("");
   const [inputClub, setInputClub] = useState("");
 
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editClub, setEditClub] = useState("");
+
   const [organiserID, setOrganiserID] = useState("");
 
   const [organisers, setOrganiser] = useState([]);
@@ -91,7 +95,6 @@ const OrganiserList = () => {
     parent_uuid: null,
     user_fire_id: inputEmail,
   };
-
   //get data from api whenever the organinser list's length changes
   const fetchOrganiser = async () => {
     try {
@@ -112,6 +115,11 @@ const OrganiserList = () => {
   const addOrganiser = async (e: any) => {
     e.preventDefault();
     console.log(bodyAdmin);
+    organisers.map((organiser: any) => {
+      if (organiser.user_fire_id === inputEmail) {
+      }
+    });
+
     /*if (inputName === "" || inputEmail === "" || inputClub === "") {
       toast({
         title: "Please fill in all fields!",
@@ -130,6 +138,9 @@ const OrganiserList = () => {
         duration: 3000,
         isClosable: true,
       });
+      setInputName("");
+      setInputEmail("");
+      setInputClub("");
       //console.log(response.data);
     } catch (error) {
       console.log(error);
@@ -140,10 +151,10 @@ const OrganiserList = () => {
   const getOrganiserById = async (id: any) => {
     try {
       const response = await api.get(`/organiser/${id}`);
-      setInputName(response.data[0].organiser_name);
-      setInputEmail(response.data[0].stu_fire_id);
+      setEditName(response.data[0].organiser_name);
+      setEditEmail(response.data[0].user_fire_id);
       /**
-       * club should be organiser's parent uuid
+       * club should be obtained organiser's parent uuid
        */
       //setInputClub(response.data[0].club);
       //console.log(response.data[0].club);
@@ -157,18 +168,14 @@ const OrganiserList = () => {
   //update organiser details
   const updateOrganiser = async (id: any) => {
     const bodyUpdate = {
-      organiser_name: inputName,
+      organiser_name: editName,
       parent_uuid: null,
-      stu_fire_id: inputEmail,
+      user_fire_id: editEmail,
     };
     try {
-      const response = await api.put(`/organiser/${id}`, bodyUpdate);
-      organisers.map((organiser: any) => {
-        if (organiser.organiser_uuid === id) {
-          organiser.organiser_name = inputName;
-          organiser.stu_fire_id = inputEmail;
-        }
-      });
+      if (organiserID === id) {
+        const response = await api.put(`/organiser/${id}`, bodyUpdate);
+      }
       setTimeout(() => fetchOrganiser(), 200);
       toast({
         title: "Organiser updated successfully!",
@@ -176,6 +183,9 @@ const OrganiserList = () => {
         duration: 3000,
         isClosable: true,
       });
+      setEditName("");
+      setEditEmail("");
+      setEditClub("");
       //console.log(response.data);
     } catch (error) {
       console.log(error);
@@ -188,6 +198,7 @@ const OrganiserList = () => {
   //function to delete organiser by calling api delete
   const deleteOrganiser = async (id: any) => {
     try {
+      // change to alert dialog in chakra (use boolean)
       if (window.confirm("Are you sure you want to delete this organiser?")) {
         await api.delete(`/organiser/${id}`);
         setTimeout(() => fetchOrganiser(), 300);
@@ -199,6 +210,12 @@ const OrganiserList = () => {
         });
       }
     } catch (error) {
+      toast({
+        title: "Cannot delete organiser that created event!",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
       console.log(error);
     }
   };
@@ -382,18 +399,18 @@ const OrganiserList = () => {
                 <FormControl>
                   <FormLabel>Name</FormLabel>
                   <Input
-                    value={inputName}
+                    value={editName}
                     placeholder="Name"
-                    onChange={(e) => setInputName(e.target.value)}
+                    onChange={(e) => setEditName(e.target.value)}
                   />
                 </FormControl>
 
                 <FormControl mt={4}>
                   <FormLabel>Email</FormLabel>
                   <Input
-                    value={inputEmail}
+                    value={editEmail}
                     placeholder="Email"
-                    onChange={(e) => setInputEmail(e.target.value)}
+                    onChange={(e) => setEditEmail(e.target.value)}
                   />
                 </FormControl>
 
@@ -403,8 +420,8 @@ const OrganiserList = () => {
                     variant="outline"
                     placeholder="--select an option--"
                     width="50%"
-                    value={inputClub}
-                    onChange={(e) => setInputClub(e.target.value)}
+                    value={editClub}
+                    onChange={(e) => setEditClub(e.target.value)}
                   >
                     <option value="option1">MUMEC</option>
                     <option value="option2">MUMTEC</option>

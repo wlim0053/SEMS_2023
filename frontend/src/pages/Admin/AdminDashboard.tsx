@@ -41,127 +41,148 @@ import { Spinner } from "@chakra-ui/react";
 import { Route, Outlet } from "react-router-dom";
 import api from "../../utils/api";
 
-const data = [
-  {
-    name: "Page A",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: "Page B",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: "Page C",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: "Page D",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: "Page E",
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: "Page F",
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: "Page G",
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
-
-// Data for Pie Chart
-const dataPie = [
-  { name: "SOIT", value: 400 },
-  { name: "SOE", value: 300 },
-  { name: "SOB", value: 300 },
-  { name: "SOS", value: 200 },
-];
-
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-
-const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = (props: {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  percent: number;
-  index: number;
-}) => {
-  const radius =
-    props.innerRadius + (props.outerRadius - props.innerRadius) * 0.5;
-  const x = props.cx + radius * Math.cos(-props.midAngle * RADIAN);
-  const y = props.cy + radius * Math.sin(-props.midAngle * RADIAN);
-
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="white"
-      textAnchor={x > props.cx ? "start" : "end"}
-      dominantBaseline="central"
-    >
-      {`${(props.percent * 100).toFixed(0)}%`}
-    </text>
-  );
-};
-
-//Customize box style
-const boxStyle = {
-  color: "white",
-  textAlign: "center",
-  bg: "white",
-  boxShadow: "2xl",
-  rounded: "md",
-  height: "470px",
-  mr: "10px",
-};
-
-const infoBoxStyle = {
-  color: "white",
-  textAlign: "left",
-  fontSize: "1.5rem",
-  fontWeight: "500",
-  textColor: "black",
-  // bg: "white",
-  // boxShadow: "md",
-  // rounded: "md",
-  p: "20px",
-  height: "430px",
-  mr: "10px",
-};
-
-const boxHeaderStyle = {
-  textAlign: "center",
-  fontSize: ["lg", "xl", "2xl"],
-  //fontSize: "1.5rem",
-  fontWeight: "500",
-  p: "5px",
-  bg: "white",
-  borderTopRadius: "8px 8px",
-  height: "78px",
-  background: "#006DAE",
-};
+/*
+/api/stats/organiser/event-count?semester=true&year=2023&organiser=parent
+*/
 
 const Admin = () => {
+  const data = [
+    {
+      name: "Page A",
+      uv: 4000,
+      pv: 2400,
+      amt: 2400,
+    },
+    {
+      name: "Page B",
+      uv: 3000,
+      pv: 1398,
+      amt: 2210,
+    },
+    {
+      name: "Page C",
+      uv: 2000,
+      pv: 9800,
+      amt: 2290,
+    },
+    {
+      name: "Page D",
+      uv: 2780,
+      pv: 3908,
+      amt: 2000,
+    },
+    {
+      name: "Page E",
+      uv: 1890,
+      pv: 4800,
+      amt: 2181,
+    },
+    {
+      name: "Page F",
+      uv: 2390,
+      pv: 3800,
+      amt: 2500,
+    },
+    {
+      name: "Page G",
+      uv: 3490,
+      pv: 4300,
+      amt: 2100,
+    },
+  ];
+
+  const data1 = [
+    {
+      name: "Page A",
+      uv: 4000,
+      pv: 2400,
+      amt: 2400,
+    },
+    {
+      name: "Page B",
+      uv: 3000,
+      pv: 1398,
+      amt: 2210,
+    },
+  ];
+
+  // Data for Pie Chart
+  const dataPie = [
+    { name: "SOIT", value: 400 },
+    { name: "SOE", value: 300 },
+    { name: "SOB", value: 300 },
+    { name: "SOS", value: 200 },
+  ];
+
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
+  const RADIAN = Math.PI / 180;
+  const renderCustomizedLabel = (props: {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    percent: number;
+    index: number;
+  }) => {
+    const radius =
+      props.innerRadius + (props.outerRadius - props.innerRadius) * 0.5;
+    const x = props.cx + radius * Math.cos(-props.midAngle * RADIAN);
+    const y = props.cy + radius * Math.sin(-props.midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > props.cx ? "start" : "end"}
+        dominantBaseline="central"
+      >
+        {`${(props.percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
+
+  const [semester, setSemester] = useState("true");
+
+  //Customize box style
+  const boxStyle = {
+    color: "white",
+    textAlign: "center",
+    bg: "white",
+    boxShadow: "2xl",
+    rounded: "md",
+    height: "520px",
+    mr: "10px",
+  };
+
+  const infoBoxStyle = {
+    color: "white",
+    textAlign: "left",
+    fontSize: "1.5rem",
+    fontWeight: "500",
+    textColor: "black",
+    // bg: "white",
+    // boxShadow: "md",
+    // rounded: "md",
+    p: "20px",
+    height: "430px",
+    mr: "10px",
+  };
+
+  const boxHeaderStyle = {
+    textAlign: "center",
+    fontSize: ["lg", "xl", "2xl"],
+    //fontSize: "1.5rem",
+    fontWeight: "500",
+    p: "5px",
+    bg: "white",
+    borderTopRadius: "8px 8px",
+    height: "78px",
+    background: "#006DAE",
+  };
+
   return (
     <SimpleGrid
       bg="gray.40"
@@ -176,11 +197,6 @@ const Admin = () => {
         <Box sx={infoBoxStyle}>
           <SimpleGrid columns={2} p={5} fontSize={"2rem"} fontWeight="500">
             Admin Dashboard
-            <Select variant="outline" placeholder="Select option" width="70%">
-              <option value="option1">MUMEC</option>
-              <option value="option2">MUMTEC</option>
-              <option value="option3">Monash Staff</option>
-            </Select>
           </SimpleGrid>
 
           {/* Continue here using grid */}
@@ -224,11 +240,22 @@ const Admin = () => {
       {/* First Graph */}
       <Box sx={boxStyle}>
         <Box sx={boxHeaderStyle}>Number of events per semester</Box>
+        <Select
+          variant="outline"
+          textColor="black"
+          placeholder="Select option"
+          width="30%"
+          p="3"
+        >
+          <option value="option1">MUMEC</option>
+          <option value="option2">MUMTEC</option>
+          <option value="option3">Monash Staff</option>
+        </Select>
         <Center>
           <BarChart
             width={460}
             height={300}
-            data={data}
+            data={data1}
             margin={{
               top: 25,
               right: 30,
