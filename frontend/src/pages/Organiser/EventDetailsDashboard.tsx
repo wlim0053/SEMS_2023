@@ -5,14 +5,12 @@ import {
   Heading,
   Flex,
   Text,
-  Image,
   VStack,
   HStack,
   Badge,
   Grid,
 } from "@chakra-ui/react";
 
-import fakeQRCode from "../../../public/fake-qrcode.jpg";
 
 interface EventData {
   event_uuid: string;

@@ -16,10 +16,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Formik, Form, Field, useFormik } from "formik";
 import * as yup from "yup";
-import React, { useState } from "react";
+import { useEffect } from "react";
 import { color } from "framer-motion";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
 
 const clubOptions = [
   "MUMEC",
@@ -108,8 +109,33 @@ interface SubmittedEventData {
   event_reg_google_form: string;
 }
 
+interface OriginalEventData {
+  //For editing
+  event_uuid: string;
+  event_ems_no: string | null;
+  event_start_date: string;
+  event_end_date: string;
+  event_title: string;
+  event_desc: string;
+  event_mode: string;
+  event_venue: string;
+  event_capacity: number;
+  event_status: string;
+  event_reg_start_date: string;
+  event_reg_end_date: string;
+  event_reg_google_form: string;
+  organiser_uuid: string;
+  parent_uuid: string | null;
+  organiser_name: string;
+  stu_fire_id: string;
+}
+
 function CreateEventForm() {
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const originalEventData: OriginalEventData = location.state.eventData;
+  const isUpdating = originalEventData !== null;
 
   const createEventInDatabase = async (eventData: SubmittedEventData) => {
     try {
@@ -127,12 +153,16 @@ function CreateEventForm() {
     }
   };
 
-  const updateEventInDatabase = async (event_uuid: string, updatedEventData: SubmittedEventData) => {
+  const updateEventInDatabase = async (
+    event_uuid: string,
+    updatedEventData: SubmittedEventData
+  ) => {
     try {
       const response = await axios.put(
         `http://localhost:3000/api/event/${event_uuid}`,
         updatedEventData
       );
+      returnToOrganiserMainPage();
       return response.data;
     } catch (error) {
       // Handle error
@@ -143,23 +173,24 @@ function CreateEventForm() {
 
   const formik = useFormik({
     initialValues: {
-      eventTitle: "",
-      venueLink: "",
-      description: "",
-      capacity: 0,
-      club: "",
+      eventTitle: isUpdating ? originalEventData.event_title : "",
+      venueLink: isUpdating ? originalEventData.event_venue : "",
+      description: isUpdating ? originalEventData.event_desc : "",
+      capacity: isUpdating ? originalEventData.event_capacity : 0,
+      club: isUpdating ? originalEventData.organiser_name : "",
       semester: "", // Kidd:: Need to double check db schema, might not exist yet.
       organiserEmail: "", // Kidd:: Do we need to store it?
-      eventStart: null,
-      eventEnd: null,
-      registrationStart: null,
-      registrationEnd: null,
-      signUpFormLink: "", // Kidd:: Need to double check db schema, might not exist yet.
+      eventStart: isUpdating ? originalEventData.event_start_date : null,
+      eventEnd: isUpdating ? originalEventData.event_end_date : null,
+      registrationStart: isUpdating
+        ? originalEventData.event_reg_start_date
+        : null,
+      registrationEnd: isUpdating ? originalEventData.event_reg_end_date : null,
+      signUpFormLink: isUpdating ? originalEventData.event_reg_google_form : "", // Kidd:: Need to double check db schema, might not exist yet.
       checkedBox: false,
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(formik.values);
       const eventData = {
         event_ems_no: null,
         organiser_uuid: "484E3234-78C3-487F-96F8-92913D805767",
@@ -176,9 +207,33 @@ function CreateEventForm() {
         event_reg_google_form: formik.values.signUpFormLink,
       };
 
-      createEventInDatabase(eventData);
+      if (isUpdating) {
+        updateEventInDatabase(originalEventData.event_uuid, eventData);
+      } else {
+        createEventInDatabase(eventData);
+      }
     },
   });
+
+  useEffect(() => {
+    if (isUpdating) {
+      formik.setValues({
+        eventTitle: originalEventData.event_title,
+        venueLink: originalEventData.event_venue,
+        description: originalEventData.event_desc,
+        capacity: originalEventData.event_capacity,
+        club: originalEventData.organiser_name,
+        semester: "", // Update this value if necessary
+        organiserEmail: "", // Update this value if necessary
+        eventStart: originalEventData.event_start_date,
+        eventEnd: originalEventData.event_end_date,
+        registrationStart: originalEventData.event_reg_start_date,
+        registrationEnd: originalEventData.event_reg_end_date,
+        signUpFormLink: originalEventData.event_reg_google_form,
+        checkedBox: false, // Update this value if necessary
+      });
+    }
+  }, [isUpdating, originalEventData, formik.setValues]);
 
   const returnToOrganiserMainPage = () => {
     navigate("/OrganiserMainPage");
@@ -191,37 +246,37 @@ function CreateEventForm() {
 
   const disableDatesBeforeRegistrationStart = (date: Date) => {
     return formik.values.registrationStart !== null
-      ? date > (formik.values.registrationStart as Date)
+      ? date > new Date(formik.values.registrationStart)
       : true;
   };
 
   const disableDatesBeforeRegistrationEnd = (date: Date) => {
     return formik.values.registrationEnd !== null
-      ? date > (formik.values.registrationEnd as Date)
+      ? date > new Date(formik.values.registrationEnd)
       : true;
   };
 
   const disableDatesAfterRegistrationEnd = (date: Date) => {
     return formik.values.registrationEnd !== null
-      ? date > (formik.values.registrationEnd as Date)
+      ? date > new Date(formik.values.registrationEnd)
       : true;
   };
 
   const disableDatesBeforeEventStarts = (date: Date) => {
     return formik.values.eventStart !== null
-      ? date >= (formik.values.eventStart as Date)
+      ? date >= new Date(formik.values.eventStart)
       : true;
   };
 
   const disableDatesAfterEventStarts = (date: Date) => {
     return formik.values.eventStart !== null
-      ? date <= (formik.values.eventStart as Date)
+      ? date <= new Date(formik.values.eventStart)
       : true;
   };
 
   const disableDatesAfterEventEnd = (date: Date) => {
     return formik.values.eventEnd !== null
-      ? date <= (formik.values.eventEnd as Date)
+      ? date <= new Date(formik.values.eventEnd)
       : true;
   };
 
@@ -402,19 +457,24 @@ function CreateEventForm() {
 
         {/* Event Start (Date and Time) */}
         <Grid templateColumns="repeat(2, 1fr)" gap={6}>
+          {/* Event Start (Date and Time) */}
           <FormControl>
             <FormLabel>Event Start (Date and Time)</FormLabel>
             <DatePicker
               id="eventStart"
               name="eventStart"
-              selected={formik.values.eventStart}
-              onChange={(date: any) => formik.setFieldValue("eventStart", date)}
+              selected={
+                formik.values.eventStart
+                  ? new Date(formik.values.eventStart)
+                  : null
+              }
+              onChange={(date) => formik.setFieldValue("eventStart", date)}
               onBlur={formik.handleBlur}
               showTimeInput
               timeInputLabel="Time:"
               dateFormat="MM/dd/yyyy h:mm aa"
               customInput={<Input />}
-              filterDate={(date: any) =>
+              filterDate={(date) =>
                 disableDatesBeforeToday(date) &&
                 disableDatesAfterRegistrationEnd(date) &&
                 disableDatesAfterEventEnd(date)
@@ -431,14 +491,16 @@ function CreateEventForm() {
             <DatePicker
               id="eventEnd"
               name="eventEnd"
-              selected={formik.values.eventEnd}
-              onChange={(date: any) => formik.setFieldValue("eventEnd", date)}
+              selected={
+                formik.values.eventEnd ? new Date(formik.values.eventEnd) : null
+              }
+              onChange={(date) => formik.setFieldValue("eventEnd", date)}
               onBlur={formik.handleBlur}
               showTimeInput
               timeInputLabel="Time:"
-              dateFormat="MM/dd/yyyy h:mm aa"
+              dateFormat="dd/MM/yyyy h:mm aa"
               customInput={<Input />}
-              filterDate={(date: any) =>
+              filterDate={(date) =>
                 disableDatesBeforeToday(date) &&
                 disableDatesBeforeEventStarts(date) &&
                 disableDatesBeforeRegistrationEnd(date) &&
@@ -456,8 +518,12 @@ function CreateEventForm() {
             <DatePicker
               id="registrationStart"
               name="registrationStart"
-              selected={formik.values.registrationStart}
-              onChange={(date: any) =>
+              selected={
+                formik.values.registrationStart
+                  ? new Date(formik.values.registrationStart)
+                  : null
+              }
+              onChange={(date) =>
                 formik.setFieldValue("registrationStart", date)
               }
               onBlur={formik.handleBlur}
@@ -465,7 +531,7 @@ function CreateEventForm() {
               timeInputLabel="Time:"
               dateFormat="dd/MM/yyyy h:mm aa"
               customInput={<Input />}
-              filterDate={(date: any) =>
+              filterDate={(date) =>
                 disableDatesBeforeToday(date) &&
                 disableDatesAfterEventStarts(date)
               } // Disable dates before today and after event start
@@ -482,16 +548,18 @@ function CreateEventForm() {
             <DatePicker
               id="registrationEnd"
               name="registrationEnd"
-              selected={formik.values.registrationEnd}
-              onChange={(date: any) =>
-                formik.setFieldValue("registrationEnd", date)
+              selected={
+                formik.values.registrationEnd
+                  ? new Date(formik.values.registrationEnd)
+                  : null
               }
+              onChange={(date) => formik.setFieldValue("registrationEnd", date)}
               onBlur={formik.handleBlur}
               showTimeInput
               timeInputLabel="Time:"
               dateFormat="MM/dd/yyyy h:mm aa"
               customInput={<Input />}
-              filterDate={(date: any) =>
+              filterDate={(date) =>
                 disableDatesBeforeRegistrationStart(date) &&
                 disableDatesAfterEventStarts(date) &&
                 disableDatesBeforeToday(date)

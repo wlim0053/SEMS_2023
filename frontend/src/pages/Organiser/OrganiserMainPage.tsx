@@ -59,6 +59,16 @@ function OrganiserMainPage() {
     return response.data;
   };
 
+  const updateEventData = () => {
+    fetchEventsFromDatabase()
+      .then((data) => {
+        setEventData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+  };
+
   useEffect(() => {
     fetchEventsFromDatabase()
       .then((data) => {
@@ -123,12 +133,7 @@ function OrganiserMainPage() {
   );
 
   const handleCreateEvent = () => {
-    navigate("/CreateEventForm");
-  };
-
-  const handleUpdateEvent = () => {
-    const eventId = "event-id"; // Replace with the actual event ID
-    navigate("/CreateEventForm", { state: { eventId } });
+    navigate("/CreateEventForm", { state: { eventData: null } }); // If it's null, /CreateEventForm can recognize that component is called for creation.
   };
 
   const handleReset = () => {
@@ -250,10 +255,15 @@ function OrganiserMainPage() {
                 <GridEventDashboard
                   data={currentEvents}
                   formatDate={formatDate}
+                  updateEventData={updateEventData}
                 />
               </TabPanel>
               <TabPanel p={0}>
-                <GridEventDashboard data={pastEvents} formatDate={formatDate} />
+                <GridEventDashboard
+                  data={pastEvents}
+                  formatDate={formatDate}
+                  updateEventData={updateEventData}
+                />
               </TabPanel>
             </TabPanels>
           </Tabs>

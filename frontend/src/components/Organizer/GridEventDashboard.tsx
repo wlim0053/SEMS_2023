@@ -26,9 +26,10 @@ interface EventData {
 interface GridEventDashboardProps {
   data: EventData[];
   formatDate: (date: string) => string;
+  updateEventData: () => void;
 }
 
-function GridEventDashboard({ data }: GridEventDashboardProps) {
+function GridEventDashboard({ data, updateEventData  }: GridEventDashboardProps) {
   return (
     <Box mt="20px">
       <Grid templateColumns="repeat(6, 1fr)" gap={0.5}>
@@ -63,7 +64,7 @@ function GridEventDashboard({ data }: GridEventDashboardProps) {
           </Text>
         </Box>
 
-        <GridEventSections data={data}/>
+        <GridEventSections data={data} updateEventData={updateEventData}/>
       </Grid>
     </Box>
   );

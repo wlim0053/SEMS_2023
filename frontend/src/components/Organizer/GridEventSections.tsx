@@ -4,6 +4,7 @@ import { Text } from '@chakra-ui/react';
 import { IconButton } from '@chakra-ui/react';
 import { DeleteIcon, EditIcon, ViewIcon } from '@chakra-ui/icons';
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface EventData {
   event_uuid: string;
@@ -27,9 +28,10 @@ interface EventData {
 
 interface GridEventSectionsProps {
   data: EventData[];
+  updateEventData: () => void;
 }
 
-function GridEventSections({ data }: GridEventSectionsProps) {
+function GridEventSections({ data, updateEventData  }: GridEventSectionsProps) {
   const navigate = useNavigate();
 
   const handleViewClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -40,9 +42,29 @@ function GridEventSections({ data }: GridEventSectionsProps) {
     });
   };
 
-  const handleEditClick = () => {
-    navigate("/CreateEventForm");
+  const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const index = Number(event.currentTarget.getAttribute('data-index'));
+    const eventData = data[index];
+    navigate("/CreateEventForm", { state: { eventData } });
   };
+
+  
+  const deleteEventFromDatabase = async (eventId: String) => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/api/event/${eventId}`);
+      console.log(response.data); // Optional: Log the response data after successful deletion
+      updateEventData();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+  const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const index = Number(event.currentTarget.getAttribute('data-index'));
+    const eventData = data[index];
+    deleteEventFromDatabase(eventData.event_uuid);
+  };
+  
   return (
     <>
       {data.map((event, index) => (
@@ -77,8 +99,8 @@ function GridEventSections({ data }: GridEventSectionsProps) {
           </Box>
           <Box w="100%" h="71" bg={index % 2 === 0 ? '#FFFFFF' : '#EDEEEE'} display="flex" justifyContent={['center', 'space-between']} alignItems={'center'} pl={'45px'} pr={'45px'}>
             <IconButton colorScheme="blue" aria-label="View Event" icon={<ViewIcon />} size={'sm'} onClick={handleViewClick} data-index={index}/>
-            <IconButton colorScheme="blue" aria-label="Edit Event" icon={<EditIcon />} size={'sm'} onClick={handleEditClick}/>
-            <IconButton colorScheme="blue" aria-label="Delete Event" icon={<DeleteIcon />} size={'sm'} />
+            <IconButton colorScheme="blue" aria-label="Edit Event" icon={<EditIcon />} size={'sm'} onClick={handleEditClick} data-index={index}/>
+            <IconButton colorScheme="blue" aria-label="Delete Event" icon={<DeleteIcon />} size={'sm'} onClick={handleDeleteClick} data-index={index}/>
           </Box>
         </React.Fragment>
       ))}
