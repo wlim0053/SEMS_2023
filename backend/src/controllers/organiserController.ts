@@ -4,6 +4,7 @@ import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 import {
 	Organiser,
+	OrganiserQueryParams,
 	OrganiserWithStudent,
 	OrganiserWithUUID,
 } from "../interfaces/organiser"
@@ -61,28 +62,36 @@ export const updateOrganiserController = async (
 }
 
 export const getOrganiserController = async (
-	req: Request<{}, OrganiserWithStudent[], {}>,
+	req: Request<{}, OrganiserWithStudent[], {}, OrganiserQueryParams>,
 	res: Response<OrganiserWithStudent[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const organisers: mssql.IResult<OrganiserWithStudent> =
-			await connection.query(`SELECT 
+		const { parent_uuid } = req.query
+
+		let parentQuery = ""
+
+		if (parentQuery) {
+			if (parentQuery === "null")
+				parentQuery = `WHERE parent_uuid IS NULL`
+			else `WHERE parent_uuid=@parent_uuid`
+		}
+
+		const organisers: mssql.IResult<OrganiserWithStudent> = await connection
+			.request()
+			.input(
+				"parent_uuid",
+				mssql.UniqueIdentifier,
+				parent_uuid === "null" ? null : parent_uuid
+			).query(`SELECT 
             organiser_uuid,
             parent_uuid,
             organiser_name,
-            u.user_fire_id,
-            spec_uuid,
-            user_email,
-            user_fname,
-            user_lname,
-            user_id,
-            user_gender,
-            user_access_lvl,
-            enrolment_year,
-            enrolment_intake
-        FROM ${DbTables.ORGANISER} o join ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id`)
+            u.*
+        FROM ${DbTables.ORGANISER} o join ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id
+        ${parentQuery}
+        `)
 		res.status(StatusCodes.OK).json(organisers.recordset)
 		connection.close()
 	} catch (error) {
@@ -105,16 +114,7 @@ export const getOrganiserByIDController = async (
                 organiser_uuid,
                 parent_uuid,
                 organiser_name,
-                u.user_fire_id,
-                spec_uuid,
-                user_email,
-                user_fname,
-                user_lname,
-                user_id,
-                user_gender,
-                user_access_lvl,
-                enrolment_year,
-                enrolment_intake
+                u.*
             FROM ${DbTables.ORGANISER} o join ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id 
 			WHERE organiser_uuid = @organiser_uuid`
 			)
