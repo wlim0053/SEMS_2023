@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import { useLocation } from "react-router-dom";
 import {
   Box,
   Heading,
@@ -9,41 +10,33 @@ import {
   HStack,
   Badge,
   Grid,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 
-import fakeQRCode from '../../../public/fake-qrcode.jpg';
+import fakeQRCode from "../../../public/fake-qrcode.jpg";
 
-interface EventDetailsProps {
-  name: string;
-  description: string;
-  date: string;
-  time: string;
-  capacity: number;
-  venue: string;
-  recurring: boolean;
-  eventStatistics: {
-    gender: {
-      male: number;
-      female: number;
-    };
-    specialization: {
-      engineering: number;
-      medicine: number;
-      arts: number;
-    };
-  };
+interface EventData {
+  event_uuid: string;
+  event_ems_no: string | null;
+  event_start_date: string;
+  event_end_date: string;
+  event_title: string;
+  event_desc: string;
+  event_mode: string;
+  event_venue: string;
+  event_capacity: number;
+  event_status: string;
+  event_reg_start_date: string;
+  event_reg_end_date: string;
+  event_reg_google_form: string;
+  organiser_uuid: string;
+  parent_uuid: string | null;
+  organiser_name: string;
+  stu_fire_id: string;
 }
 
-const EventDetailsDashboard: React.FC<EventDetailsProps> = ({
-  name,
-  description,
-  date,
-  time,
-  capacity,
-  venue,
-  recurring,
-  eventStatistics,
-}) => {
+const EventDetailsDashboard = () => {
+  const location = useLocation();
+  const eventData: EventData = location.state.eventData;
   return (
     <Box p={4}>
       <Heading size="lg" mb={4}>
@@ -52,59 +45,66 @@ const EventDetailsDashboard: React.FC<EventDetailsProps> = ({
 
       <Box borderWidth={1} borderRadius="md" boxShadow="md" p={4} mb={4}>
         <Text fontWeight="bold" fontSize="lg" mb={2}>
-          Name: PI 2 presentation
+          Name: 
         </Text>
-        <Text>{name}</Text>
+        <Text>{eventData.event_title}</Text>
 
         <Text fontWeight="bold" fontSize="lg" mt={4} mb={2}>
-          Description:
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil, ratione nisi repudiandae, consequuntur repellendus, recusandae dolore alias itaque voluptatum quae expedita mollitia! Illo sed, velit nostrum quaerat nesciunt dolorum ex.
+          Description: 
         </Text>
-        <Text>{description}</Text>
+        <Text>{eventData.event_desc}</Text>
 
         <Flex alignItems="center" mt={4} mb={2}>
           <Text fontWeight="bold" marginRight={2} fontSize="lg">
             Date:
           </Text>
-          <Text fontSize="lg">23/5/2023</Text>
+          <Text fontSize="lg">{eventData.event_start_date}</Text>
         </Flex>
 
         <Flex alignItems="center">
           <Text fontWeight="bold" marginRight={2} fontSize="lg">
             Time:
           </Text>
-          <Text fontSize="lg">{time}</Text>
+          <Text fontSize="lg">{}</Text>
         </Flex>
       </Box>
 
-      <Grid templateColumns="1fr 1fr" gap={4} borderWidth={1} borderRadius="md" boxShadow="md" p={4} mb={4}>
+      <Grid
+        templateColumns="1fr 1fr"
+        gap={4}
+        borderWidth={1}
+        borderRadius="md"
+        boxShadow="md"
+        p={4}
+        mb={4}
+      >
         <Box>
           <Flex alignItems="center" mb={2}>
             <Text fontWeight="bold" marginRight={2} fontSize="lg">
               Capacity:
             </Text>
-            <Text fontSize="lg">{capacity}</Text>
+            <Text fontSize="lg">{eventData.event_capacity}</Text>
           </Flex>
 
           <Flex alignItems="center">
             <Text fontWeight="bold" mb={2} marginRight={2} fontSize="lg">
-              Venue: 
+              Venue:
             </Text>
-            <Text fontSize="lg">Monash University Malaysia</Text>
+            <Text fontSize="lg">{eventData.event_venue}</Text>
           </Flex>
 
           <Flex alignItems="center" mb={2}>
             <Text fontWeight="bold" marginRight={2} fontSize="lg">
               Recurring:
             </Text>
-            <Text fontSize="lg">{recurring ? 'Yes' : 'No'}</Text>
+            <Text fontSize="lg">{}</Text>
           </Flex>
 
           <Flex alignItems="center">
             <Text fontWeight="bold" marginRight={2} fontSize="lg">
               Links and QR Code:
             </Text>
-            <Image src={fakeQRCode} alt="QR Code" boxSize={250} />
+            <Text fontSize="lg">{eventData.event_reg_google_form}</Text>
           </Flex>
         </Box>
         <Box>
@@ -117,18 +117,14 @@ const EventDetailsDashboard: React.FC<EventDetailsProps> = ({
               <Text fontWeight="bold" fontSize="md">
                 Number of Males:
               </Text>
-              <Badge colorScheme="blue">
-                {eventStatistics.gender.male}
-              </Badge>
+              <Badge colorScheme="blue">{}</Badge>
             </HStack>
 
             <HStack>
               <Text fontWeight="bold" fontSize="md">
                 Number of Females:
               </Text>
-              <Badge colorScheme="pink">
-                {eventStatistics.gender.female}
-              </Badge>
+              <Badge colorScheme="pink">{}</Badge>
             </HStack>
 
             <HStack>
@@ -136,7 +132,7 @@ const EventDetailsDashboard: React.FC<EventDetailsProps> = ({
                 Number of Engineering Specialization:
               </Text>
               <Badge colorScheme="green">
-                {eventStatistics.specialization.engineering}
+                {}
               </Badge>
             </HStack>
 
@@ -145,7 +141,7 @@ const EventDetailsDashboard: React.FC<EventDetailsProps> = ({
                 Number of Medicine Specialization:
               </Text>
               <Badge colorScheme="red">
-                {eventStatistics.specialization.medicine}
+                {}
               </Badge>
             </HStack>
 
@@ -154,7 +150,7 @@ const EventDetailsDashboard: React.FC<EventDetailsProps> = ({
                 Number of Arts Specialization:
               </Text>
               <Badge colorScheme="purple">
-                {eventStatistics.specialization.arts}
+                {}
               </Badge>
             </HStack>
           </VStack>
@@ -165,6 +161,3 @@ const EventDetailsDashboard: React.FC<EventDetailsProps> = ({
 };
 
 export default EventDetailsDashboard;
-
-
-

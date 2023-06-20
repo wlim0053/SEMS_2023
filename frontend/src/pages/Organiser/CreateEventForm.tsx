@@ -18,6 +18,9 @@ import { Formik, Form, Field, useFormik } from "formik";
 import * as yup from "yup";
 import React, { useState } from "react";
 import { color } from "framer-motion";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 const clubOptions = [
   "MUMEC",
   "MUSA SoE",
@@ -45,7 +48,6 @@ const validationSchema = yup.object().shape({
   eventTitle: yup.string().required("Event Title is required"),
   venueLink: yup.string().required("Venue Link is required"),
   description: yup.string().required("Description is required"),
-  checkedBox: yup.string().required("Please fill the EMS form"),
   capacity: yup
     .number()
     .required("Capacity is required")
@@ -87,37 +89,99 @@ const validationSchema = yup.object().shape({
     .string()
     .required("Sign Up Form Link is required")
     .url("Invalid Sign Up Form Link"),
+  checkedBox: yup.bool().oneOf([true], "Please fill the EMS form"),
 });
 
+interface SubmittedEventData {
+  event_ems_no: string | null;
+  organiser_uuid: string;
+  event_start_date: string;
+  event_end_date: string;
+  event_title: string;
+  event_desc: string;
+  event_mode: string;
+  event_venue: string;
+  event_capacity: number;
+  event_status: string;
+  event_reg_start_date: string;
+  event_reg_end_date: string;
+  event_reg_google_form: string;
+}
+
 function CreateEventForm() {
-  const [isChecked, setIsChecked] = useState(false);
+  const navigate = useNavigate();
+
+  const createEventInDatabase = async (eventData: SubmittedEventData) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/event",
+        eventData
+      );
+      console.log(response.data); // Response data from the server
+      returnToOrganiserMainPage();
+
+      // Handle the response or perform any necessary actions
+    } catch (error) {
+      console.error("Error creating event:", error);
+      // Handle the error appropriately
+    }
+  };
+
+  const updateEventInDatabase = async (event_uuid: string, updatedEventData: SubmittedEventData) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/api/event/${event_uuid}`,
+        updatedEventData
+      );
+      return response.data;
+    } catch (error) {
+      // Handle error
+      console.error(error);
+      throw error;
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
       eventTitle: "",
       venueLink: "",
       description: "",
-      capacity: "",
+      capacity: 0,
       club: "",
-      semester: "",
-      organiserEmail: "",
+      semester: "", // Kidd:: Need to double check db schema, might not exist yet.
+      organiserEmail: "", // Kidd:: Do we need to store it?
       eventStart: null,
       eventEnd: null,
       registrationStart: null,
       registrationEnd: null,
-      signUpFormLink: "",
-      checkedBox: "",
+      signUpFormLink: "", // Kidd:: Need to double check db schema, might not exist yet.
+      checkedBox: false,
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
       console.log(formik.values);
+      const eventData = {
+        event_ems_no: null,
+        organiser_uuid: "484E3234-78C3-487F-96F8-92913D805767",
+        event_start_date: formik.values.eventStart || "",
+        event_end_date: formik.values.eventEnd || "",
+        event_title: formik.values.eventTitle,
+        event_desc: formik.values.description,
+        event_mode: "P",
+        event_venue: formik.values.venueLink,
+        event_capacity: formik.values.capacity,
+        event_status: "P",
+        event_reg_start_date: formik.values.registrationStart || "",
+        event_reg_end_date: formik.values.registrationEnd || "",
+        event_reg_google_form: formik.values.signUpFormLink,
+      };
+
+      createEventInDatabase(eventData);
     },
   });
 
-  // Function to handle checkbox change
-  const handleCheckboxChange = (e: { target: { checked: boolean | ((prevState: boolean) => boolean); }; }) => {
-    setIsChecked(e.target.checked);
-
+  const returnToOrganiserMainPage = () => {
+    navigate("/OrganiserMainPage");
   };
 
   const disableDatesBeforeToday = (date: Date) => {
@@ -161,9 +225,7 @@ function CreateEventForm() {
       : true;
   };
 
-
   return (
-
     <form onSubmit={formik.handleSubmit}>
       <Box>
         <Text
@@ -177,9 +239,10 @@ function CreateEventForm() {
         </Text>
       </Box>
 
-
       <Stack spacing={6} width="900px" mx="auto" mb={12}>
-        <Box>{/*Because Stack from Chakra UI refrains the first element from being moved, this box is a placeholder for ui aspect*/}</Box>
+        <Box>
+          {/*Because Stack from Chakra UI refrains the first element from being moved, this box is a placeholder for ui aspect*/}
+        </Box>
         <Text
           fontSize="2xl"
           fontWeight="bold"
@@ -252,7 +315,7 @@ function CreateEventForm() {
             <Input
               id="capacity"
               name="capacity"
-              type="text"
+              type="number"
               value={formik.values.capacity}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -316,10 +379,9 @@ function CreateEventForm() {
               onBlur={formik.handleBlur}
               placeholder="Enter organiser email"
             />
-            {formik.touched.organiserEmail &&
-              formik.errors.organiserEmail && (
-                <Text color="red">{formik.errors.organiserEmail}</Text>
-              )}
+            {formik.touched.organiserEmail && formik.errors.organiserEmail && (
+              <Text color="red">{formik.errors.organiserEmail}</Text>
+            )}
           </FormControl>
         </Grid>
 
@@ -473,11 +535,15 @@ function CreateEventForm() {
         >
           EMS FORM
         </Text>
-        <FormLabel>By submitting this form, you are acknowledging that your event plan is final and no changes can be made to said plan. The details submitted along the form will be used to submit the event details to the school.
-
-          Please ensure there is a minimum of FOURTEEN (14) days between the submission day (every Tuesday/Friday of the week) to the event day itself.
-
-          NOTE: Ensure that you have submitted the SARAH Risk Assessment and have completed the venue booking BEFORE you submit this form.</FormLabel>
+        <FormLabel>
+          By submitting this form, you are acknowledging that your event plan is
+          final and no changes can be made to said plan. The details submitted
+          along the form will be used to submit the event details to the school.
+          Please ensure there is a minimum of FOURTEEN (14) days between the
+          submission day (every Tuesday/Friday of the week) to the event day
+          itself. NOTE: Ensure that you have submitted the SARAH Risk Assessment
+          and have completed the venue booking BEFORE you submit this form.
+        </FormLabel>
         <iframe
           //src="https://forms.gle/Rfzed5ZHWXy5RdA68"
           src=" https://forms.gle/yujspP6WVvmHBeoU8"
@@ -489,19 +555,18 @@ function CreateEventForm() {
         <FormControl>
           <FormLabel></FormLabel>
           <Checkbox
-            id="isChecked"
-            name="isChecked"
-            isChecked={isChecked}
-            onChange={handleCheckboxChange}
+            id="checkedBox"
+            name="checkedBox"
+            onChange={formik.handleChange}
           >
             EMS Form has been filled and submitted above
           </Checkbox>
-          {formik.touched.checkedBox && formik.errors.checkedBox && (
+          {formik.errors.checkedBox && (
             <Text color="red">{formik.errors.checkedBox}</Text>
           )}
         </FormControl>
         {/* Submit Button */}
-        <Button type="submit" disabled={!isChecked}>Submit</Button>
+        <Button type="submit">Submit</Button>
       </Stack>
     </form>
   );

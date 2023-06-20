@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Heading,
@@ -18,91 +18,60 @@ import { AddIcon } from "@chakra-ui/icons";
 import CalendarViewButton from "../../components/Organizer/CalendarViewButton";
 import GridViewButton from "../../components/Organizer/GridViewButton";
 import GridEventDashboard from "../../components/Organizer/GridEventDashboard";
-import GridEventDashboardPageNavigator from "../../components/Organizer/GridEventDashboardPageNavigator";
 import Calendar from "../../components/Organizer/Calendar";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface EventData {
-  id: string;
-  event: string;
-  venue: string;
-  club: string;
-  participants: string;
-  date: string;
-}
-
-interface GridEventDashboardProps {
-  data: EventData[];
-  formatDate: (date: string) => string;
+  event_uuid: string;
+  event_ems_no: string | null;
+  event_start_date: string;
+  event_end_date: string;
+  event_title: string;
+  event_desc: string;
+  event_mode: string;
+  event_venue: string;
+  event_capacity: number;
+  event_status: string;
+  event_reg_start_date: string;
+  event_reg_end_date: string;
+  event_reg_google_form: string;
+  organiser_uuid: string;
+  parent_uuid: string | null;
+  organiser_name: string;
+  stu_fire_id: string;
 }
 
 function OrganiserMainPage() {
-  const [calendarViewFlag, setCalendarViewFlag] = React.useState(false);
-  const [selectedEvents, setSelectedEvents] = React.useState(-1);
+  const [calendarViewFlag, setCalendarViewFlag] = useState(false);
   const navigate = useNavigate();
 
   type SortField = keyof EventData;
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("asc");
-  const [sortField, setSortField] = React.useState<SortField>("event");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<SortField>("event_title");
 
-  const [selectedClubs, setSelectedClubs] = React.useState<string[]>([]);
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
+  const [eventData, setEventData] = useState<EventData[]>([]);
+
+  const fetchEventsFromDatabase = async () => {
+    const response = await axios.get("http://localhost:3000/api/event");
+    return response.data;
+  };
+
+  useEffect(() => {
+    fetchEventsFromDatabase()
+      .then((data) => {
+        setEventData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+  }, []);
 
   function toggleView() {
     setCalendarViewFlag(!calendarViewFlag);
   }
-
-  const eventData: EventData[] = [
-    {
-      id: "ed-1",
-      event: "MUM event",
-      venue: "Monash University Malaysia",
-      club: "IMechE",
-      participants: "1/50",
-      date: "2023-04-05",
-    },
-    {
-      id: "ed2",
-      event: "MUM event 1",
-      venue: "Monash University Malaysia",
-      club: "RoboGals",
-      participants: "2/50",
-      date: "2023-05-02",
-    },
-    {
-      id: "ed3",
-      event: "Website Launch",
-      venue: "Monash University Malaysia",
-      club: "Sems",
-      participants: "3/50",
-      date: "2023-07-08",
-    },
-    {
-      id: "ed-6",
-      event: "webisite demo client",
-      venue: "Monash University Malaysia",
-      club: "Organizers submodule",
-      participants: "4/50",
-      date: "2023-06-20",
-    },
-    {
-      id: "ed4",
-      event: "MUM event 2",
-      venue: "Monash University Malaysia",
-      club: "ICE",
-      participants: "4/50",
-      date: "2023-05-02",
-    },
-    {
-      id: "ed5",
-      event: "PI2 Presentation",
-      venue: "Monash University Malaysia",
-      club: "Organizers submodule",
-      participants: "5/50",
-      date: "2023-05-23",
-    },
-  ];
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
@@ -112,6 +81,8 @@ function OrganiserMainPage() {
     let sortedData: EventData[] = [...events]; // Create a copy of the events array
 
     sortedData.sort((a, b) => {
+      // Kidd:: Need to ask Kennedy and understand how to get participation
+      /* 
       if (sortField === "participants") {
         const participantsA = parseInt(a[sortField].split("/")[0]);
         const participantsB = parseInt(b[sortField].split("/")[0]);
@@ -121,10 +92,13 @@ function OrganiserMainPage() {
         } else {
           return participantsB - participantsA;
         }
-      } else if (sortField === "date") {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return sortOrder === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+      } */
+      if (sortField === "event_start_date") {
+        const dateA = new Date(a.event_start_date);
+        const dateB = new Date(b.event_start_date);
+        return sortOrder === "asc"
+          ? dateA.getTime() - dateB.getTime()
+          : dateB.getTime() - dateA.getTime();
       } else {
         return 0;
       }
@@ -134,22 +108,31 @@ function OrganiserMainPage() {
   };
 
   const filteredEvents = eventData.filter((event) => {
-    const eventMatches = event.event.toLowerCase().includes(searchTerm);
-    const venueMatches = event.venue.toLowerCase().includes(searchTerm);
-    const clubMatches = event.club.toLowerCase().includes(searchTerm);
+    const eventMatches = event.event_title.toLowerCase().includes(searchTerm);
+    const venueMatches = event.event_venue.toLowerCase().includes(searchTerm);
+    const clubMatches = event.organiser_name.toLowerCase().includes(searchTerm); // Kidd:: Apparently organiser_name is club name (Need to confirm)
     return eventMatches || venueMatches || clubMatches;
   });
 
   const sortedEvents = sortEvents(filteredEvents);
-  const currentEvents = sortedEvents.filter((event) => new Date(event.date) >= new Date());
-  const pastEvents = sortedEvents.filter((event) => new Date(event.date) < new Date());
+  const currentEvents = sortedEvents.filter(
+    (event) => new Date(event.event_start_date) >= new Date()
+  );
+  const pastEvents = sortedEvents.filter(
+    (event) => new Date(event.event_start_date) < new Date()
+  );
 
   const handleCreateEvent = () => {
     navigate("/CreateEventForm");
   };
 
+  const handleUpdateEvent = () => {
+    const eventId = "event-id"; // Replace with the actual event ID
+    navigate("/CreateEventForm", { state: { eventId } });
+  };
+
   const handleReset = () => {
-    setSortField("event");
+    setSortField("event_title");
     setSortOrder("asc");
     setSelectedClubs([]);
   };
@@ -191,11 +174,25 @@ function OrganiserMainPage() {
         </Flex>
 
         <Flex mb={"15px"}>
-          <Box flex="1" ml={"25px"}>
-            <Input placeholder="Search Venue, Event, or Club" onChange={handleSearch} />
+          <Box
+            flex="1"
+            display={!calendarViewFlag ? "block" : "none"}
+            ml={"25px"}
+          >
+            <Input
+              placeholder="Search Venue, Event, or Club"
+              onChange={handleSearch}
+            />
           </Box>
 
-          <Box width={"700px"} display={"flex"} justifyContent={"center"} alignItems={"center"} ml={"40px"} mr={"20px"}>
+          <Box
+            width={!calendarViewFlag ? "700px" : "0px"}
+            display={!calendarViewFlag ? "flex" : "none"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            ml={"40px"}
+            mr={"20px"}
+          >
             <Text as="p" noOfLines={1}>
               Sort by:
             </Text>
@@ -222,7 +219,6 @@ function OrganiserMainPage() {
             >
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
-              
             </Select>
 
             <Button colorScheme="blue" size="sm" onClick={handleReset}>
@@ -230,40 +226,40 @@ function OrganiserMainPage() {
             </Button>
           </Box>
 
-          <Box width={"85px"} display="flex" justifyContent={["center", "space-between"]}>
-            <CalendarViewButton calendarViewFlag={calendarViewFlag} toggleView={toggleView} />
-            <GridViewButton calendarViewFlag={calendarViewFlag} toggleView={toggleView} />
+          <Box flex="1" />
+
+          <Box width={"85px"} display="flex" justifyContent="flex-end">
+            <CalendarViewButton
+              calendarViewFlag={calendarViewFlag}
+              toggleView={toggleView}
+            />
+            <GridViewButton
+              calendarViewFlag={calendarViewFlag}
+              toggleView={toggleView}
+            />
           </Box>
         </Flex>
-
-        <Tabs align="end" variant="enclosed">
-          <TabList>
-            <Tab>Current Events</Tab>
-            <Tab>Past Events</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel p={0}>
-              {calendarViewFlag ? (
-                <Calendar />
-              ) : (
-                <>
-                  <GridEventDashboard data={currentEvents} formatDate={formatDate} />
-                  <GridEventDashboardPageNavigator />
-                </>
-              )}
-            </TabPanel>
-            <TabPanel p={0}>
-              {calendarViewFlag ? (
-                <Calendar />
-              ) : (
-                <>
-                  <GridEventDashboard data={pastEvents} formatDate={formatDate} />
-                  <GridEventDashboardPageNavigator />
-                </>
-              )}
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+        {!calendarViewFlag ? (
+          <Tabs align="end" variant="enclosed">
+            <TabList>
+              <Tab>Current Events</Tab>
+              <Tab>Past Events</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel p={0}>
+                <GridEventDashboard
+                  data={currentEvents}
+                  formatDate={formatDate}
+                />
+              </TabPanel>
+              <TabPanel p={0}>
+                <GridEventDashboard data={pastEvents} formatDate={formatDate} />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        ) : (
+          <Calendar eventData={eventData} />
+        )}
       </Box>
     </>
   );

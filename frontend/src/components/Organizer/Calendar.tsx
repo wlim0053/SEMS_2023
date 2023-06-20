@@ -19,7 +19,27 @@ import { IconButton } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon, ViewIcon } from "@chakra-ui/icons";
 import "./CalendarStyle.css";
 
-function Calendar() {
+interface EventData {
+  event_uuid: string;
+  event_ems_no: string | null;
+  event_start_date: string;
+  event_end_date: string;
+  event_title: string;
+  event_desc: string;
+  event_mode: string;
+  event_venue: string;
+  event_capacity: number;
+  event_status: string;
+  event_reg_start_date: string;
+  event_reg_end_date: string;
+  event_reg_google_form: string;
+  organiser_uuid: string;
+  parent_uuid: string | null;
+  organiser_name: string;
+  stu_fire_id: string;
+}
+
+function Calendar({ eventData }: { eventData: EventData[] }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [modal, setModal] = useState(false);
@@ -74,27 +94,11 @@ function Calendar() {
     hoverInfo.el.style.cursor = "pointer";
   };
 
-  const events = [
-    {
-      title: "MUM Event",
-      start: "2023-04-05T08:00:00",
-      end: "2023-04-05T09:00:00",
-      description: "This is a MUM event",
-    },
-    {
-      title: "MUM Event 2",
-      start: "2023-05-02T12:26:00",
-      end: "2023-05-02T13:00:00",
-      description: "This is a MUM event",
-    },
-
-    {
-      title: "Presentation 3170 ",
-      start: "2023-05-23T15:00:00",
-      end: "2023-05-23T17:00:00",
-      description: "This is the final presentation for this semester's 3170 project.",
-    }
-  ];
+  const events = eventData.map((event) => ({
+    title: event.event_title,
+    start: event.event_start_date,
+    description: event.event_venue + " - " + event.organiser_name,
+  }));
 
   return (
     <div
