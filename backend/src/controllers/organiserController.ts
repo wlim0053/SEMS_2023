@@ -65,37 +65,38 @@ export const getOrganiserController = async (
 	res: Response<OrganiserWithStudent[]>,
 	next: NextFunction
 ) => {
-	try {
-		const connection = await pool.connect()
-		const { parent_uuid } = req.query
+	// try {
+	// 	const connection = await pool.connect()
+	// 	const { parent_uuid } = req.query
 
-		let parentQuery = ""
+	// 	let parentQuery = ""
 
-		if (parentQuery) {
-			if (parentQuery === "null")
-				parentQuery = `WHERE parent_uuid IS NULL`
-			else `WHERE parent_uuid=@parent_uuid`
-		}
+	// 	if (parentQuery) {
+	// 		if (parentQuery === "null")
+	// 			parentQuery = `WHERE parent_uuid IS NULL`
+	// 		else `WHERE parent_uuid=@parent_uuid`
+	// 	}
 
-		const organisers: mssql.IResult<OrganiserWithStudent> = await connection
-			.request()
-			.input(
-				"parent_uuid",
-				mssql.UniqueIdentifier,
-				parent_uuid === "null" ? null : parent_uuid
-			).query(`SELECT 
-            organiser_uuid,
-            parent_uuid,
-            organiser_name,
-            u.*
-        FROM ${DbTables.ORGANISER} o join ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id
-        ${parentQuery}
-        `)
-		res.status(StatusCodes.OK).json(organisers.recordset)
-		connection.close()
-	} catch (error) {
-		next(error)
-	}
+	// 	const organisers: mssql.IResult<OrganiserWithStudent> = await connection
+	// 		.request()
+	// 		.input(
+	// 			"parent_uuid",
+	// 			mssql.UniqueIdentifier,
+	// 			parent_uuid === "null" ? null : parent_uuid
+	// 		).query(`SELECT 
+    //         organiser_uuid,
+    //         parent_uuid,
+    //         organiser_name,
+    //         u.*
+    //     FROM ${DbTables.ORGANISER} o join ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id
+    //     ${parentQuery}
+    //     `)
+	// 	res.status(StatusCodes.OK).json(organisers.recordset)
+	// 	connection.close()
+	// } catch (error) {
+	// 	next(error)
+	// }
+	console.log(req.body)
 }
 
 export const getOrganiserByIDController = async (

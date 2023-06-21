@@ -106,7 +106,7 @@ export const loginUserController = async (
 
 		// ! start here
 		if (student.recordset.length != 0){
-			const generatedToken = generateJwtHandler(student.recordset[0].user_fire_id)
+			const generatedToken = generateJwtHandler(student.recordset[0])
 			res.cookie("token", generatedToken, { secure: true, sameSite: "none", httpOnly: true})
 			res.json(student.recordset)
 		}
