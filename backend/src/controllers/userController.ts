@@ -4,6 +4,7 @@ import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 import { User, UserWithFireId } from "../interfaces/user"
 import { EventWithOrganiser } from "../interfaces/event"
+import { generateJwtHandler} from "../middlewares/jwtHandler"
 
 export const registerUserController = async (
 	req: Request<{}, UserWithFireId[], UserWithFireId>,
@@ -102,7 +103,17 @@ export const loginUserController = async (
 		// use this to check for db response
 		// res.json(student.recordset)
 
+
 		// ! start here
+		if (student.recordset.length != 0){
+			const generatedToken = generateJwtHandler(student.recordset[0].user_fire_id)
+			res.cookie("token", generatedToken, { secure: true, sameSite: "none", httpOnly: true})
+			res.json(student.recordset)
+		}
+		else {
+			res.sendStatus(401)
+		}
+		
 	} catch (error) {
 		next(error)
 	}

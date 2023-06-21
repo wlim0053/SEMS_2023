@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, FormControl, FormLabel, Input, Image, Heading, Select } from "@chakra-ui/react";
-import axios from 'axios';
 import api from '../utils/api';
 import { s } from "@fullcalendar/core/internal-common";
 import { useNavigate } from "react-router-dom"
@@ -67,12 +66,11 @@ const RegisterPage: React.FC = () => {
 
       console.log(payload);
   
-      let res = await api.post('/user', payload);
+      let res = await api.post('/user/register', payload);
   
       let data = res.data;
       console.log(data);
       console.log("POST Request sent")
-      navigate('/StudentHome');
   }
     doPostRequest();
   };
@@ -82,7 +80,7 @@ useEffect(() => {
   // Perform your API call here
   api.get('/specialisation')
   .then((response) => {setSpecialise(response.data)})
-  .then(special => console.log(specialise));
+  // .then(special => console.log(specialise));
 }, []); // Empty dependency array to ensure the effect runs only once on component mount
 
    return (

@@ -16,7 +16,7 @@ Image,
 Center,
 } from '@chakra-ui/react';
 import { EmailIcon } from '@chakra-ui/icons';
-import axios from 'axios';
+import api from '../utils/api';
 import { useNavigate } from "react-router-dom"
 
 
@@ -56,44 +56,21 @@ const handleSubmit = (e: FormEvent) => {
       // The signed-in user info.
       const user = result.user;
       console.log(user);
-      console.log(user.uid);
-      console.log(user.displayName)
-  
-      const body = {
-          "stu_fire_id": user.uid,
-          "stu_email": user.email,
-          "stu_name": user.displayName,
-          "stu_id": null,
-          "enrolment_year": null,
-          "enrolment_intake": null,
-          "stu_gender": null,
-          "dis_uuid": null,
-      }
-  
-      const body2 = {
-          "stu_fire_id": "test123",
-          "stu_email": "lpep1030@student.monash.edu",
-          "stu_name": "Lionel Pepsi",
-          "stu_id": 30103010,
-          "enrolment_year": "2021-01-01T00:00:00.000Z",
-          "enrolment_intake": 7,
-          "stu_gender": 1,
-          "dis_uuid": "8DEA91DF-9FB3-4874-9DDB-7171A54EEBAE"
-        }
+
       async function doPostRequest() {
   
-          let payload = body2;
+          let payload = { user_fire_id: user.uid};
   
           console.log(payload);
       
-          let res = await axios.post('http://localhost:3000/api/student', payload);
+          let res = await api.post('/user/login', payload);
       
           let data = res.data;
           console.log(data);
           console.log("POST Request sent")
       }
       
-      // doPostRequest();
+      doPostRequest();
   
   
       // IdP data available using getAdditionalUserInfo(result)

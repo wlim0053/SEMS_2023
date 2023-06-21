@@ -1,6 +1,7 @@
 import express from "express"
 import helmet from "helmet"
 import cors from "cors"
+import cookieParser from "cookie-parser"
 import { schoolRouter } from "./routes/school"
 import { userRouter } from "./routes/user"
 import { organiserRouter } from "./routes/organiser"
@@ -12,7 +13,7 @@ import { feedbackRouter } from "./routes/feedback"
 import { statsRouter } from "./routes/stats"
 import { downloadRouter } from "./routes/download"
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 5173
 const app = express()
 
 // TODO add deployment website later
@@ -29,10 +30,14 @@ const corsOptions: cors.CorsOptions = {
 	optionsSuccessStatus: 200,
 	credentials: true,
 }
-// app.use(cors(corsOptions))
+app.use(cors(corsOptions))
 app.use(express.json())
 // app.use(helmet())
 // app.use(express.urlencoded());
+
+// * Cookie parser middleware
+// * Must be placed before the routes or else it doesn't work (not sure why)
+app.use(cookieParser())
 
 /**
  * Routes for retrieving data from tables
@@ -56,5 +61,7 @@ app.use("/api/download", downloadRouter)
 
 // * Error handling middleware
 app.use(errorHandler)
+
+
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))

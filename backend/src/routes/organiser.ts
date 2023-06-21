@@ -8,13 +8,14 @@ import {
 } from "../controllers/organiserController"
 import { Organiser } from "../interfaces/organiser"
 import { requestValidators } from "../middlewares/requestValidator"
+import { verifyJwtHandler } from "../middlewares/jwtHandler"
 
 export const organiserRouter = express.Router()
 
 organiserRouter
 	.route("/")
 	.post(requestValidators({ body: Organiser }), createOrganiserController)
-	.get(getOrganiserController)
+	.get(verifyJwtHandler,getOrganiserController)
 
 organiserRouter
 	.route("/:id")
