@@ -2,7 +2,8 @@ import nodemailer from "nodemailer"
 import { NextFunction, Request, Response } from "express"
 import Mailgen from "mailgen"
 import { StatusCodes } from "../utils/constant"
-import handlebars from "handlebars"
+import { readFile } from "fs"
+import handlebars from 'handlebars';
 
 const user = process.env.email_user;
 const pass = process.env.email_password;
@@ -18,46 +19,36 @@ export const registrationEmail = async (req: Request, res: Response, next: NextF
 
     let transporter = nodemailer.createTransport(trans_obj);
 
-    let mailGenerator = new Mailgen({
-        theme: "default",
-        product: {
-            name: "SEMS",
-            link: "https://www.monash.edu.my"
+    readFile('./src/utils/template/registration.html', 'utf8', (err, htmlTemplate) => {
+        if (err) {
+          console.error('Error reading HTML file:', err);
+          return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
         }
-    })
-
-    let response = {
-        body: {
-            name: "mimiyazaki", //req.body.user_fname
-            intro: "You have successfully signed up for an event!",
-            table: {
-                data: [ {
-                    event: "Tech Talk: Exploring the Future of Artificial Intelligence", // req.body.event_title
-                    description: "Join us for an exciting Tech Talk session where we delve into the fascinating \
-                    world of Artificial Intelligence (AI). Discover how AI is transforming industries, learn about \
-                    the latest advancements, and explore the ethical implications of this rapidly evolving technology. \
-                    Whether you're a technology enthusiast or simply curious about AI, this event is an opportunity to \
-                    expand your knowledge and engage in insightful discussions with industry experts." // req.body.event_desc
-                }],
-            }, 
-            outro: "Thank you and we look forward to seeing you soon!",
-        },
-    };
       
-    let mail = mailGenerator.generate(response);
-
-    let message = {
-        from: user,
-        to: ["eooi0006@student.monash.edu", "wlim0053@student.monash.edu"],
-        subject: "Thank you for your registration!",
-        html: mail
-    }
-
-    transporter.sendMail(message).then(() => {
-        return res.sendStatus(StatusCodes.OK)
-    }).catch(() => {
-        return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR)
-    });
+        const template = handlebars.compile(htmlTemplate);
+      
+        const data = {
+          name: 'John Doe',
+          eventName: 'Tech Talk: Exploring the Future of Artificial Intelligence',
+        };
+      
+        const mail = template(data);
+      
+        let message = {
+          from: user,
+          to: ["eooi0006@student.monash.edu", "wlim0053@student.monash.edu", "xlee0024@student.monash.edu"],
+          subject: "Thank you for your registration!",
+          html: mail
+        }
+      
+        transporter.sendMail(message)
+          .then(() => {
+            return res.sendStatus(StatusCodes.OK);
+          })
+          .catch(() => {
+            return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+          });
+      });
 }
 
 export const reminderEmail = async (req: Request, res: Response, next: NextFunction) => {
