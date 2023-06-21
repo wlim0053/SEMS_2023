@@ -51,7 +51,7 @@ const createTriggers = async () => {
 		await connection.query("USE sems_demo")
 		const res = await connection.query(`
         CREATE OR ALTER TRIGGER trg_UpdateUserAccessLvl
-        ON tbl_organiser
+        ON ${DbTables.ORGANISER}
         AFTER INSERT, UPDATE
         AS
         BEGIN
@@ -341,7 +341,7 @@ const delay = 3000
 // createDatabase()
 // setTimeout(createTables, timer)
 // setTimeout(alterTables, (timer += delay))
-// setTimeout(createTriggers, (timer += delay))
+setTimeout(createTriggers, (timer += delay))
 
 // * 2. Run these individually 1 by 1
 // populateTableSchool()

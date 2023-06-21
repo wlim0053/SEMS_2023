@@ -5,7 +5,7 @@ import { DbTables, StatusCodes } from "../utils/constant"
 import { User, UserWithFireId } from "../interfaces/user"
 import { EventWithOrganiser } from "../interfaces/event"
 
-export const createUserController = async (
+export const registerUserController = async (
 	req: Request<{}, UserWithFireId[], UserWithFireId>,
 	res: Response<UserWithFireId[]>,
 	next: NextFunction
@@ -21,15 +21,10 @@ export const createUserController = async (
 			.input("user_lname", mssql.VarChar, req.body.user_lname)
 			.input("user_id", mssql.Int, req.body.user_id)
 			.input("user_gender", mssql.Int, req.body.user_gender)
-			.input(
-				"user_access_lvl",
-				mssql.Char,
-				req.body.user_access_lvl ?? null
-			)
 			.input("enrolment_year", mssql.Date, req.body.enrolment_year)
 			.input("enrolment_intake", mssql.Int, req.body.enrolment_intake)
 			.query(`
-                INSERT INTO ${DbTables.USER} 
+                INSERT INTO ${DbTables.USER} (user_fire_id, spec_uuid, user_email, user_fname, user_lname, user_id, user_gender, enrolment_year, enrolment_intake)
                 OUTPUT INSERTED.*
                 VALUES (
                     @user_fire_id,
@@ -39,7 +34,6 @@ export const createUserController = async (
                     @user_lname,
                     @user_id,
                     @user_gender,
-                    @user_access_lvl,
                     @enrolment_year,
                     @enrolment_intake
                 )
@@ -91,61 +85,84 @@ export const updateUserController = async (
 	}
 }
 
-export const deleteUserController = async (
-	req: Request<{ id: string }, {}, {}>,
-	res: Response<{}>,
-	next: NextFunction
-) => {
-	try {
-		const connection = await pool.connect()
-		await connection
-			.request()
-			.input("user_fire_id", mssql.VarChar, req.params.id)
-			.query(
-				`DELETE FROM ${DbTables.USER} WHERE [user_fire_id]=@user_fire_id`
-			)
-		res.sendStatus(204)
-		connection.close()
-	} catch (error) {
-		next(error)
-	}
-}
-
-export const getUserController = async (
-	req: Request<{}, UserWithFireId[], {}>,
-	res: Response<UserWithFireId[]>,
-	next: NextFunction
-) => {
-	try {
-		const connection = await pool.connect()
-		const Users: mssql.IResult<UserWithFireId> = await connection.query(
-			`SELECT * FROM ${DbTables.USER}`
-		)
-		connection.close()
-		res.status(StatusCodes.OK).json(Users.recordset)
-	} catch (error) {
-		next(error)
-	}
-}
-
-export const getUserByIdController = async (
-	req: Request<{ id: string }, UserWithFireId[], {}>,
-	res: Response<UserWithFireId[]>,
+export const loginUserController = async (
+	req: Request<{}, {}, { user_fire_id: string }, {}>,
+	res: Response,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
 		const student: mssql.IResult<UserWithFireId> = await connection
 			.request()
-			.input("user_fire_id", mssql.VarChar, req.params.id)
+			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id)
 			.query(
 				`SELECT * FROM ${DbTables.USER} WHERE user_fire_id=@user_fire_id`
 			)
-		res.json(student.recordset)
+
+		// use this to check for db response
+		// res.json(student.recordset)
+
+		// ! start here
 	} catch (error) {
 		next(error)
 	}
 }
+// ! might not be needed anymore
+// export const deleteUserController = async (
+// 	req: Request<{ id: string }, {}, {}>,
+// 	res: Response<{}>,
+// 	next: NextFunction
+// ) => {
+// 	try {
+// 		const connection = await pool.connect()
+// 		await connection
+// 			.request()
+// 			.input("user_fire_id", mssql.VarChar, req.params.id)
+// 			.query(
+// 				`DELETE FROM ${DbTables.USER} WHERE [user_fire_id]=@user_fire_id`
+// 			)
+// 		res.sendStatus(204)
+// 		connection.close()
+// 	} catch (error) {
+// 		next(error)
+// 	}
+// }
+
+// export const getUserController = async (
+// 	req: Request<{}, UserWithFireId[], {}>,
+// 	res: Response<UserWithFireId[]>,
+// 	next: NextFunction
+// ) => {
+// 	try {
+// 		const connection = await pool.connect()
+// 		const Users: mssql.IResult<UserWithFireId> = await connection.query(
+// 			`SELECT * FROM ${DbTables.USER}`
+// 		)
+// 		connection.close()
+// 		res.status(StatusCodes.OK).json(Users.recordset)
+// 	} catch (error) {
+// 		next(error)
+// 	}
+// }
+
+// export const getUserByIdController = async (
+// 	req: Request<{ id: string }, UserWithFireId[], {}>,
+// 	res: Response<UserWithFireId[]>,
+// 	next: NextFunction
+// ) => {
+// 	try {
+// 		const connection = await pool.connect()
+// 		const student: mssql.IResult<UserWithFireId> = await connection
+// 			.request()
+// 			.input("user_fire_id", mssql.VarChar, req.params.id)
+// 			.query(
+// 				`SELECT * FROM ${DbTables.USER} WHERE user_fire_id=@user_fire_id`
+// 			)
+// 		res.json(student.recordset)
+// 	} catch (error) {
+// 		next(error)
+// 	}
+// }
 
 export const getUserEventByIdController = async (
 	req: Request<{ id: string }, EventWithOrganiser[], {}>,
