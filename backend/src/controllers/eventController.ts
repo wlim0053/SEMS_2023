@@ -51,11 +51,12 @@ export const createEventController = async (
 				mssql.VarChar,
 				req.body.event_reg_google_form
 			).query(`
-                INSERT INTO ${DbTables.EVENT} (event_ems_no, organiser_uuid, event_start_date, event_end_date, event_title, event_desc, event_mode, event_venue, event_capacity, event_status, event_reg_start_date, event_reg_end_date, event_reg_google_form)  
+                INSERT INTO ${DbTables.EVENT}  
 				OUTPUT INSERTED.*
 				VALUES (
-                    @event_ems_no,
+                    DEFAULT,
                     @organiser_uuid,
+                    @event_ems_no,
                     @event_start_date,
                     @event_end_date,
                     @event_title,
@@ -154,7 +155,7 @@ export const getEventController = async (
                 o.organiser_uuid,
                 parent_uuid,
                 organiser_name,
-                stu_fire_id
+                user_fire_id
             FROM ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o 
             ON e.organiser_uuid=o.organiser_uuid`
 			)
@@ -192,7 +193,7 @@ export const getEventByIDController = async (
                 o.organiser_uuid,
                 parent_uuid,
                 organiser_name,
-                stu_fire_id
+                user_fire_id
             FROM ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o 
             ON e.organiser_uuid=o.organiser_uuid
             WHERE [event_uuid] = @event_uuid`
@@ -224,6 +225,7 @@ export const deleteEventController = async (
 	}
 }
 
+// todo join with user table
 export const getEventParticipationController = async (
 	req: Request<{ id: string }, ParticipationWithUUID[], {}>,
 	res: Response<ParticipationWithUUID[]>,
