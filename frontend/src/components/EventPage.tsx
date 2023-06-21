@@ -20,13 +20,14 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Select,
   Text,
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../utils/api";
 
 function EventPage() {
   interface Event {
@@ -65,6 +66,17 @@ function EventPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [sortedEvents, setSortedEvents] = useState<Event[]>([]);
 
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userId, setUserId] = useState<number>(0);
+  const [gender, setGender] = useState<number>(0);
+  const [enrolmentYear, setEnrolmentYear] = useState("");
+  const [enrolmentIntake, setEnrolmentIntake] = useState("");
+  const [specialisation, setSpecialisation] = useState("");
+  const [specUuid, setSpecUuid] = useState("");
+  const [specialisations, setSpecialisations] = useState<string[]>([]);
+
   const clubs = [
     { name: "IEMMSS", id: "iemmss" },
     { name: "CHEMECAR", id: "chemecar" },
@@ -75,13 +87,47 @@ function EventPage() {
   ];
 
   useEffect(() => {
+    api
+      .get("/specialisation")
+      .then((response) => {
+        const specialisationNames = response.data.map(
+          (spec: { spec_name: string }) => spec.spec_name
+        );
+        setSpecialisations(specialisationNames);
+      })
+      .catch((error) => {
+        console.error("Error fetching specialisations:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    api
+      .get("/specialisation")
+      .then((response) => {
+        const filteredSpecialisation = response.data.find(
+          (spec: { spec_name: string; spec_uuid: string }) =>
+            spec.spec_name === specialisation
+        );
+        if (filteredSpecialisation) {
+          setSpecUuid(filteredSpecialisation.spec_uuid);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching specialisations:", error);
+      });
+  }, [specialisation]);
+
+  useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/event");
+        const response = await api.get("/event");
         const data = response.data;
-        setEvents(data);
-        setSortedEvents(data);
-        setSignUpStatus(new Array(data.length).fill(false));
+        const filteredData = data.filter(
+          (event: Event) => event.event_status === "A"
+        );
+        setEvents(filteredData);
+        setSortedEvents(filteredData);
+        setSignUpStatus(new Array(filteredData.length).fill(false));
       } catch (error) {
         console.error(error);
       }
@@ -90,7 +136,56 @@ function EventPage() {
     fetchEvents().catch((error) => console.error(error));
   }, []);
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSignUpModalOpen(false);
+    setSignUpStatus((prevStatus) =>
+      prevStatus.map((status, i) => (i === currentIndex ? true : status))
+    );
+
+    const userFireId = `${firstName}${lastName}`
+      .split("")
+      .map((c, i) => (i % 2 === 0 ? c.toUpperCase() : c.toLowerCase()))
+      .join("");
+
+    const data = {
+      user_fire_id: userFireId,
+      spec_uuid: specUuid,
+      user_email: email,
+      user_fname: firstName,
+      user_lname: lastName,
+      user_id: userId,
+      user_gender: gender,
+      user_access_lvl: "S",
+      enrolment_year: new Date(
+        `${enrolmentYear}-01-01T00:00:00.000Z`
+      ).toISOString(),
+      enrolment_intake: convertToIntakeMonth(enrolmentIntake.toString()),
+    };
+
+    api
+      .post("/user", data)
+      .then((response) => {
+        console.log("User created:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error creating user:", error);
+      });
+  };
+
   const navigate = useNavigate();
+
+  const convertToIntakeMonth = (selectedValue: string) => {
+    let intakeMonth = 0;
+    if (selectedValue === "February") {
+      intakeMonth = 2;
+    } else if (selectedValue === "July") {
+      intakeMonth = 7;
+    } else if (selectedValue === "October") {
+      intakeMonth = 10;
+    }
+    return intakeMonth;
+  };
 
   const handleGoToCalendar = () => {
     navigate("/StudentHome");
@@ -262,7 +357,7 @@ function EventPage() {
               <h2>
                 <AccordionButton
                   borderBottom="1px solid #ccc"
-                  bg="#d9d9d9"
+                  bg="#bfe6ff"
                   display="flex"
                   justifyContent="space-between"
                   alignItems="center"
@@ -375,29 +470,106 @@ function EventPage() {
         <ModalContent>
           <ModalHeader>Sign Up</ModalHeader>
           <ModalCloseButton />
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setIsSignUpModalOpen(false);
-              setSignUpStatus((prevStatus) =>
-                prevStatus.map((status, i) =>
-                  i === currentIndex ? true : status
-                )
-              );
-              console.log("Submit clicked");
-            }}
-          >
+          <form onSubmit={handleSubmit}>
             <ModalBody pb={6}>
-              <FormControl isRequired>
-                <FormLabel>Name</FormLabel>
-                <Input />
-                <FormErrorMessage>Name is required.</FormErrorMessage>
+              <FormControl mt={4} isRequired>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <FormErrorMessage>Email is required.</FormErrorMessage>
+              </FormControl>
+
+              {/* Add more form controls here for the other fields... */}
+
+              <FormControl mt={4} isRequired>
+                <FormLabel>First Name</FormLabel>
+                <Input
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+                <FormErrorMessage>First Name is required.</FormErrorMessage>
               </FormControl>
 
               <FormControl mt={4} isRequired>
-                <FormLabel>Email</FormLabel>
-                <Input type="email" />
-                <FormErrorMessage>Email is required.</FormErrorMessage>
+                <FormLabel>Last Name</FormLabel>
+                <Input
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+                <FormErrorMessage>Last Name is required.</FormErrorMessage>
+              </FormControl>
+
+              <FormControl mt={4} isRequired>
+                <FormLabel>Student ID</FormLabel>
+                <Input
+                  type="number"
+                  value={userId}
+                  onChange={(e) => setUserId(parseInt(e.target.value))}
+                />
+                <FormErrorMessage>Student ID is required.</FormErrorMessage>
+              </FormControl>
+
+              <FormControl mt={4} isRequired>
+                <FormLabel>Gender</FormLabel>
+                <Select
+                  placeholder="Select gender"
+                  value={gender === 0 ? "male" : "female"}
+                  onChange={(e) => setGender(e.target.value === "male" ? 0 : 1)}
+                >
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </Select>
+              </FormControl>
+
+              <FormControl mt={4} isRequired>
+                <FormLabel>Specialisation</FormLabel>
+                <Select
+                  placeholder="Select specialisation"
+                  value={specialisation}
+                  onChange={(e) => setSpecialisation(e.target.value)}
+                >
+                  {specialisations.map((spec) => (
+                    <option key={spec} value={spec}>
+                      {spec}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl mt={4} isRequired>
+                <FormLabel>Enrolment Year</FormLabel>
+                <Select
+                  placeholder="Select enrolment year"
+                  value={enrolmentYear}
+                  onChange={(e) => setEnrolmentYear(e.target.value)}
+                >
+                  {Array.from(
+                    { length: new Date().getFullYear() - 1960 },
+                    (_, i) => 1961 + i
+                  ).map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl mt={4} isRequired>
+                <FormLabel>Enrolment Intake</FormLabel>
+                <Select
+                  placeholder="Select enrolment intake"
+                  value={enrolmentIntake}
+                  onChange={(e) => setEnrolmentIntake(e.target.value)}
+                >
+                  <option value="February">February</option>
+                  <option value="July">July</option>
+                  <option value="October">October</option>
+                </Select>
               </FormControl>
             </ModalBody>
 
