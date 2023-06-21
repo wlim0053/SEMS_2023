@@ -8,7 +8,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 function StudentEvents() {
   interface Event {
@@ -34,8 +34,8 @@ function StudentEvents() {
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/event")
+    api
+      .get("/event")
       .then((response) => setEvents(response.data))
       .catch((error) => console.log(error));
   }, []);

@@ -16,7 +16,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import "./CalendarStyle.css";
-import axios from "axios";
+import api from "../utils/api";
 
 function Calendar() {
   const [title, setTitle] = useState("");
@@ -61,7 +61,7 @@ function Calendar() {
   }, []);
 
   const fetchEventsFromDatabase = async () => {
-    const response = await axios.get("http://localhost:3000/api/event");
+    const response = await api.get("/event");
     return response.data;
   };
 

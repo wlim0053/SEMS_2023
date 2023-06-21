@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Text, Flex } from "@chakra-ui/react";
-import axios from "axios";
+import api from "../../utils/api";
 
 function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState(0);
@@ -22,12 +22,10 @@ function CountdownTimer() {
 
   useEffect(() => {
     const fetchEventsFromDatabase = async () => {
-      // Fetch events from the database
       try {
-        const response = await axios.get("http://localhost:3000/api/event");
+        const response = await api.get("/event");
         const data = response.data;
 
-        // Process the data and find the nearest event
         const currentDate = new Date();
         let nearestEvent = null;
 
@@ -42,14 +40,8 @@ function CountdownTimer() {
             nearestEvent = {
               timeLeft,
               eventDate,
-              startTime: eventDate.toLocaleTimeString([], {
-                hour: "numeric",
-                minute: "numeric",
-              }),
-              endTime: new Date(element.event_end_date).toLocaleTimeString([], {
-                hour: "numeric",
-                minute: "numeric",
-              }),
+              startTime: element.event_start_date,
+              endTime: element.event_end_date,
               title: element.event_title,
             };
           }
@@ -70,7 +62,19 @@ function CountdownTimer() {
     };
 
     fetchEventsFromDatabase().catch((error) => console.error(error));
+
+    // Fetch events and update timer every minute
+    const interval = setInterval(() => {
+      fetchEventsFromDatabase().catch((error) => console.error(error));
+    }, 1000);
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(interval);
   }, []);
+
+  if (!timeLeft) {
+    return null; // Render loading state or placeholder
+  }
 
   // get current date of today in "DD(th/st/nd/rd) MMM YYYY" format
   function getCurrentDate() {
