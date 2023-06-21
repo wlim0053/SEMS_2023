@@ -1,6 +1,6 @@
 import dotenv from "dotenv"
 import { NextFunction, Request, Response } from "express"
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken"
 import { UserWithFireId } from "../interfaces/user"
 dotenv.config({
 	path: "development" === process.env.NODE_ENV ? ".env.dev" : ".env.prod",
@@ -15,24 +15,28 @@ export const generateJwtHandler = (user: UserWithFireId) => {
     return token
 }
 
-export const verifyJwtHandler = (req:Request, res: Response, next: NextFunction ) => {
-    const token = req.cookies.token
-    if (!token) {
-        res.status(401)
-        next(new Error("Unauthorized"))
 
+
+export const verifyJwtHandler = (access_level: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const token = req.cookies.token
+        if (!token) {
+            res.status(401)
+            throw new Error("Unauthorized")
+        }
+        try {
+            const user = jwt.verify(token, process.env.access_token_secret!)
+            console.log(typeof user)
+            if(typeof user === "object" && access_level.includes(user.user_access_lvl)){
+                req.body.user = user
+                next()
+            }else{
+                res.status(403)
+                throw new Error("Not permitted")
+            }
+
+        } catch (error) {
+            next(error)
+        }
     }
-    try {
-        const user = jwt.verify(token, process.env.access_token_secret!)
-        req.body.user = user
-        next()
-        
-    } catch (error) {
-        res.status(403)
-        next(new Error("Forbidden"))
-    }
-
-    
-    
-
 }

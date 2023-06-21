@@ -15,7 +15,7 @@ export const organiserRouter = express.Router()
 organiserRouter
 	.route("/")
 	.post(requestValidators({ body: Organiser }), createOrganiserController)
-	.get(verifyJwtHandler,getOrganiserController)
+	.get(verifyJwtHandler(["S","O"]),getOrganiserController)
 
 organiserRouter
 	.route("/:id")
