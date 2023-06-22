@@ -20,11 +20,8 @@ export const registerUserController = async (
 			.input("user_fname", mssql.VarChar, req.body.user_fname)
 			.input("user_lname", mssql.VarChar, req.body.user_lname)
 			.input("user_id", mssql.Int, req.body.user_id)
-			.input("user_gender", mssql.Int, req.body.user_gender)
-			.input("enrolment_year", mssql.Date, req.body.enrolment_year)
-			.input("enrolment_intake", mssql.Int, req.body.enrolment_intake)
-			.query(`
-                INSERT INTO ${DbTables.USER} (user_fire_id, spec_uuid, user_email, user_fname, user_lname, user_id, user_gender, enrolment_year, enrolment_intake)
+			.input("user_gender", mssql.Int, req.body.user_gender).query(`
+                INSERT INTO ${DbTables.USER}
                 OUTPUT INSERTED.*
                 VALUES (
                     @user_fire_id,
@@ -34,8 +31,7 @@ export const registerUserController = async (
                     @user_lname,
                     @user_id,
                     @user_gender,
-                    @enrolment_year,
-                    @enrolment_intake
+                    DEFAULT
                 )
             `)
 		res.json(create.recordset)
@@ -62,8 +58,6 @@ export const updateUserController = async (
 			.input("user_id", mssql.Int, req.body.user_id)
 			.input("user_gender", mssql.Int, req.body.user_gender)
 			.input("user_access_lvl", mssql.Char, req.body.user_access_lvl)
-			.input("enrolment_year", mssql.Date, req.body.enrolment_year)
-			.input("enrolment_intake", mssql.Int, req.body.enrolment_intake)
 			.query(`
             UPDATE ${DbTables.USER} SET
                 [user_email]=@user_email,
@@ -72,9 +66,6 @@ export const updateUserController = async (
                 [user_lname]=@user_lname,
                 [user_id]=@user_id,
                 [user_gender]=@user_gender,
-                [user_access_lvl]=@user_access_lvl,
-                [enrolment_year]=@enrolment_year,
-                [enrolment_intake]=@enrolment_intake
             OUTPUT INSERTED.*
             WHERE [user_fire_id]=@user_fire_id
         `)
