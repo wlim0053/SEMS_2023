@@ -29,7 +29,7 @@ participationRouter
 		getParticipationController
 	)
 
-participationRouter.route("/:id/mark-attendance").patch(
+participationRouter.route("/:id/attendance").patch(
 	verifyJwtHandler(["O", "A"]),
 	requestValidators({
 		body: Participation.pick({ participation_attendance: true }),
