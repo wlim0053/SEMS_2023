@@ -13,7 +13,7 @@ import { feedbackRouter } from "./routes/feedback"
 import { statsRouter } from "./routes/stats"
 import { downloadRouter } from "./routes/download"
 
-const PORT = process.env.PORT || 5173
+const PORT = process.env.PORT || 3000
 const app = express()
 
 // TODO add deployment website later
@@ -61,7 +61,5 @@ app.use("/api/download", downloadRouter)
 
 // * Error handling middleware
 app.use(errorHandler)
-
-
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))

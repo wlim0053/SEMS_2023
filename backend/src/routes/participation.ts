@@ -9,7 +9,9 @@ import {
 import {
 	Participation,
 	ParticipationQueryParams,
+	ParticipationWithJwt,
 } from "../interfaces/participation"
+import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
 
 export const participationRouter = express.Router()
@@ -17,19 +19,20 @@ export const participationRouter = express.Router()
 participationRouter
 	.route("/")
 	.post(
-		requestValidators({ body: Participation }),
+		verifyJwtHandler(["S", "O", "A"]),
+		requestValidators({ body: ParticipationWithJwt }),
 		createParticipationController
 	)
 	.get(
+		verifyJwtHandler(["S", "O", "A"]),
 		requestValidators({ query: ParticipationQueryParams }),
 		getParticipationController
 	)
 
-participationRouter.route("/:id/attendance").patch(
+participationRouter.route("/:id/mark-attendance").patch(
+	verifyJwtHandler(["O", "A"]),
 	requestValidators({
 		body: Participation.pick({ participation_attendance: true }),
 	}),
 	markParticipationAttendanceController
 )
-// .get(getParticipationByIdController)
-// .delete(deleteParticipationController)

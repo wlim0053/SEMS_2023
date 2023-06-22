@@ -5,11 +5,14 @@ import {
 	Participation,
 	ParticipationWithEvent,
 	ParticipationWithUUID,
+	ParticipationQueryParams,
+	ParticipationWithJwt,
 } from "../interfaces/participation"
 import { DbTables, StatusCodes } from "../utils/constant"
 
+// * Used by students to sign up for an event
 export const createParticipationController = async (
-	req: Request<{}, ParticipationWithUUID[], Participation>,
+	req: Request<{}, ParticipationWithUUID[], ParticipationWithJwt>,
 	res: Response<ParticipationWithUUID[]>,
 	next: NextFunction
 ) => {
@@ -18,12 +21,7 @@ export const createParticipationController = async (
 		const create: mssql.IResult<ParticipationWithUUID> = await connection
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, req.body.event_uuid)
-			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id)
-			.input(
-				"participation_attendance",
-				mssql.Bit,
-				req.body.participation_attendance
-			)
+			.input("user_fire_id", mssql.VarChar, req.body.user.user_fire_id)
 			.input(
 				"participation_year",
 				mssql.TinyInt,
@@ -52,6 +50,7 @@ export const createParticipationController = async (
 	}
 }
 
+// * Used by organisers to mark a participation's attendance
 export const markParticipationAttendanceController = async (
 	req: Request<{ id: string }, ParticipationWithUUID[], Participation>,
 	res: Response<ParticipationWithUUID[]>,
@@ -79,21 +78,30 @@ export const markParticipationAttendanceController = async (
 	}
 }
 
+// * Used by students on Calendar to show their upcoming events, and on History Page to show their past events (only will show THE USER's event won't show other user's event)
 export const getParticipationController = async (
-	req: Request<{}, ParticipationWithEvent[], {}, { event_status: string }>,
+	req: Request<
+		{},
+		ParticipationWithEvent[],
+		ParticipationWithJwt,
+		ParticipationQueryParams
+	>,
 	res: Response<ParticipationWithEvent[]>,
 	next: NextFunction
 ) => {
-	let where = ""
+	let eventStatus = ""
 
 	if (req.query.event_status) {
-		where = `where e.event_status='${req.query.event_status}'`
+		eventStatus = `AND e.event_status='@event_status'`
 	}
 
 	try {
 		const connection = await pool.connect()
 		const participants: mssql.IResult<ParticipationWithEvent> =
-			await connection.request().query(`
+			await connection
+				.request()
+				.input("user_fire_id", req.body.user.user_fire_id)
+				.input("event_status", req.query.event_status).query(`
             SELECT 
                 p.participation_uuid,
                 p.user_fire_id,
@@ -105,7 +113,8 @@ export const getParticipationController = async (
                 ${DbTables.PARTICIPATION} p JOIN ${DbTables.EVENT} e
             ON 
                 p.event_uuid=e.event_uuid
-            ${where}
+            WHERE
+                p.user_fire_id=@user_fire_id ${eventStatus}
         `)
 		res.json(participants.recordset)
 		connection.close()
