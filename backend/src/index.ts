@@ -10,6 +10,7 @@ import { participationRouter } from "./routes/participation"
 import { errorHandler } from "./middlewares/errorHandler"
 import { feedbackRouter } from "./routes/feedback"
 import { statsRouter } from "./routes/stats"
+import { downloadRouter } from "./routes/download"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -28,7 +29,7 @@ const corsOptions: cors.CorsOptions = {
 	optionsSuccessStatus: 200,
 	credentials: true,
 }
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
 app.use(express.json())
 // app.use(helmet())
 // app.use(express.urlencoded());
@@ -49,6 +50,9 @@ app.use("/api/feedback", feedbackRouter)
 
 // Route for retrieving statistical data from tables (group by statements)
 app.use("/api/stats", statsRouter)
+
+// Route for file transfer
+app.use("/api/download", downloadRouter)
 
 // * Error handling middleware
 app.use(errorHandler)
