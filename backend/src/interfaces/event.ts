@@ -1,7 +1,9 @@
 import zod from "zod"
+import { Organiser } from "./organiser"
 
 export const Event = zod.object({
 	event_ems_no: zod.string().nullable(),
+	event_ems_link: zod.string().url().nullable(),
 	organiser_uuid: zod.string().uuid(),
 	event_start_date: zod.string().datetime(),
 	event_end_date: zod.string().datetime(),
@@ -10,7 +12,7 @@ export const Event = zod.object({
 	event_mode: zod.enum(["P", "V", "H"]),
 	event_venue: zod.string().nonempty(),
 	event_capacity: zod.number().nonnegative(),
-	event_status: zod.enum(["D", "P", "A", "R"]),
+	event_status: zod.enum(["D", "P", "A", "R", "C"]),
 	event_reg_start_date: zod.string().datetime().nullable(),
 	event_reg_end_date: zod.string().datetime().nullable(),
 	event_reg_google_form: zod.string().url().nullable(),
@@ -20,11 +22,13 @@ export const EventWithUUID = Event.extend({
 	event_uuid: zod.string().uuid(),
 })
 
-export const EventWithOrganiser = EventWithUUID.extend({
-	parent_uuid: zod.string(),
-	organiser_name: zod.string(),
-	user_fire_id: zod.string(),
-})
+export const EventWithOrganiser = EventWithUUID.merge(
+	Organiser.pick({
+		parent_uuid: true,
+		organiser_name: true,
+		user_fire_id: true,
+	})
+)
 
 export type Event = zod.infer<typeof Event>
 
