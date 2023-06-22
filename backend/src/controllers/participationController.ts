@@ -92,7 +92,7 @@ export const getParticipationController = async (
 	let eventStatus = ""
 
 	if (req.query.event_status) {
-		eventStatus = `AND e.event_status='@event_status'`
+		eventStatus = `AND e.event_status=@event_status`
 	}
 
 	try {
@@ -101,7 +101,8 @@ export const getParticipationController = async (
 			await connection
 				.request()
 				.input("user_fire_id", req.body.user.user_fire_id)
-				.input("event_status", req.query.event_status).query(`
+				.input("event_status", mssql.Char, req.query.event_status)
+				.query(`
             SELECT 
                 p.participation_uuid,
                 p.user_fire_id,
