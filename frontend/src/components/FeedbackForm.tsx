@@ -11,6 +11,10 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  useToast,
+  Alert,
+  AlertIcon,
+  CloseButton,
 } from "@chakra-ui/react";
 import api from "../utils/api";
 import FeedbackRadioTable from "./FeedbackRadioTable";
@@ -24,6 +28,7 @@ const FeedbackFormSchema = Yup.object().shape({
 });
 
 const FeedbackForm = () => {
+  const toast = useToast();
   return (
     <>
       <Box
@@ -53,7 +58,7 @@ const FeedbackForm = () => {
             setTimeout(async (e) => {
               setSubmitting(false);
               const body = {
-                participation_uuid: "8AEB18BB-4A51-4366-8ACC-C86A9CFA3F0F",
+                participation_uuid: "388BA55A-0517-4E77-AFD7-4A66CEFFFC58",
                 feedback_comm: Number(values.communication),
                 feedback_proj: Number(values.PM),
                 feedback_solve: Number(values.PS),
@@ -64,8 +69,22 @@ const FeedbackForm = () => {
                 const response = await api.post("/feedback", body);
                 let data = response.data;
                 console.log(data);
-                alert("Feedback has been submitted");
+                toast({
+                  title: "Feedback Received",
+                  description: "Thank you for your feedback :)",
+                  status: "success",
+                  duration: 9000,
+                  isClosable: true,
+                });
               } catch (err) {
+                toast({
+                  title: "Submission Failed",
+                  description:
+                    "You have already provided a feedback for this event",
+                  status: "error",
+                  duration: 9000,
+                  isClosable: true,
+                });
                 console.log(err);
               }
             }, 400);
