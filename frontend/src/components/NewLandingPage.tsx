@@ -52,12 +52,12 @@ function NewLandingPage (){
                 <Spacer />
 
                 <Box  position = 'absolute' top = '45%' right = '20%' border='1px' borderColor='#5A5A5A' w = '400px' h = '270px'>
-                    <Text color = '#FFFFFF' fontWeight = 'bold' fontSize= '1xl' fontFamily='Arial' >
+                    <Text color = '#412a2a' fontWeight = 'bold' fontSize= '1xl' fontFamily='Arial' >
                         Its primary objective is to keep students informed and involved by providing details such as event descriptions, dates, times, locations, and any registration or ticketing requirements. 
                     </Text>
                     <Spacer height = '3'/>
                     <Text color = '#FFFFFF' fontWeight = 'bold' fontSize= '1xl' fontFamily='Arial'>
-                        This page alllows students to easily browse through the wide range of options available to them and select events that align with their interests, academic pursuits, or personal development goals.
+                        This page allows students to easily browse through the wide range of options available to them and select events that align with their interests, academic pursuits, or personal development goals.
                     </Text>
                 </Box>
                 
