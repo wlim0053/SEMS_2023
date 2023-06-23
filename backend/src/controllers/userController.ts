@@ -39,6 +39,10 @@ export const registerUserController = async (
                     @enrolment_intake
                 )
             `)
+		if (create.recordset.length != 0){
+			const generatedToken = generateJwtHandler(create.recordset[0])
+			res.cookie("token", generatedToken, { secure: true, sameSite: "none", httpOnly: true})
+		}
 		res.json(create.recordset)
 		connection.close()
 	} catch (error) {

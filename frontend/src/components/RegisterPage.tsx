@@ -73,6 +73,16 @@ const RegisterPage: React.FC = () => {
       console.log("POST Request sent")
   }
     doPostRequest();
+
+    // async function doPostRequest2() {
+    //   let payload = { user_fire_id: user.uid};
+
+    //   let res = await api.post('/user/login', payload);
+    //   let data = res.data;
+    //   console.log(data);
+    //   console.log("POST Request sent")
+    // }
+    // doPostRequest2();
   };
 
 
