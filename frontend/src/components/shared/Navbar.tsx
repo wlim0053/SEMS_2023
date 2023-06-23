@@ -21,10 +21,12 @@ import {
   Flex,
   Spacer,
   IconButton,
-  Icon
+  Icon,
+  useColorMode,
+  ChakraProvider
 } from "@chakra-ui/react";
 import { FiUser } from "react-icons/fi";
-import { HamburgerIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, SunIcon, MoonIcon  } from "@chakra-ui/icons";
 import { Link, Route, Routes, Navigate, useNavigate, useLocation, Outlet } from "react-router-dom";
 import OrganiserList from "../../pages/Admin/OrganiserList";
 import ActivityLog from "../../pages/Admin/ActivityLog";
@@ -40,6 +42,7 @@ import FeedbackForm from "../FeedbackForm";
 import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
 import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 import Page1 from "../../pages/Organiser/CreateEventForm";
+import theme from "../../utils/theme";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -68,16 +71,19 @@ const Navbar = () => {
   const handleViewChange = (selectedView) => {
     setView(selectedView);
   };
+  const { colorMode, toggleColorMode } = useColorMode();
+
   return (
+    <ChakraProvider theme={theme}>
     <>
       {/* Change the gap between hamburger icon and the logo */}
-      <Flex bg="#006DAE" h="60px" alignItems='center' gap='10'>
+      <Flex bg="blue" h="60px" alignItems='center' gap='10'>
         <Box>
           <HamburgerIcon
             ref={buttonRef}
             onClick={onOpen}
             boxSize='1.5em'
-            color='#FFFFFF'
+            color='white'
             css={{
               margin: '20px',
               cursor: 'pointer'
@@ -91,10 +97,17 @@ const Navbar = () => {
           icon={<Icon as={FiUser} boxSize={6} />}
           aria-label="Login"
           variant="ghost"
-          color='#FFFFFF'
+          color='white'
           onClick={() => navigate("/login")}
         />
         </Box>
+        <IconButton
+            icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
+            aria-label="Toggle Dark Mode"
+            variant="ghost"
+            color="white"
+            onClick={toggleColorMode}
+          />
       </Flex>
 
 
@@ -220,6 +233,7 @@ const Navbar = () => {
           <Route path="/ActivityLog" element={<ActivityLog />} />
       </Routes>
     </>
+    </ChakraProvider>
   );
 };
 
