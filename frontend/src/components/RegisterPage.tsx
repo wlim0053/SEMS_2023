@@ -12,12 +12,19 @@ const RegisterPageSchema = Yup.object().shape({
   enrolmentYear: Yup.string().required("Required"),
   enrolmentIntake: Yup.string().required("Required"),
   gender: Yup.string().required("Required"),
-  discipline: Yup.string().required("Required"),
+  school: Yup.string().required("Required"),
+  discipline: Yup.string().when('school', {
+    is: 'Engineering', // or whatever value represents the School of Engineering
+    then: Yup.string().required("Required"),
+    otherwise: Yup.string().notRequired()
+  }),
 });
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const [specialise, setSpecialise] = useState<Object[] | null>(null);
+  const [schoolType, setSchoolType] = useState<string | null>(null);
+  const [schools, setSchools] = useState<Object[] | null>(null);
 
   const handleFormSubmit = (values) => {
     const user = JSON.parse(localStorage.getItem('RegUser') || '{}');
@@ -42,6 +49,27 @@ const RegisterPage: React.FC = () => {
     }
     doPostRequest();
   };
+
+  useEffect(() => {
+    // Assume you have an endpoint /schools to fetch the list of schools
+    api.get('/schools')
+    .then((response) => {
+      setSchools(response.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (schoolType === 'Engineering') { // or whatever value represents the School of Engineering
+      // Perform your API call here
+      api.get('/specialisation')
+      .then((response) => {setSpecialise(response.data)})
+    } else {
+      setSpecialise(null);
+    }
+  }, [schoolType]);
 
   useEffect(() => {
     // Perform your API call here
@@ -70,6 +98,7 @@ const RegisterPage: React.FC = () => {
           enrolmentYear: "",
           enrolmentIntake: "",
           gender: "",
+          school: "",
           discipline: "",
         }}
         validationSchema={RegisterPageSchema}
@@ -115,6 +144,27 @@ const RegisterPage: React.FC = () => {
               </Field>
               <FormErrorMessage>{Error.gender}</FormErrorMessage>
             </FormControl>
+            <Divider my={1} />
+            <FormControl isRequired mt={6}>
+              <FormLabel>School</FormLabel>
+              <Field as="select" name="school" onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSchoolType(e.target.value)}>
+                {schools ? schools.map((schoolItem: any) =>
+                  <option value={schoolItem.school_uuid} key={schoolItem.school_name}>{schoolItem.school_name}</option>
+                ): <option value="0" key="Loading">Loading...</option>}
+              </Field>
+              <FormErrorMessage>{Error.school}</FormErrorMessage>
+            </FormControl>
+            {schoolType === 'Engineering' && // or whatever value represents the School of Engineering
+              <FormControl isRequired mt={6}>
+                <FormLabel>Discipline</FormLabel>
+                <Field as="select" name="discipline">
+                  {specialise ? specialise.map((specialisationItem: any) =>
+                    <option value={specialisationItem.spec_uuid} key={specialisationItem.spec_name}>{specialisationItem.spec_name}</option>
+                  ): <option value="0" key="Loading">Loading...</option>}
+                </Field>
+                <FormErrorMessage>{Error.discipline}</FormErrorMessage>
+              </FormControl>
+            }
             <Divider my={1} />
             <FormControl isRequired mt={6}>
               <FormLabel>Discipline</FormLabel>
