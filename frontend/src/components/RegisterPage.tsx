@@ -1,38 +1,19 @@
-import React, { useState } from "react";
-import { Box, Button, FormControl, FormLabel, Input, Image, Heading, Select } from "@chakra-ui/react";
+import React from "react";
+import * as Yup from "yup";
+import { Formik, Field } from "formik";
+import { Box, Button, FormControl, FormLabel, FormErrorMessage, Select, Image, Heading } from "@chakra-ui/react";
 
-interface RegisterPageFormData {
-  name: string;
-  email: string;
-  studentId: string;
-  enrolmentYear: string;
-  enrolmentIntake: string;
-  gender: string;
-  discipline: string;
-}
+const RegisterPageSchema = Yup.object().shape({
+  name: Yup.string().required("Required"),
+  email: Yup.string().email("Invalid email").required("Required"),
+  studentId: Yup.string().required("Required"),
+  enrolmentYear: Yup.string().required("Required"),
+  enrolmentIntake: Yup.string().required("Required"),
+  gender: Yup.string().required("Required"),
+  discipline: Yup.string().required("Required"),
+});
 
 const RegisterPage: React.FC = () => {
-  const [formData, setFormData] = useState<RegisterPageFormData>({
-    name: "",
-    email: "",
-    studentId: "",
-    enrolmentYear: "",
-    enrolmentIntake: "",
-    gender: "",
-    discipline: "",
-  });
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
   return (
     <Box p={5}>
       <Box textAlign="center" mb={5}>
@@ -46,81 +27,55 @@ const RegisterPage: React.FC = () => {
         />
         <Heading>Register</Heading>
       </Box>
-      <form onSubmit={handleSubmit}>
-        <FormControl isRequired>
-          <FormLabel>Name</FormLabel>
-          <Input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleInputChange}
-          />
-        </FormControl>
-        <FormControl isRequired mt={6}>
-          <FormLabel>Email</FormLabel>
-          <Input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleInputChange}
-          />
-        </FormControl>
-        <FormControl isRequired mt={6}>
-          <FormLabel>Student ID</FormLabel>
-          <Input
-            type="text"
-            name="studentId"
-            placeholder="Student ID"
-            value={formData.studentId}
-            onChange={handleInputChange}
-          />
-        </FormControl>
-        <FormControl isRequired mt={6}>
-          <FormLabel>Enrolment Year</FormLabel>
-          <Select name="enrolmentYear" value={formData.enrolmentYear} onChange={handleInputChange}>
-            <option value="2022">2022</option>
-            <option value="2023">2023</option>
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-          </Select>
-        </FormControl>
-        <FormControl isRequired mt={6}>
-          <FormLabel>Enrolment Intake</FormLabel>
-          <Select name="enrolmentIntake" value={formData.enrolmentIntake} onChange={handleInputChange}>
-            <option value="February">January</option>
-            <option value="July">February</option>
-            <option value="October">March</option>
-          </Select>
-        </FormControl>
-        <FormControl isRequired mt={6}>
-          <FormLabel>Gender</FormLabel>
-          <Select name="gender" value={formData.gender} onChange={handleInputChange}>
-            <option value="Female">Female</option>
-            <option value="Male">Male</option>
-          </Select>
-        </FormControl>
-        <FormControl isRequired mt={6}>
-          <FormLabel>Discipline</FormLabel>
-          <Select name="discipline" value={formData.discipline} onChange={handleInputChange}>
-            <option value="Chemical">Chemical</option>
-            <option value="Mechanical">Mechanical</option>
-            <option value="Electrical">Electrical</option>
-          </Select>
-        </FormControl>
-        <Button
-          bg="#006DAE"
-          color="white"
-          h="60px"
-          type="submit"
-          width="full"
-          mt={6}
-        >
-          Register
-        </Button>
-      </form>
+      <Formik
+        initialValues={{
+          name: "",
+          email: "",
+          studentId: "",
+          enrolmentYear: "",
+          enrolmentIntake: "",
+          gender: "",
+          discipline: "",
+        }}
+        validationSchema={RegisterPageSchema}
+        onSubmit={(values, { setSubmitting }) => {
+          setTimeout(() => {
+            setSubmitting(false);
+            console.log(values);
+            // Here you would typically handle the form values, e.g. send them to an API
+          }, 400);
+        }}
+      >
+        {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
+          <form onSubmit={handleSubmit}>
+            <FormControl isRequired>
+              <FormLabel>Name</FormLabel>
+              <Field
+                type="text"
+                name="name"
+                placeholder="Name"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.name}
+              />
+              <FormErrorMessage>{errors.name}</FormErrorMessage>
+            </FormControl>
+            {/* Repeat the FormControl block for each of your form fields, e.g. email, studentId, etc. */}
+            {/* Just replace the 'name' prop with the appropriate field name */}
+            <Button
+              bg="#006DAE"
+              color="white"
+              h="60px"
+              type="submit"
+              width="full"
+              mt={6}
+              disabled={isSubmitting}
+            >
+              Register
+            </Button>
+          </form>
+        )}
+      </Formik>
     </Box>
   );
 };
