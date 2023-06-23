@@ -21,9 +21,9 @@ export const EventWithUUID = Event.extend({
 })
 
 export const EventWithOrganiser = EventWithUUID.extend({
-	parent_uuid: zod.string().nullable(),
-	organiser_name: zod.string().nonempty(),
-	stu_fire_id: zod.string(),
+	parent_uuid: zod.string(),
+	organiser_name: zod.string(),
+	user_fire_id: zod.string(),
 })
 
 export type Event = zod.infer<typeof Event>

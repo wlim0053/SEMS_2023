@@ -5,7 +5,6 @@ import Admin from "./pages/Admin/AdminDashboard"
 
 import { ChakraProvider } from "@chakra-ui/react"
 // components
-import LoginPage from "./components/LoginPage"
 // css
 import "./App.css"
 import { BrowserRouter as Router, Route, Outlet } from "react-router-dom"
