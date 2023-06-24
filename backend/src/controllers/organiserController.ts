@@ -7,6 +7,7 @@ import {
 	OrganiserWithStudent,
 	OrganiserWithUUID,
 } from "../interfaces/organiser"
+import { AdminOrganiserQueryParams } from "../interfaces/queryParams"
 
 export const createOrganiserController = async (
 	req: Request<{}, OrganiserWithUUID[], Organiser>,
@@ -19,16 +20,14 @@ export const createOrganiserController = async (
 			.request()
 			.input("parent_uuid", mssql.UniqueIdentifier, req.body.parent_uuid)
 			.input("organiser_name", mssql.VarChar, req.body.organiser_name)
-			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id).query(`
-                INSERT INTO ${DbTables.ORGANISER}  
-				OUTPUT INSERTED.*
+			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id).query(`
+                INSERT INTO ${DbTables.ORGANISER} (user_fire_id, parent_uuid, organiser_name)
 				VALUES (
-                    DEFAULT,
+                    @user_fire_id,
                     @parent_uuid,
-                    @organiser_name,
-                    @stu_fire_id
+                    @organiser_name
                 )`)
-		res.json(create.recordset)
+		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -47,44 +46,50 @@ export const updateOrganiserController = async (
 			.input("organiser_uuid", mssql.UniqueIdentifier, req.params.id)
 			.input("parent_uuid", mssql.UniqueIdentifier, req.body.parent_uuid)
 			.input("organiser_name", mssql.VarChar, req.body.organiser_name)
-			.input("stu_fire_id", mssql.VarChar, req.body.stu_fire_id)
+			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id)
 			.query(
 				`UPDATE ${DbTables.ORGANISER} 
 			        SET [parent_uuid] = @parent_uuid, 
                         [organiser_name] = @organiser_name,
-                        [stu_fire_id] = @stu_fire_id
-				OUTPUT INSERTED.*
+                        [user_fire_id] = @user_fire_id
 			    WHERE [organiser_uuid] = @organiser_uuid`
 			)
-		res.json(updated.recordset)
+		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
 		next(error)
 	}
 }
 
+// * Used on Admin Organiser List
+// * When creating organisers need to specify whether they have a parent club -> `WHERE parent_uuid IS NULL`
 export const getOrganiserController = async (
-	req: Request<{}, OrganiserWithStudent[], {}>,
+	req: Request<{}, OrganiserWithStudent[], {}, AdminOrganiserQueryParams>,
 	res: Response<OrganiserWithStudent[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
+		const { parent_uuid } = req.query
+
+		let parentQuery = ""
+		if (parent_uuid) {
+			if (parent_uuid === "null")
+				parentQuery = `WHERE parent_uuid IS NULL`
+		}
+
 		const organisers: mssql.IResult<OrganiserWithStudent> =
-			await connection.query(`SELECT 
-            organiser_uuid,
-            parent_uuid,
-            organiser_name,
-            s.stu_fire_id,
-            spec_uuid,
-            stu_email,
-            stu_name,
-            stu_id,
-            stu_gender,
-            enrolment_year,
-            enrolment_intake
-        FROM ${DbTables.ORGANISER} o join ${DbTables.STUDENT} s ON o.stu_fire_id=s.stu_fire_id`)
-		res.status(StatusCodes.OK).json(organisers.recordset)
+			await connection.request().query(`
+	        SELECT
+	            organiser_uuid,
+	            parent_uuid,
+	            organiser_name,
+	            u.*
+	        FROM
+	            ${DbTables.ORGANISER} o JOIN ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id
+	        ${parentQuery}
+	    `)
+		res.json(organisers.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -106,15 +111,8 @@ export const getOrganiserByIDController = async (
                 organiser_uuid,
                 parent_uuid,
                 organiser_name,
-                s.stu_fire_id,
-                spec_uuid,
-                stu_email,
-                stu_name,
-                stu_id,
-                stu_gender,
-                enrolment_year,
-                enrolment_intake
-            FROM ${DbTables.ORGANISER} o join ${DbTables.STUDENT} s ON o.stu_fire_id=s.stu_fire_id 
+                u.*
+            FROM ${DbTables.ORGANISER} o join ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id 
 			WHERE organiser_uuid = @organiser_uuid`
 			)
 		res.json(organiser.recordset)

@@ -1,19 +1,22 @@
 import express from "express"
 import helmet from "helmet"
 import cors from "cors"
+import cookieParser from "cookie-parser"
 import { schoolRouter } from "./routes/school"
-import { studentRouter } from "./routes/student"
+import { userRouter } from "./routes/user"
 import { organiserRouter } from "./routes/organiser"
 import { specialisationRouter } from "./routes/specialisation"
-import { eventRouter } from "./routes/event"
 import { participationRouter } from "./routes/participation"
 import { errorHandler } from "./middlewares/errorHandler"
 import { feedbackRouter } from "./routes/feedback"
+import { statsRouter } from "./routes/stats"
+import { downloadRouter } from "./routes/download"
+import { studentEventRouter } from "./routes/event.for-student"
+import { organiserEventRouter } from "./routes/event.for-organisers"
 
 const PORT = process.env.PORT || 3000
 const app = express()
 
-// middleware
 // TODO add deployment website later
 // * Note: remember to comment cors when using ThunderClient, haven't figured out a way to add ThunderClient to CORS
 const whitelist = ["http://localhost:5173", "http://127.0.0.1:5173"]
@@ -33,19 +36,32 @@ app.use(express.json())
 // app.use(helmet())
 // app.use(express.urlencoded());
 
+// * Cookie parser middleware
+// * Must be placed before the routes or else it doesn't work (not sure why)
+app.use(cookieParser())
+
 /**
- * Routes
+ * Routes for retrieving data from tables
  * * Name of the router should be specified only once in the app.use() method, and not repeated in the router's definition
  * * DO: app.use('/api/school', schoolRouter)
  * ! DON'T: router.get('/school'), router.post('/school')...
  */
 app.use("/api/school", schoolRouter)
-app.use("/api/student", studentRouter)
+app.use("/api/user", userRouter)
 app.use("/api/organiser", organiserRouter)
 app.use("/api/specialisation", specialisationRouter)
-app.use("/api/event", eventRouter)
 app.use("/api/participation", participationRouter)
 app.use("/api/feedback", feedbackRouter)
+
+// Routes for retrieving events based on student's/organiser's page
+app.use("/api/event/for-student", studentEventRouter)
+app.use("/api/event/for-organiser", organiserEventRouter)
+
+// Route for retrieving statistical data from tables (group by statements)
+app.use("/api/stats", statsRouter)
+
+// Route for file transfer
+app.use("/api/download", downloadRouter)
 
 // * Error handling middleware
 app.use(errorHandler)
