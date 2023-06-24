@@ -8,9 +8,9 @@ import {
 } from "../controllers/participationController"
 import {
 	Participation,
-	ParticipationQueryParams,
 	ParticipationWithJwt,
 } from "../interfaces/participation"
+import { ParticipationQueryParams } from "../interfaces/queryParams"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
 

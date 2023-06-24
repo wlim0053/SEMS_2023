@@ -5,10 +5,10 @@ import {
 	Participation,
 	ParticipationWithEvent,
 	ParticipationWithUUID,
-	ParticipationQueryParams,
 	ParticipationWithJwt,
 } from "../interfaces/participation"
 import { DbTables, StatusCodes } from "../utils/constant"
+import { ParticipationQueryParams } from "../interfaces/queryParams"
 
 // * Used by students to sign up for an event
 export const createParticipationController = async (

@@ -35,15 +35,6 @@ export type ParticipationWithEvent = zod.infer<typeof ParticipationWithEvent>
 // * Request body
 export const ParticipationWithJwt = Participation.omit({
 	user_fire_id: true,
-}).extend({ user: JwtToken })
+}).merge(JwtToken)
 
 export type ParticipationWithJwt = zod.infer<typeof ParticipationWithJwt>
-
-// * Query params
-export const ParticipationQueryParams = zod.object({
-	event_status: zod.enum(["D", "P", "A", "R", "C"]).optional(),
-})
-
-export type ParticipationQueryParams = zod.infer<
-	typeof ParticipationQueryParams
->

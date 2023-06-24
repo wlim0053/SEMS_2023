@@ -100,7 +100,7 @@ export const loginUserController = async (
 			})
 			res.json(student.recordset)
 		} else {
-			res.sendStatus(401)
+			res.status(401)
 			throw new Error("Unauthorised")
 		}
 	} catch (error) {

@@ -6,12 +6,13 @@ import { schoolRouter } from "./routes/school"
 import { userRouter } from "./routes/user"
 import { organiserRouter } from "./routes/organiser"
 import { specialisationRouter } from "./routes/specialisation"
-import { eventRouter } from "./routes/event"
 import { participationRouter } from "./routes/participation"
 import { errorHandler } from "./middlewares/errorHandler"
 import { feedbackRouter } from "./routes/feedback"
 import { statsRouter } from "./routes/stats"
 import { downloadRouter } from "./routes/download"
+import { studentEventRouter } from "./routes/event.for-student"
+import { organiserEventRouter } from "./routes/event.for-organisers"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -49,9 +50,12 @@ app.use("/api/school", schoolRouter)
 app.use("/api/user", userRouter)
 app.use("/api/organiser", organiserRouter)
 app.use("/api/specialisation", specialisationRouter)
-app.use("/api/event", eventRouter)
 app.use("/api/participation", participationRouter)
 app.use("/api/feedback", feedbackRouter)
+
+// Routes for retrieving events based on student's/organiser's page
+app.use("/api/event/for-student", studentEventRouter)
+app.use("/api/event/for-organiser", organiserEventRouter)
 
 // Route for retrieving statistical data from tables (group by statements)
 app.use("/api/stats", statsRouter)

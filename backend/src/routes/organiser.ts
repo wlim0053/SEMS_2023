@@ -14,11 +14,19 @@ export const organiserRouter = express.Router()
 
 organiserRouter
 	.route("/")
-	.post(requestValidators({ body: Organiser }), createOrganiserController)
-	.get(verifyJwtHandler(["S","O"]),getOrganiserController)
+	.post(
+		verifyJwtHandler(["A"]),
+		requestValidators({ body: Organiser }),
+		createOrganiserController
+	)
+	.get(verifyJwtHandler(["A"]), getOrganiserController)
 
 organiserRouter
 	.route("/:id")
-	.get(getOrganiserByIDController)
-	.put(requestValidators({ body: Organiser }), updateOrganiserController)
-	.delete(deleteOrganiserController)
+	.get(verifyJwtHandler(["A"]), getOrganiserByIDController)
+	.put(
+		verifyJwtHandler(["A"]),
+		requestValidators({ body: Organiser }),
+		updateOrganiserController
+	)
+	.delete(verifyJwtHandler(["A"]), deleteOrganiserController)

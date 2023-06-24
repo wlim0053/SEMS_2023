@@ -1,6 +1,8 @@
 import zod from "zod"
+import { JwtToken } from "./jwtToken"
 import { Organiser } from "./organiser"
 
+// * Response body
 export const Event = zod.object({
 	event_ems_no: zod.string().nullable(),
 	event_ems_link: zod.string().url().nullable(),
@@ -35,3 +37,10 @@ export type Event = zod.infer<typeof Event>
 export type EventWithUUID = zod.infer<typeof EventWithUUID>
 
 export type EventWithOrganiser = zod.infer<typeof EventWithOrganiser>
+
+// * Request body
+export const EventWithJwt = Event.omit({
+	organiser_uuid: true,
+}).merge(JwtToken)
+
+export type EventWithJwt = zod.infer<typeof EventWithJwt>
