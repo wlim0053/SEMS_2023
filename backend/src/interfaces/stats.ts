@@ -1,21 +1,5 @@
 import zod from "zod"
 
-// * Query Params
-export const StatsQueryParams = zod.object({
-	year: zod.string(),
-})
-
-export const EventCountByOrganiserQueryParams = StatsQueryParams.extend({
-	semester: zod.enum(["true", "false"]).optional(),
-	organiser: zod.enum(["parent", "child"]),
-})
-
-export type StatsQueryParams = zod.infer<typeof StatsQueryParams>
-
-export type EventCountByOrganiserQueryParams = zod.infer<
-	typeof EventCountByOrganiserQueryParams
->
-
 // * Stats response body
 export const EventCountByOrganiser = zod.object({
 	organiser_name: zod.string(),
