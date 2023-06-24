@@ -2,7 +2,6 @@ import express from "express"
 import {
 	registerUserController,
 	updateUserController,
-	getUserEventByIdController,
 	loginUserController,
 } from "../controllers/userController"
 import { User, UserWithFireId } from "../interfaces/user"
@@ -16,11 +15,7 @@ userRouter
 	.route("/register")
 	.post(requestValidators({ body: UserWithFireId }), registerUserController)
 
-// endpoint to get all the user's participated events
-userRouter.route("/:id/event").get(getUserEventByIdController)
-
 userRouter
 	.route("/:id")
 	.put(requestValidators({ body: User }), updateUserController)
 // .get(getUserByIdController)
-// .delete(deleteUserController)

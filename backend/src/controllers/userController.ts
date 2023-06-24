@@ -4,6 +4,7 @@ import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 import { User, UserWithFireId } from "../interfaces/user"
 import { EventWithOrganiser } from "../interfaces/event"
+import { generateJwtHandler } from "../middlewares/jwtHandler"
 
 export const registerUserController = async (
 	req: Request<{}, UserWithFireId[], UserWithFireId>,
@@ -20,11 +21,8 @@ export const registerUserController = async (
 			.input("user_fname", mssql.VarChar, req.body.user_fname)
 			.input("user_lname", mssql.VarChar, req.body.user_lname)
 			.input("user_id", mssql.Int, req.body.user_id)
-			.input("user_gender", mssql.Int, req.body.user_gender)
-			.input("enrolment_year", mssql.Date, req.body.enrolment_year)
-			.input("enrolment_intake", mssql.Int, req.body.enrolment_intake)
-			.query(`
-                INSERT INTO ${DbTables.USER} (user_fire_id, spec_uuid, user_email, user_fname, user_lname, user_id, user_gender, enrolment_year, enrolment_intake)
+			.input("user_gender", mssql.Int, req.body.user_gender).query(`
+                INSERT INTO ${DbTables.USER}
                 OUTPUT INSERTED.*
                 VALUES (
                     @user_fire_id,
@@ -34,8 +32,7 @@ export const registerUserController = async (
                     @user_lname,
                     @user_id,
                     @user_gender,
-                    @enrolment_year,
-                    @enrolment_intake
+                    DEFAULT
                 )
             `)
 		res.json(create.recordset)
@@ -62,8 +59,6 @@ export const updateUserController = async (
 			.input("user_id", mssql.Int, req.body.user_id)
 			.input("user_gender", mssql.Int, req.body.user_gender)
 			.input("user_access_lvl", mssql.Char, req.body.user_access_lvl)
-			.input("enrolment_year", mssql.Date, req.body.enrolment_year)
-			.input("enrolment_intake", mssql.Int, req.body.enrolment_intake)
 			.query(`
             UPDATE ${DbTables.USER} SET
                 [user_email]=@user_email,
@@ -72,9 +67,6 @@ export const updateUserController = async (
                 [user_lname]=@user_lname,
                 [user_id]=@user_id,
                 [user_gender]=@user_gender,
-                [user_access_lvl]=@user_access_lvl,
-                [enrolment_year]=@enrolment_year,
-                [enrolment_intake]=@enrolment_intake
             OUTPUT INSERTED.*
             WHERE [user_fire_id]=@user_fire_id
         `)
@@ -99,10 +91,18 @@ export const loginUserController = async (
 				`SELECT * FROM ${DbTables.USER} WHERE user_fire_id=@user_fire_id`
 			)
 
-		// use this to check for db response
-		// res.json(student.recordset)
-
-		// ! start here
+		if (student.recordset.length !== 0) {
+			const generatedToken = generateJwtHandler(student.recordset[0])
+			res.cookie("token", generatedToken, {
+				secure: true,
+				sameSite: "none",
+				httpOnly: true,
+			})
+			res.json(student.recordset)
+		} else {
+			res.status(401)
+			throw new Error("Unauthorised")
+		}
 	} catch (error) {
 		next(error)
 	}
@@ -164,25 +164,25 @@ export const loginUserController = async (
 // 	}
 // }
 
-export const getUserEventByIdController = async (
-	req: Request<{ id: string }, EventWithOrganiser[], {}>,
-	res: Response<EventWithOrganiser[]>,
-	next: NextFunction
-) => {
-	try {
-		const connection = await pool.connect()
-		const events: mssql.IResult<EventWithOrganiser> = await connection
-			.request()
-			.input("user_fire_id", mssql.VarChar, req.params.id).query(`
-                SELECT e.*, parent_uuid, organiser_name
-                FROM ${DbTables.USER} u 
-                JOIN ${DbTables.PARTICIPATION} p ON u.user_fire_id=p.user_fire_id
-                JOIN ${DbTables.EVENT} e on p.event_uuid=e.event_uuid
-                JOIN ${DbTables.ORGANISER} o on e.organiser_uuid=o.organiser_uuid
-                WHERE u.user_fire_id=@user_fire_id
-            `)
-		res.json(events.recordset)
-	} catch (error) {
-		next(error)
-	}
-}
+// export const getUserEventByIdController = async (
+// 	req: Request<{ id: string }, EventWithOrganiser[], {}>,
+// 	res: Response<EventWithOrganiser[]>,
+// 	next: NextFunction
+// ) => {
+// 	try {
+// 		const connection = await pool.connect()
+// 		const events: mssql.IResult<EventWithOrganiser> = await connection
+// 			.request()
+// 			.input("user_fire_id", mssql.VarChar, req.params.id).query(`
+//                 SELECT e.*, parent_uuid, organiser_name
+//                 FROM ${DbTables.USER} u
+//                 JOIN ${DbTables.PARTICIPATION} p ON u.user_fire_id=p.user_fire_id
+//                 JOIN ${DbTables.EVENT} e on p.event_uuid=e.event_uuid
+//                 JOIN ${DbTables.ORGANISER} o on e.organiser_uuid=o.organiser_uuid
+//                 WHERE u.user_fire_id=@user_fire_id
+//             `)
+// 		res.json(events.recordset)
+// 	} catch (error) {
+// 		next(error)
+// 	}
+// }
