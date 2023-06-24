@@ -14,7 +14,7 @@ import { downloadRouter } from "./routes/download"
 import { studentEventRouter } from "./routes/event.for-student"
 import { organiserEventRouter } from "./routes/event.for-organisers"
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 5173
 const app = express()
 
 // TODO add deployment website later
@@ -65,5 +65,7 @@ app.use("/api/download", downloadRouter)
 
 // * Error handling middleware
 app.use(errorHandler)
+
+
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))

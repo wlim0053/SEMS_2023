@@ -9,6 +9,7 @@ import {
 import { Organiser } from "../interfaces/organiser"
 import { requestValidators } from "../middlewares/requestValidator"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
+import { verifyJwtHandler } from "../middlewares/jwtHandler"
 
 export const organiserRouter = express.Router()
 
