@@ -5,6 +5,7 @@ import { DbTables, StatusCodes } from "../utils/constant"
 import { User, UserLogin, UserWithFireId } from "../interfaces/user"
 import { EventWithOrganiser } from "../interfaces/event"
 import { generateJwtHandler } from "../middlewares/jwtHandler"
+import { generateJwtHandler } from "../middlewares/jwtHandler"
 
 export const registerUserController = async (
 	req: Request<{}, UserWithFireId[], UserWithFireId>,
@@ -35,6 +36,14 @@ export const registerUserController = async (
                     DEFAULT
                 )
             `)
+		if (create.recordset.length != 0) {
+			const generatedToken = generateJwtHandler(create.recordset[0])
+			res.cookie("token", generatedToken, {
+				secure: true,
+				sameSite: "none",
+				httpOnly: true,
+			})
+		}
 		res.json(create.recordset)
 		connection.close()
 	} catch (error) {
