@@ -4,12 +4,14 @@ import {
 	updateUserController,
 	loginUserController,
 } from "../controllers/userController"
-import { User, UserWithFireId } from "../interfaces/user"
+import { User, UserLogin, UserWithFireId } from "../interfaces/user"
 import { requestValidators } from "../middlewares/requestValidator"
 
 export const userRouter = express.Router()
 
-userRouter.route("/login").post(loginUserController)
+userRouter
+	.route("/login")
+	.post(requestValidators({ body: UserLogin }), loginUserController)
 
 userRouter
 	.route("/register")

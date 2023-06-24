@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
-import { User, UserWithFireId } from "../interfaces/user"
+import { User, UserLogin, UserWithFireId } from "../interfaces/user"
 import { EventWithOrganiser } from "../interfaces/event"
 import { generateJwtHandler } from "../middlewares/jwtHandler"
 
@@ -78,8 +78,8 @@ export const updateUserController = async (
 }
 
 export const loginUserController = async (
-	req: Request<{}, {}, { user_fire_id: string }, {}>,
-	res: Response,
+	req: Request<{}, UserWithFireId[], UserLogin, {}>,
+	res: Response<UserWithFireId[]>,
 	next: NextFunction
 ) => {
 	try {
@@ -99,6 +99,7 @@ export const loginUserController = async (
 				httpOnly: true,
 			})
 			res.json(student.recordset)
+			connection.close()
 		} else {
 			res.status(401)
 			throw new Error("Unauthorised")
