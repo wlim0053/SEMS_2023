@@ -24,6 +24,7 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { SearchIcon, CloseIcon } from "@chakra-ui/icons";
+import FeedbackForm from "./FeedbackForm";
 
 function NewHistoryPage() {
   // Fetches participated events from the database
@@ -40,6 +41,7 @@ function NewHistoryPage() {
           let eventData = eventResponse.data[0];
           console.log(eventResponse);
           const event: PastEvent = {
+            participation_uuid: data[i]["participation_uuid"],
             eventNo: i + 1,
             eventName: eventData["event_title"],
             club: eventData["organiser_name"],
@@ -109,9 +111,12 @@ function NewHistoryPage() {
   >("eventNo");
   const [events, setEvents] = useState<PastEvent[]>([]);
   const [clubs, setClubs] = useState<string[]>([]);
+  const [feedbackModal, setFeedbackModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<PastEvent>();
 
   // Defining Past events
   type PastEvent = {
+    participation_uuid: string;
     eventNo: number;
     eventName: string;
     club: string;
@@ -203,95 +208,126 @@ function NewHistoryPage() {
 
   // Table frontend
   return (
-    <Box width="100%" p={5} overflowX="auto">
-      <Heading color="#006DAE">Past Events Joined</Heading>
-      <Box
-        width="100%"
-        pb={4}
-        overflowX="auto"
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-      >
-        <Input
-          placeholder="Search for an event"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          mr={2}
-        />
-        <IconButton
-          aria-label="Search events"
-          icon={<SearchIcon />}
-          onClick={() => console.log("Search clicked")}
-          mr={2}
-        />
-        <IconButton
-          aria-label={"Clear search"}
-          icon={<CloseIcon />}
-          onClick={() => setSearchTerm("")}
-        />
-      </Box>
-
-      <Flex justify="space-between" mb={5}>
-        <Box>
-          <Button
-            colorScheme="blue"
-            size="sm"
+    <>
+      <Box width="100%" p={5} overflowX="auto">
+        <Heading color="#006DAE">Past Events Joined</Heading>
+        <Box
+          width="100%"
+          pb={4}
+          overflowX="auto"
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+        >
+          <Input
+            placeholder="Search for an event"
+            value={searchTerm}
+            onChange={handleSearchChange}
             mr={2}
-            onClick={() => setIsModalOpen(true)}
-          >
-            Sort Clubs
-          </Button>
+          />
+          <IconButton
+            aria-label="Search events"
+            icon={<SearchIcon />}
+            onClick={() => console.log("Search clicked")}
+            mr={2}
+          />
+          <IconButton
+            aria-label={"Clear search"}
+            icon={<CloseIcon />}
+            onClick={() => setSearchTerm("")}
+          />
         </Box>
-      </Flex>
-      <Table variant="simple" size="md" width="auto" mx="auto" sx={tableStyles}>
-        <Thead>
-          <Tr>
-            <Th>Event No.</Th>
-            <Th onClick={() => handleSort("eventName")}>
-              Event Name{" "}
-              {sortField === "eventName" && (sortOrder === "asc" ? "↑" : "↓")}
-            </Th>
-            <Th>Club</Th>
-            <Th onClick={() => handleSort("dateTime")}>
-              Date & Time{" "}
-              {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
-            </Th>
-            <Th>Action</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {sortedEvents.map((event) => (
-            <Tr key={event.eventNo}>
-              <Td>{event.eventNo}</Td>
-              <Td>{event.eventName}</Td>
-              <Td>{event.club}</Td>
-              <Td>
-                <Text as="time" dateTime={event.dateTime.toISOString()}>
-                  {event.dateTime.toLocaleString()}
-                </Text>
-              </Td>
-              <Td>
-                <Button
-                  colorScheme="blue"
-                  size="sm"
-                  onClick={() =>
-                    toast({
-                      title: "Feedback Received",
-                      description: "Thank you for your feedback :)",
-                      status: "success",
-                      duration: 9000,
-                      isClosable: true,
-                    })
-                  }
-                >
-                  Provide Feedback
-                </Button>
-              </Td>
+
+        <Flex justify="space-between" mb={5}>
+          <Box>
+            <Button
+              colorScheme="blue"
+              size="sm"
+              mr={2}
+              onClick={() => setIsModalOpen(true)}
+            >
+              Sort Clubs
+            </Button>
+          </Box>
+        </Flex>
+        <Table
+          variant="simple"
+          size="md"
+          width="auto"
+          mx="auto"
+          sx={tableStyles}
+        >
+          <Thead>
+            <Tr>
+              <Th>Event No.</Th>
+              <Th onClick={() => handleSort("eventName")}>
+                Event Name{" "}
+                {sortField === "eventName" && (sortOrder === "asc" ? "↑" : "↓")}
+              </Th>
+              <Th>Club</Th>
+              <Th onClick={() => handleSort("dateTime")}>
+                Date & Time{" "}
+                {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
+              </Th>
+              <Th>Action</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {sortedEvents.map((event) => (
+              <Tr key={event.eventNo}>
+                <Td>{event.eventNo}</Td>
+                <Td>{event.eventName}</Td>
+                <Td>{event.club}</Td>
+                <Td>
+                  <Text as="time" dateTime={event.dateTime.toISOString()}>
+                    {event.dateTime.toLocaleString()}
+                  </Text>
+                </Td>
+                <Td>
+                  <Button
+                    colorScheme="blue"
+                    size="sm"
+                    onClick={() =>
+                      // toast({
+                      //   title: "Feedback Received",
+                      //   description: "Thank you for your feedback :)",
+                      //   status: "success",
+                      //   duration: 9000,
+                      //   isClosable: true,
+                      // })
+                      {
+                        setSelectedEvent(event);
+                        setFeedbackModal(true);
+                      }
+                    }
+                  >
+                    Provide Feedback
+                  </Button>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </Box>
+      <Modal
+        isOpen={feedbackModal}
+        onClose={() => setFeedbackModal(false)}
+        size={"3xl"}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody borderWidth={2} borderColor={"#000000"}>
+            <FeedbackForm
+              eventTitle={selectedEvent ? selectedEvent.eventName : ""}
+              participationID={
+                selectedEvent ? selectedEvent.participation_uuid : ""
+              }
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <ModalOverlay />
         <ModalContent>
@@ -318,7 +354,7 @@ function NewHistoryPage() {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Box>
+    </>
   );
 }
 

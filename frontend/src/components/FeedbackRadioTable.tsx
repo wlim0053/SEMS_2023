@@ -35,8 +35,8 @@ function FeedbackRadioTable({
           <Thead>
             <Tr textAlign={"center"}>
               <Td></Td>
-              <Td width={"30%"}>Disagree</Td>
-              <Td width={"30%"}>Neutral</Td>
+              <Td width={"31%"}>Disagree</Td>
+              <Td width={"31%"}>Neutral</Td>
               <Td>Agree</Td>
             </Tr>
           </Thead>
@@ -55,7 +55,7 @@ function FeedbackRadioTable({
                       onChange={handleChange}
                       marginLeft={4}
                     >
-                      <Stack direction="row" spacing={180}>
+                      <Stack direction="row" spacing={150}>
                         <Field value="1" as={Radio}></Field>
                         <Field value="2" as={Radio}></Field>
                         <Field value="3" as={Radio}></Field>

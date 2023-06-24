@@ -12,12 +12,14 @@ import {
   FormErrorMessage,
   FormLabel,
   useToast,
-  Alert,
-  AlertIcon,
-  CloseButton,
 } from "@chakra-ui/react";
 import api from "../utils/api";
 import FeedbackRadioTable from "./FeedbackRadioTable";
+
+interface Props {
+  eventTitle: string;
+  participationID: string;
+}
 
 const FeedbackFormSchema = Yup.object().shape({
   communication: Yup.string().required("Required"),
@@ -27,23 +29,28 @@ const FeedbackFormSchema = Yup.object().shape({
   reflection: Yup.string().required("Required"),
 });
 
-const FeedbackForm = () => {
+const FeedbackForm = ({ eventTitle, participationID }: Props) => {
   const toast = useToast();
   return (
     <>
       <Box
-        color="gray.600"
+        color="#000000"
         fontSize="sm"
-        width="60em"
+        width="53em"
         margin={"auto"}
         padding={6}
-        borderWidth={3}
-        borderColor={"#000000"}
-        marginTop={6}
+        // borderWidth={3}
+        // borderColor={"#000000"}
+        marginTop={4}
         marginBottom={6}
       >
-        <Heading marginBottom={9} marginTop={6}>
-          Feedback
+        <Heading
+          marginBottom={9}
+          marginTop={6}
+          fontSize={"3xl"}
+          color={"#000000"}
+        >
+          Feedback for {eventTitle}
         </Heading>
         <Formik
           initialValues={{
@@ -58,7 +65,7 @@ const FeedbackForm = () => {
             setTimeout(async (e) => {
               setSubmitting(false);
               const body = {
-                participation_uuid: "388BA55A-0517-4E77-AFD7-4A66CEFFFC58",
+                participation_uuid: participationID,
                 feedback_comm: Number(values.communication),
                 feedback_proj: Number(values.PM),
                 feedback_solve: Number(values.PS),
