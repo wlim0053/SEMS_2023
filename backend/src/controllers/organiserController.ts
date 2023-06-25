@@ -7,6 +7,7 @@ import {
 	OrganiserWithStudent,
 	OrganiserWithUUID,
 } from "../interfaces/organiser"
+import { AdminOrganiserQueryParams } from "../interfaces/queryParams"
 
 export const createOrganiserController = async (
 	req: Request<{}, OrganiserWithUUID[], Organiser>,
@@ -60,8 +61,10 @@ export const updateOrganiserController = async (
 	}
 }
 
+// * Used on Admin Organiser List
+// * When creating organisers need to specify whether they have a parent club -> `WHERE parent_uuid IS NULL`
 export const getOrganiserController = async (
-	req: Request<{}, OrganiserWithStudent[], {}, { parent_uuid: string }>,
+	req: Request<{}, OrganiserWithStudent[], {}, AdminOrganiserQueryParams>,
 	res: Response<OrganiserWithStudent[]>,
 	next: NextFunction
 ) => {
@@ -70,28 +73,23 @@ export const getOrganiserController = async (
 		const { parent_uuid } = req.query
 
 		let parentQuery = ""
-
-		if (parentQuery) {
-			if (parentQuery === "null")
+		if (parent_uuid) {
+			if (parent_uuid === "null")
 				parentQuery = `WHERE parent_uuid IS NULL`
-			else `WHERE parent_uuid=@parent_uuid`
 		}
 
-		const organisers: mssql.IResult<OrganiserWithStudent> = await connection
-			.request()
-			.input(
-				"parent_uuid",
-				mssql.UniqueIdentifier,
-				parent_uuid === "null" ? null : parent_uuid
-			).query(`SELECT 
-            organiser_uuid,
-            parent_uuid,
-            organiser_name,
-            u.*
-        FROM ${DbTables.ORGANISER} o join ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id
-        ${parentQuery}
-        `)
-		res.status(StatusCodes.OK).json(organisers.recordset)
+		const organisers: mssql.IResult<OrganiserWithStudent> =
+			await connection.request().query(`
+	        SELECT
+	            organiser_uuid,
+	            parent_uuid,
+	            organiser_name,
+	            u.*
+	        FROM
+	            ${DbTables.ORGANISER} o JOIN ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id
+	        ${parentQuery}
+	    `)
+		res.json(organisers.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
