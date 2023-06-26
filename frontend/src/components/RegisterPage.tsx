@@ -127,16 +127,6 @@ const RegisterPage: React.FC = () => {
               <FormErrorMessage>{Error.enrolmentYear}</FormErrorMessage>
             </FormControl>
             <FormControl isRequired mt={6}>
-              <FormLabel>Enrolment Intake</FormLabel>
-              <Field as="select" name="enrolmentIntake">
-                <option value="2" key="February">February</option>
-                <option value="7" key="July">July</option>
-                <option value="10" key="October">October</option>
-              </Field>
-              <FormErrorMessage>{Error.enrolmentIntake}</FormErrorMessage>
-            </FormControl>
-            <Divider my={1} />
-            <FormControl isRequired mt={6}>
               <FormLabel>Gender</FormLabel>
               <Field as="select" name="gender">
                 <option value="0" key="Female">Female</option>
