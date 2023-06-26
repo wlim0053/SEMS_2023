@@ -21,13 +21,12 @@ export const createOrganiserController = async (
 			.input("organiser_name", mssql.VarChar, req.body.organiser_name)
 			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id).query(`
                 INSERT INTO ${DbTables.ORGANISER} (user_fire_id, parent_uuid, organiser_name)
-				OUTPUT INSERTED.*
 				VALUES (
                     @user_fire_id,
                     @parent_uuid,
                     @organiser_name
                 )`)
-		res.json(create.recordset)
+		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -52,10 +51,9 @@ export const updateOrganiserController = async (
 			        SET [parent_uuid] = @parent_uuid, 
                         [organiser_name] = @organiser_name,
                         [user_fire_id] = @user_fire_id
-				OUTPUT INSERTED.*
 			    WHERE [organiser_uuid] = @organiser_uuid`
 			)
-		res.json(updated.recordset)
+		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
 		next(error)
