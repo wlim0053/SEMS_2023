@@ -21,33 +21,36 @@ export const registrationEmail = async (req: Request, res: Response, next: NextF
 
     readFile('./src/utils/template/registration.html', 'utf8', (err, htmlTemplate) => {
         if (err) {
-          console.error('Error reading HTML file:', err);
-          return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+            console.error('Error reading HTML file:', err);
+            return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
         }
       
         const template = handlebars.compile(htmlTemplate);
       
         const data = {
-          name: 'John Doe',
-          eventName: 'Tech Talk: Exploring the Future of Artificial Intelligence',
+            name: 'John Doe',
+            eventName: 'Tech Talk: Exploring the Future of Artificial Intelligence',
         };
       
         const mail = template(data);
       
         let message = {
-          from: user,
-          to: ["eooi0006@student.monash.edu", "wlim0053@student.monash.edu", "xlee0024@student.monash.edu"],
-          subject: "Thank you for your registration!",
-          html: mail
+            from: user,
+            to: ["xlee0024@student.monash.edu", "wlim0052@student.monash.edu"],
+            subject: "Thank you for your registration!",
+            html: mail
+            // ,
+            // attachments: [{
+            //     filename: "2023-Engaged_and_Integrated_Student_Experience_Platform.pdf",
+            //     path: './src/2023-Engaged_and_Integrated_Student_Experience_Platform.pdf'
+            // }]
         }
       
-        transporter.sendMail(message)
-          .then(() => {
+        transporter.sendMail(message).then(() => {
             return res.sendStatus(StatusCodes.OK);
-          })
-          .catch(() => {
+        }).catch(() => {
             return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
-          });
+        });
       });
 }
 
