@@ -7,6 +7,7 @@ import {
 	OrganiserWithStudent,
 	OrganiserWithUUID,
 } from "../interfaces/organiser"
+import { AdminOrganiserQueryParams } from "../interfaces/queryParams"
 
 export const createOrganiserController = async (
 	req: Request<{}, OrganiserWithUUID[], Organiser>,
@@ -21,13 +22,12 @@ export const createOrganiserController = async (
 			.input("organiser_name", mssql.VarChar, req.body.organiser_name)
 			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id).query(`
                 INSERT INTO ${DbTables.ORGANISER} (user_fire_id, parent_uuid, organiser_name)
-				OUTPUT INSERTED.*
 				VALUES (
                     @user_fire_id,
                     @parent_uuid,
                     @organiser_name
                 )`)
-		res.json(create.recordset)
+		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -52,40 +52,44 @@ export const updateOrganiserController = async (
 			        SET [parent_uuid] = @parent_uuid, 
                         [organiser_name] = @organiser_name,
                         [user_fire_id] = @user_fire_id
-				OUTPUT INSERTED.*
 			    WHERE [organiser_uuid] = @organiser_uuid`
 			)
-		res.json(updated.recordset)
+		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
 	} catch (error) {
 		next(error)
 	}
 }
 
+// * Used on Admin Organiser List
+// * When creating organisers need to specify whether they have a parent club -> `WHERE parent_uuid IS NULL`
 export const getOrganiserController = async (
-	req: Request<{}, OrganiserWithStudent[], {}>,
+	req: Request<{}, OrganiserWithStudent[], {}, AdminOrganiserQueryParams>,
 	res: Response<OrganiserWithStudent[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
+		const { parent_uuid } = req.query
+
+		let parentQuery = ""
+		if (parent_uuid) {
+			if (parent_uuid === "null")
+				parentQuery = `WHERE parent_uuid IS NULL`
+		}
+
 		const organisers: mssql.IResult<OrganiserWithStudent> =
-			await connection.query(`SELECT 
-            organiser_uuid,
-            parent_uuid,
-            organiser_name,
-            u.user_fire_id,
-            spec_uuid,
-            user_email,
-            user_fname,
-            user_lname,
-            user_id,
-            user_gender,
-            user_access_lvl,
-            enrolment_year,
-            enrolment_intake
-        FROM ${DbTables.ORGANISER} o join ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id`)
-		res.status(StatusCodes.OK).json(organisers.recordset)
+			await connection.request().query(`
+	        SELECT
+	            organiser_uuid,
+	            parent_uuid,
+	            organiser_name,
+	            u.*
+	        FROM
+	            ${DbTables.ORGANISER} o JOIN ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id
+	        ${parentQuery}
+	    `)
+		res.json(organisers.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)
@@ -107,16 +111,7 @@ export const getOrganiserByIDController = async (
                 organiser_uuid,
                 parent_uuid,
                 organiser_name,
-                u.user_fire_id,
-                spec_uuid,
-                user_email,
-                user_fname,
-                user_lname,
-                user_id,
-                user_gender,
-                user_access_lvl,
-                enrolment_year,
-                enrolment_intake
+                u.*
             FROM ${DbTables.ORGANISER} o join ${DbTables.USER} u ON o.user_fire_id=u.user_fire_id 
 			WHERE organiser_uuid = @organiser_uuid`
 			)
