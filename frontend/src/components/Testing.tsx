@@ -43,11 +43,21 @@ const Testing = () => {
                 </Image>
             </Box>
 
-            <Box height='100vh' bg = '#027EB6' width='75vh' position='relative'  opacity='0.8' alignItems='center' >
+            <Flex height='100vh' bg = '#027EB6' width='75vh' position='relative'  alignItems='center' justifyContent='center' alignContent='center' flexDirection = 'column' >
                 <Heading position='absolute'  fontWeight='bold' bottom = '40vh' fontSize='60px' color='white' left = '30px'>
                     STUDENT MANAGEMENT EXPERIENCE SYSTEM
                 </Heading> 
-            </Box>
+                <ButtonGroup gap = '10' position = 'relative' top = '180px'>
+                    
+                    <Button colorScheme="gray" leftIcon={<EmailIcon/>}>
+                    Login
+                    </Button>
+
+                    <Button colorScheme="gray" leftIcon={<EmailIcon/>} >
+                    Sign Up
+                    </Button>
+                </ButtonGroup>
+            </Flex>
         </Flex>
 
         <Flex position = 'relative' height = '100vh' flexWrap='wrap' justifyContent= 'center'>
@@ -208,13 +218,7 @@ const Testing = () => {
 
 
         </Flex>
-
-        
-
-
-        
-        
-        
+ 
     </>
         
         
