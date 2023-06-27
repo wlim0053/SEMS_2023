@@ -10,14 +10,16 @@ export const User = zod.object({
 		message: "Invalid number. Expected 0 or 1.",
 	}),
 	user_access_lvl: zod.enum(["A", "O", "S"]).optional(),
-	enrolment_year: zod.string().datetime(),
-	enrolment_intake: zod.number(),
 })
 
 export const UserWithFireId = User.extend({
 	user_fire_id: zod.string(),
 })
 
+export const UserLogin = UserWithFireId.pick({ user_fire_id: true })
+
 export type User = zod.infer<typeof User>
 
 export type UserWithFireId = zod.infer<typeof UserWithFireId>
+
+export type UserLogin = zod.infer<typeof UserLogin>

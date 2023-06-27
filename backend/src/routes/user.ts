@@ -1,27 +1,23 @@
 import express from "express"
 import {
-	createUserController,
+	registerUserController,
 	updateUserController,
-	getUserByIdController,
-	getUserController,
-	deleteUserController,
-	getUserEventByIdController,
+	loginUserController,
 } from "../controllers/userController"
-import { User, UserWithFireId } from "../interfaces/user"
+import { User, UserLogin, UserWithFireId } from "../interfaces/user"
 import { requestValidators } from "../middlewares/requestValidator"
 
 export const userRouter = express.Router()
 
 userRouter
-	.route("/")
-	.post(requestValidators({ body: UserWithFireId }), createUserController) // TODO: prob need to shift this createUserController to register endpoint
-	.get(getUserController)
+	.route("/login")
+	.post(requestValidators({ body: UserLogin }), loginUserController)
 
-// endpoint to get all the user's participated events
-userRouter.route("/:id/event").get(getUserEventByIdController)
+userRouter
+	.route("/register")
+	.post(requestValidators({ body: UserWithFireId }), registerUserController)
 
 userRouter
 	.route("/:id")
 	.put(requestValidators({ body: User }), updateUserController)
-	.get(getUserByIdController)
-	.delete(deleteUserController)
+// .get(getUserByIdController)

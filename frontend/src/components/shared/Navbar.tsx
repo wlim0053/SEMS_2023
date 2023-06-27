@@ -20,14 +20,16 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, Route, Routes } from "react-router-dom";
-import OrganiserList from "../../pages/admin/OrganiserList";
-import ActivityLog from "../../pages/admin/ActivityLog";
-import Admin from "../../pages/admin/AdminDashboard";
+import OrganiserList from "../../pages/Admin/OrganiserList";
+import ActivityLog from "../../pages/Admin/ActivityLog";
+import Admin from "../../pages/Admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
 import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
 import CreateEventForm from "../../pages/Organiser/CreateEventForm";
 import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
+import LoginPage from "../LoginPage"
+import RegisterPage from "../RegisterPage"
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -67,6 +69,7 @@ const Navbar = () => {
               <Link to="/ActivityLog">Activity Log</Link>
               <Link to="/StudentHome">Student Home</Link>
               <Link to="/EventHome">Event Home</Link>
+							<Link to="/LoginPage">Login Page</Link>
               <Link to="/OrganiserMainPage">Organiser Main Page</Link>
             </VStack>
           </DrawerBody>
@@ -81,6 +84,8 @@ const Navbar = () => {
         <Route path="/ActivityLog" element={<ActivityLog />} />
         <Route path="/StudentHome" element={<StudentHome />} />
         <Route path="/EventHome" element={<EventHome />} />
+				<Route path="/LoginPage" element={<LoginPage />} />
+				<Route path="/RegisterPage" element={<RegisterPage />} />
         <Route path="/CreateEventForm" element={<CreateEventForm />} />
         <Route path="/EventDetailsDashboard" element={<EventDetailsDashboard date="2023-05-21" time="14:00" capacity={100} venue="Example Venue" recurring={false} eventStatistics={{ gender: { male: 50, female: 50 }, specialization: { engineering: 30, medicine: 40, arts: 30 } }} />} />
       </Routes>

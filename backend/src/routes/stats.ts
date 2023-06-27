@@ -7,7 +7,7 @@ import {
 import {
 	EventCountByOrganiserQueryParams,
 	StatsQueryParams,
-} from "../interfaces/stats"
+} from "../interfaces/queryParams"
 import { requestValidators } from "../middlewares/requestValidator"
 
 export const statsRouter = express.Router()
