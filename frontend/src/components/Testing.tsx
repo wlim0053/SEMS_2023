@@ -194,21 +194,6 @@ const Testing = () => {
 
         </Flex>
 
-        <Flex position = 'relative' bgImage= "url('https://www.monash.edu.my/__data/assets/image/0003/988023/Malaysia-campus-2-.jpg')" 
-             bgSize = 'cover' height = '100vh'  justifyContent='center' alignContent='center' alignItems='center' flexDirection = 'column' >
-                <Center position='relative' bottom = '70px' color= ' #027EB6' fontFamily='Arial' fontWeight='bold'  fontSize = '6xl'> Come Join Us Now</Center>
-                <ButtonGroup gap = '10'>
-                    
-                    <Button colorScheme="blue" leftIcon={<EmailIcon/>}>
-                    Login
-                    </Button>
-
-                    <Button colorScheme="blue" leftIcon={<EmailIcon/>} >
-                    Sign Up
-                    </Button>
-                </ButtonGroup>
-        </Flex>
-
 
         <Flex bg = '#5A5A5A' width = '100%' height='15vh' flexDirection='column' justifyContent='center'>
             <Text fontSize='2xl' color = 'white'> Data Policy</Text>
