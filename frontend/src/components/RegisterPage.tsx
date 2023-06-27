@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -95,185 +95,147 @@ const RegisterPage: React.FC = () => {
   }
 
   return (
-    <Box p={5} maxW="800px" margin="auto">
-      <Box textAlign="center" mb={5}>
-        <Image
-          src="https://media.discordapp.net/attachments/950381894187483173/1003982545299439778/2016-MonashUniversityMALAYSIA_2-MonoCMYKoutlines.png?width=653&height=378"
-          height="200"
-          width="400"
-          className="d-inline-block align-top"
-          alt="Logo"
-          mx="auto"
-        />
-        <Heading>Register</Heading>
-      </Box>
-      <Formik
-        initialValues={{
-          firstName: "",
-          lastName: "",
-          studentId: "",
-          enrolmentYear: "",
-          enrolmentIntake: "",
-          gender: "",
-          school: "",
-          discipline: "",
-        }}
-        validationSchema={RegisterPageSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            setSubmitting(false);
-            const user = JSON.parse(localStorage.getItem("RegUser") || "{}");
-            const body = {
-              user_fire_id: user.uid,
-              spec_uuid: values.discipline,
-              user_email: user.email,
-              user_fname: values.firstName,
-              user_lname: values.lastName,
-              user_id: parseInt(values.studentId),
-              user_gender: parseInt(values.gender),
-              enrolment_year: new Date(values.enrolmentYear).toISOString(),
-              enrolment_intake: parseInt(values.enrolmentIntake),
-              user_access_lvl: "S",
-            };
+    <>
+      <Box p={5} maxW="800px" margin="auto">
+        <Box textAlign="center" mb={5}>
+          <Image
+            src="https://media.discordapp.net/attachments/950381894187483173/1003982545299439778/2016-MonashUniversityMALAYSIA_2-MonoCMYKoutlines.png?width=653&height=378"
+            height="200"
+            width="400"
+            className="d-inline-block align-top"
+            alt="Logo"
+            mx="auto"
+          />
+          <Heading>Register</Heading>
+        </Box>
+        <Formik
+          initialValues={{
+            firstName: "",
+            lastName: "",
+            studentId: "",
+            enrolmentYear: "",
+            enrolmentIntake: "",
+            gender: "",
+            school: "",
+            discipline: "",
+          }}
+          validationSchema={RegisterPageSchema}
+          onSubmit={(values, { setSubmitting }) => {
+            setTimeout(() => {
+              setSubmitting(false);
+              const user = JSON.parse(localStorage.getItem("RegUser") || "{}");
+              const body = {
+                user_fire_id: user.uid,
+                spec_uuid: values.discipline,
+                user_email: user.email,
+                user_fname: values.firstName,
+                user_lname: values.lastName,
+                user_id: parseInt(values.studentId),
+                user_gender: parseInt(values.gender),
+                enrolment_year: new Date(values.enrolmentYear).toISOString(),
+                enrolment_intake: parseInt(values.enrolmentIntake),
+                user_access_lvl: "S",
+              };
 
-            doPostRequest(body);
-          }, 400);
-        }}
-      >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) => (
-          <form onSubmit={handleSubmit}>
-            <FormControl isRequired>
-              <FormLabel>First Name</FormLabel>
-              <Field
-                type="text"
-                name="firstName"
-                placeholder="Type here, e.g. John"
-                as={Input}
-                errors={errors}
-                touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-              />
-              <FormErrorMessage>{errors.firstName}</FormErrorMessage>
-            </FormControl>
-            <FormControl isRequired mt={6}>
-              <FormLabel>Last Name</FormLabel>
-              <Field
-                type="text"
-                name="lastName"
-                placeholder="Type here, e.g. Walter"
-                as={Input}
-                errors={errors}
-                touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-              />
-              <FormErrorMessage>{errors.lastName}</FormErrorMessage>
-            </FormControl>
-            <FormControl isRequired mt={6}>
-              <FormLabel>Student ID</FormLabel>
-              <Field
-                type="number"
-                name="studentId"
-                placeholder="Type here, e.g. 32706139"
-                as={Input}
-                errors={errors}
-                touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-              />
-              <FormErrorMessage>{errors.studentId}</FormErrorMessage>
-            </FormControl>
-            <FormControl isRequired mt={6}>
-              <FormLabel>Enrolment Year</FormLabel>
-              <Field
-                type="number"
-                name="enrolmentYear"
-                placeholder="Type here, e.g. 2021"
-                as={Input}
-                errors={errors}
-                touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-              />
-              <FormErrorMessage>{errors.enrolmentYear}</FormErrorMessage>
-            </FormControl>
-            <FormControl isRequired mt={6}>
-              <FormLabel>Gender</FormLabel>
-              <Field
-                as="select"
-                name="gender"
-                errors={errors}
-                touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-              >
-                <option value="0" key="Female">
-                  Female
-                </option>
-                <option value="1" key="Male">
-                  Male
-                </option>
-              </Field>
-              <FormErrorMessage>{errors.gender}</FormErrorMessage>
-            </FormControl>
-            <Divider my={1} />
-            <FormControl isRequired mt={6}>
-              <FormLabel>School</FormLabel>
-              <Field
-                as="select"
-                name="school"
-                // onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                //   setSchoolType(e.target.value)
-                // }
-                errors={errors}
-                touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-              >
-                {schools ? (
-                  schools.map((schoolItem: any) => (
-                    <option
-                      value={schoolItem.school_name}
-                      key={schoolItem.school_name}
-                    >
-                      {schoolItem.school_name}
-                    </option>
-                  ))
-                ) : (
-                  <option value="0" key="Loading">
-                    Loading...
-                  </option>
-                )}
-              </Field>
-              <FormErrorMessage>{errors.school}</FormErrorMessage>
-            </FormControl>
-            {values.school === engineeringSchool && ( // or whatever value represents the School of Engineering
+              doPostRequest(body);
+            }, 400);
+          }}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            isSubmitting,
+          }) => (
+            <form onSubmit={handleSubmit}>
+              <FormControl isRequired>
+                <FormLabel>First Name</FormLabel>
+                <Field
+                  type="text"
+                  name="firstName"
+                  placeholder="Type here, e.g. John"
+                  as={Input}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+                <FormErrorMessage>{errors.firstName}</FormErrorMessage>
+              </FormControl>
               <FormControl isRequired mt={6}>
-                <FormLabel>Discipline</FormLabel>
+                <FormLabel>Last Name</FormLabel>
+                <Field
+                  type="text"
+                  name="lastName"
+                  placeholder="Type here, e.g. Walter"
+                  as={Input}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+                <FormErrorMessage>{errors.lastName}</FormErrorMessage>
+              </FormControl>
+              <FormControl isRequired mt={6}>
+                <FormLabel>Student ID</FormLabel>
+                <Field
+                  type="number"
+                  name="studentId"
+                  placeholder="Type here, e.g. 32706139"
+                  as={Input}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+                <FormErrorMessage>{errors.studentId}</FormErrorMessage>
+              </FormControl>
+              <FormControl isRequired mt={6}>
+                <FormLabel>Enrolment Year</FormLabel>
+                <Field
+                  type="number"
+                  name="enrolmentYear"
+                  placeholder="Type here, e.g. 2021"
+                  as={Input}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+                <FormErrorMessage>{errors.enrolmentYear}</FormErrorMessage>
+              </FormControl>
+              <FormControl isRequired mt={6}>
+                <FormLabel>Gender</FormLabel>
                 <Field
                   as="select"
-                  name="discipline"
-                  errors={errors}
-                  touched={touched}
-                  handleBlur={handleBlur}
-                  handleChange={handleChange}
+                  name="gender"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
                 >
-                  {specialise ? (
-                    specialise.map((specialisationItem: any) => (
+                  <option value="0" key="Female">
+                    Female
+                  </option>
+                  <option value="1" key="Male">
+                    Male
+                  </option>
+                </Field>
+                <FormErrorMessage>{errors.gender}</FormErrorMessage>
+              </FormControl>
+              <Divider my={1} />
+              <FormControl isRequired mt={6}>
+                <FormLabel>School</FormLabel>
+                <Field
+                  as="select"
+                  name="school"
+                  // onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  //   setSchoolType(e.target.value)
+                  // }
+
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                >
+                  {schools ? (
+                    schools.map((schoolItem: any) => (
                       <option
-                        value={specialisationItem.spec_uuid}
-                        key={specialisationItem.spec_name}
+                        value={schoolItem.uuid}
+                        key={schoolItem.school_name}
                       >
-                        {specialisationItem.spec_name}
+                        {schoolItem.school_name}
                       </option>
                     ))
                   ) : (
@@ -282,19 +244,45 @@ const RegisterPage: React.FC = () => {
                     </option>
                   )}
                 </Field>
-                <FormErrorMessage>{errors.discipline}</FormErrorMessage>
+                <FormErrorMessage>{errors.school}</FormErrorMessage>
               </FormControl>
-            )}
-            <Divider my={1} />
-            {/* <FormControl isRequired mt={6}>
+              {values.school === engineeringSchool && ( // or whatever value represents the School of Engineering
+                <FormControl isRequired mt={6}>
+                  <FormLabel>Discipline</FormLabel>
+                  <Field
+                    as="select"
+                    name="discipline"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                  >
+                    {specialise ? (
+                      specialise.map((specialisationItem: any) => (
+                        <option
+                          value={specialisationItem.spec_uuid}
+                          key={specialisationItem.spec_name}
+                        >
+                          {specialisationItem.spec_name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="0" key="Loading">
+                        Loading...
+                      </option>
+                    )}
+                  </Field>
+                  <FormErrorMessage>{errors.discipline}</FormErrorMessage>
+                </FormControl>
+              )}
+              <Divider my={1} />
+              {/* <FormControl isRequired mt={6}>
               <FormLabel>Discipline</FormLabel>
               <Field
                 as="select"
                 name="discipline"
                 errors={errors}
                 touched={touched}
-                handleBlur={handleBlur}
-                handleChange={handleChange}
+                onBlur={handleBlur}
+                onChange={handleChange}
               >
                 {specialise ? (
                   specialise.map((specialisationItem: any) => (
@@ -313,22 +301,23 @@ const RegisterPage: React.FC = () => {
               </Field>
               <FormErrorMessage>{errors.discipline}</FormErrorMessage>
             </FormControl> */}
-            {/* <Divider my={1} /> */}
-            <Button
-              bg="#006DAE"
-              color="white"
-              h="60px"
-              width="full"
-              mt={6}
-              type="submit"
-              disabled={isSubmitting}
-            >
-              Register
-            </Button>
-          </form>
-        )}
-      </Formik>
-    </Box>
+              {/* <Divider my={1} /> */}
+              <Button
+                bg="#006DAE"
+                color="white"
+                h="60px"
+                width="full"
+                mt={6}
+                type="submit"
+                disabled={isSubmitting}
+              >
+                Register
+              </Button>
+            </form>
+          )}
+        </Formik>
+      </Box>
+    </>
   );
 };
 
