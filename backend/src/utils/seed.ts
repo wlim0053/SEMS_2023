@@ -342,7 +342,7 @@ const delay = 3000
 // createDatabase()
 // setTimeout(createTables, timer)
 // setTimeout(alterTables, (timer += delay))
-setTimeout(createTriggers, (timer += delay))
+// setTimeout(createTriggers, (timer += delay))
 
 // * 2. Run these individually 1 by 1
 // populateTableSchool()
