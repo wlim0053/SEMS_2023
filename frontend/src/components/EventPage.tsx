@@ -103,7 +103,6 @@ function EventPage() {
 
   // get from /participation and console.log
 
-
   useEffect(() => {
     const fetchParticipation = async () => {
       try {
@@ -121,12 +120,14 @@ function EventPage() {
   }, []);
 
   const isSignedUp = (eventUuid: string) => {
-    return participatedEvents.some((participation) => participation.event_uuid === eventUuid);
+    return participatedEvents.some(
+      (participation) => participation.event_uuid === eventUuid
+    );
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+
     console.log(selectedEvent);
     console.log(selectedEvent?.event_uuid);
     console.log(enrolmentYear);
@@ -136,7 +137,7 @@ function EventPage() {
       console.error("No event found");
       return;
     }
-  
+
     // Proceed with sign-up if within the registration period
     // data to be sent
     const data = {
@@ -146,9 +147,9 @@ function EventPage() {
       participation_semester: enrolmentIntake,
       participation_attendance: 0,
     };
-  
+
     try {
-      const response = await api.post('/participation', data);
+      const response = await api.post("/participation", data);
       console.log(response.data);
       // Close the modal after successful submission
       setIsSignUpModalOpen(false);
@@ -156,7 +157,7 @@ function EventPage() {
       console.error(error);
     }
   };
-  
+
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -202,7 +203,6 @@ function EventPage() {
       setSelectedClubs(selectedClubs.filter((c) => c !== club));
     }
   };
-
 
   return (
     <Box width="100%" p={5} overflowX="auto">
@@ -300,7 +300,7 @@ function EventPage() {
             const currentDate = new Date();
             const registrationStartDate = new Date(event.event_reg_start_date);
             const registrationEndDate = new Date(event.event_reg_end_date);
-      
+
             if (
               currentDate < registrationStartDate ||
               currentDate > registrationEndDate
@@ -308,16 +308,15 @@ function EventPage() {
               // Display a toast message indicating that sign-up is not possible
               toast({
                 title: "Cannot Sign Up",
-                description: "Sign-up is only allowed during the registration period.",
+                description:
+                  "Sign-up is only allowed during the registration period.",
                 status: "warning",
                 duration: 3000,
                 isClosable: true,
               });
-      
+
               return;
             }
-      
-            // Proceed with sign-up if within the registration period
             setIsSignUpModalOpen(true);
             setCurrentIndex(index);
             setSelectedEvent(event);
@@ -449,7 +448,7 @@ function EventPage() {
                 >
                   {Array.from({ length: 4 }, (_, i) => i + 1).map((year) => (
                     <option key={year} value={year}>
-                      {year} 
+                      {year}
                     </option>
                   ))}
                 </Select>
@@ -476,7 +475,7 @@ function EventPage() {
               pr={6}
               pb={4}
             >
-              <Button type="submit" colorScheme="blue" >
+              <Button type="submit" colorScheme="blue">
                 Submit
               </Button>
             </Box>
