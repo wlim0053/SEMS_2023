@@ -176,6 +176,18 @@ const RegisterPage: React.FC = () => {
                 <FormErrorMessage>{errors.lastName}</FormErrorMessage>
               </FormControl>
               <FormControl isRequired mt={6}>
+                <FormLabel>Email</FormLabel>
+                <Field
+                  type="text"
+                  name="email"
+                  placeholder="Type here, e.g. johnw123@gmail.com"
+                  as={Input}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+                <FormErrorMessage>{errors.email}</FormErrorMessage>
+              </FormControl>
+              <FormControl isRequired mt={6}>
                 <FormLabel>Student ID</FormLabel>
                 <Field
                   type="number"
