@@ -18,7 +18,7 @@ export const Participation = zod.object({
 		.refine((value) => value === 1 || value === 2, {
 			message: "Invalid number. Expected 1 or 2.",
 		}),
-	feedback_uuid: zod.string().uuid().nullable(),
+	feedback_uuid: zod.string().uuid().nullish(),
 })
 
 export const ParticipationWithUUID = Participation.extend({
