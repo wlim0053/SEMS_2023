@@ -4,11 +4,11 @@
   "description": "Node.js setup with Express and TypeScript",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc && ncp ./static dist/static",
     "preserve": "npm run build",
-    "dev": "cross-env NODE_ENV=development concurrently \"tsc --watch\" \"nodemon -q dist/index.js\"",
+    "dev": "cross-env NODE_ENV=development concurrently \"tsc --watch\" \"nodemon -q dist/src/index.js\"",
     "prestart": "npm run build",
-    "start": "cross-env NODE_ENV=production node dist/index.js",
+    "start": "cross-env NODE_ENV=production node dist/src/index.js",
     "seed": "cross-env NODE_ENV=development nodemon ./src/utils/seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -46,6 +46,7 @@
   "devDependencies": {
     "concurrently": "^8.0.1",
     "cross-env": "^7.0.3",
+    "ncp": "^2.0.0",
     "nodemon": "^2.0.22",
     "rimraf": "^5.0.0",
     "ts-node": "^10.9.1"

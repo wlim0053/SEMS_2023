@@ -174,6 +174,8 @@ const populateTableUser = async () => {
 				user_lname: "Haha",
 				user_id: 34206969,
 				user_gender: 0,
+				user_enrolment_year: 2020,
+				user_enrolment_semester: 10,
 			},
 			{
 				user_fire_id: "L1on3lP3ps1",
@@ -183,6 +185,8 @@ const populateTableUser = async () => {
 				user_lname: "Pepsi",
 				user_id: 30103010,
 				user_gender: 1,
+				user_enrolment_year: 2021,
+				user_enrolment_semester: 2,
 			},
 		]
 
@@ -194,10 +198,14 @@ const populateTableUser = async () => {
 		})
 		table.columns.add("spec_uuid", mssql.UniqueIdentifier)
 		table.columns.add("user_email", mssql.VarChar, { nullable: false })
-		table.columns.add("user_fname", mssql.VarChar)
-		table.columns.add("user_lname", mssql.VarChar)
+		table.columns.add("user_fname", mssql.VarChar, { nullable: false })
+		table.columns.add("user_lname", mssql.VarChar, { nullable: false })
 		table.columns.add("user_id", mssql.Int)
-		table.columns.add("user_gender", mssql.Int)
+		table.columns.add("user_gender", mssql.Int, { nullable: false })
+		table.columns.add("user_enrolment_year", mssql.Int, { nullable: false })
+		table.columns.add("user_enrolment_semester", mssql.TinyInt, {
+			nullable: false,
+		})
 		students.forEach(
 			({
 				user_fire_id,
@@ -207,6 +215,8 @@ const populateTableUser = async () => {
 				user_lname,
 				user_id,
 				user_gender,
+				user_enrolment_year,
+				user_enrolment_semester,
 			}) =>
 				table.rows.add(
 					user_fire_id,
@@ -215,7 +225,9 @@ const populateTableUser = async () => {
 					user_fname,
 					user_lname,
 					user_id,
-					user_gender
+					user_gender,
+					user_enrolment_year,
+					user_enrolment_semester
 				)
 		)
 		const result = await connection.request().bulk(table)
@@ -342,7 +354,7 @@ const delay = 3000
 // createDatabase()
 // setTimeout(createTables, timer)
 // setTimeout(alterTables, (timer += delay))
-setTimeout(createTriggers, (timer += delay))
+// setTimeout(createTriggers, (timer += delay))
 
 // * 2. Run these individually 1 by 1
 // populateTableSchool()
