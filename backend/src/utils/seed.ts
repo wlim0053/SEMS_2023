@@ -174,8 +174,6 @@ const populateTableUser = async () => {
 				user_lname: "Haha",
 				user_id: 34206969,
 				user_gender: 0,
-				enrolment_year: "2023",
-				enrolment_intake: 2,
 			},
 			{
 				user_fire_id: "L1on3lP3ps1",
@@ -185,8 +183,6 @@ const populateTableUser = async () => {
 				user_lname: "Pepsi",
 				user_id: 30103010,
 				user_gender: 1,
-				enrolment_year: "2021",
-				enrolment_intake: 7,
 			},
 		]
 
@@ -202,8 +198,6 @@ const populateTableUser = async () => {
 		table.columns.add("user_lname", mssql.VarChar)
 		table.columns.add("user_id", mssql.Int)
 		table.columns.add("user_gender", mssql.Int)
-		table.columns.add("enrolment_year", mssql.Date)
-		table.columns.add("enrolment_intake", mssql.Int)
 		students.forEach(
 			({
 				user_fire_id,
@@ -213,8 +207,6 @@ const populateTableUser = async () => {
 				user_lname,
 				user_id,
 				user_gender,
-				enrolment_year,
-				enrolment_intake,
 			}) =>
 				table.rows.add(
 					user_fire_id,
@@ -223,9 +215,7 @@ const populateTableUser = async () => {
 					user_fname,
 					user_lname,
 					user_id,
-					user_gender,
-					enrolment_year,
-					enrolment_intake
+					user_gender
 				)
 		)
 		const result = await connection.request().bulk(table)
@@ -271,6 +261,7 @@ const populateTableEvent = async () => {
 			nullable: false,
 		})
 		table.columns.add("event_ems_no", mssql.VarChar, { nullable: true })
+		table.columns.add("event_ems_link", mssql.VarChar, { nullable: true })
 		table.columns.add("event_start_date", mssql.SmallDateTime, {
 			nullable: false,
 		})
@@ -289,6 +280,7 @@ const populateTableEvent = async () => {
 		table.rows.add(
 			null,
 			organiserUUID,
+			null,
 			null,
 			"2023-05-11 18:00",
 			"2023-05-11 20:00",
@@ -324,8 +316,17 @@ const populateTableParticipation = async () => {
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, eventUUID)
 			.input("user_fire_id", mssql.VarChar, user_fire_id)
+			.input("participation_year", mssql.TinyInt, 3)
+			.input("participation_semester", mssql.TinyInt, 2)
 			.query(
-				`INSERT INTO ${DbTables.PARTICIPATION} (event_uuid, user_fire_id) VALUES (@event_uuid, @user_fire_id)`
+				`INSERT INTO ${DbTables.PARTICIPATION} VALUES (
+                    DEFAULT, 
+                    @event_uuid, 
+                    @user_fire_id,
+                    @participation_year,
+                    @participation_semester,
+                    DEFAULT
+                )`
 			)
 		console.log(res)
 		connection.close()

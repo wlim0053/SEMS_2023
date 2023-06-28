@@ -7,13 +7,17 @@ import {
 	EventCountByOrganiser,
 	GenderCountByEvent,
 } from "../interfaces/stats"
+import {
+	EventCountByOrganiserQueryParams,
+	StatsQueryParams,
+} from "../interfaces/queryParams"
 
 export const getEventCountByOrganiser = async (
 	req: Request<
 		{},
 		EventCountByOrganiser[],
 		{},
-		{ year: string; semester: string; organiser: string }
+		EventCountByOrganiserQueryParams
 	>,
 	res: Response<EventCountByOrganiser[]>,
 	next: NextFunction
@@ -99,7 +103,7 @@ export const getEventCountByOrganiser = async (
 }
 
 export const getAttendeesCountBySchool = async (
-	req: Request<{}, AttendeesCountBySchool[], {}, { year: string }>,
+	req: Request<{}, AttendeesCountBySchool[], {}, StatsQueryParams>,
 	res: Response<AttendeesCountBySchool[]>,
 	next: NextFunction
 ) => {
@@ -131,7 +135,7 @@ export const getAttendeesCountBySchool = async (
 }
 
 export const getGenderCountByEvent = async (
-	req: Request<{}, GenderCountByEvent[], {}, { year: string }>,
+	req: Request<{}, GenderCountByEvent[], {}, StatsQueryParams>,
 	res: Response<GenderCountByEvent[]>,
 	next: NextFunction
 ) => {

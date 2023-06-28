@@ -1,17 +1,20 @@
 import express from "express"
 import helmet from "helmet"
 import cors from "cors"
+import cookieParser from "cookie-parser"
 import { schoolRouter } from "./routes/school"
 import { userRouter } from "./routes/user"
 import { organiserRouter } from "./routes/organiser"
 import { specialisationRouter } from "./routes/specialisation"
-import { eventRouter } from "./routes/event"
 import { participationRouter } from "./routes/participation"
 import { errorHandler } from "./middlewares/errorHandler"
 import { feedbackRouter } from "./routes/feedback"
 import { statsRouter } from "./routes/stats"
+import { downloadRouter } from "./routes/download"
+import { studentEventRouter } from "./routes/event.for-student"
+import { organiserEventRouter } from "./routes/event.for-organisers"
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 5173
 const app = express()
 
 // TODO add deployment website later
@@ -28,10 +31,14 @@ const corsOptions: cors.CorsOptions = {
 	optionsSuccessStatus: 200,
 	credentials: true,
 }
-app.use(cors(corsOptions))
+//app.use(cors(corsOptions))
 app.use(express.json())
 // app.use(helmet())
 // app.use(express.urlencoded());
+
+// * Cookie parser middleware
+// * Must be placed before the routes or else it doesn't work (not sure why)
+app.use(cookieParser())
 
 /**
  * Routes for retrieving data from tables
@@ -43,14 +50,22 @@ app.use("/api/school", schoolRouter)
 app.use("/api/user", userRouter)
 app.use("/api/organiser", organiserRouter)
 app.use("/api/specialisation", specialisationRouter)
-app.use("/api/event", eventRouter)
 app.use("/api/participation", participationRouter)
 app.use("/api/feedback", feedbackRouter)
+
+// Routes for retrieving events based on student's/organiser's page
+app.use("/api/event/for-student", studentEventRouter)
+app.use("/api/event/for-organiser", organiserEventRouter)
 
 // Route for retrieving statistical data from tables (group by statements)
 app.use("/api/stats", statsRouter)
 
+// Route for file transfer
+app.use("/api/download", downloadRouter)
+
 // * Error handling middleware
 app.use(errorHandler)
+
+
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))
