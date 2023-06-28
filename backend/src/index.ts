@@ -31,7 +31,7 @@ const corsOptions: cors.CorsOptions = {
 	optionsSuccessStatus: 200,
 	credentials: true,
 }
-// app.use(cors(corsOptions))
+app.use(cors(corsOptions))
 app.use(express.json())
 // app.use(helmet())
 // app.use(express.urlencoded());
