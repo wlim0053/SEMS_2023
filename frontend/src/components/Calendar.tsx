@@ -61,7 +61,7 @@ function Calendar() {
   }, []);
 
   const fetchEventsFromDatabase = async () => {
-    const response = await api.get("/event");
+    const response = await api.get("/participation?event_status=A");
     return response.data;
   };
 

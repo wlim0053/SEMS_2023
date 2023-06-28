@@ -35,7 +35,7 @@ function StudentEvents() {
 
   useEffect(() => {
     api
-      .get("/event")
+      .get("/participation?event_status=A")
       .then((response) => setEvents(response.data))
       .catch((error) => console.log(error));
   }, []);
