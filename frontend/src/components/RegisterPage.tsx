@@ -219,6 +219,7 @@ const RegisterPage: React.FC = () => {
                   onBlur={handleBlur}
                   onChange={handleChange}
                 >
+                  <option value="" disabled selected>Select Gender</option>
                   <option value="0" key="Female">
                     Female
                   </option>
@@ -241,6 +242,7 @@ const RegisterPage: React.FC = () => {
                   onBlur={handleBlur}
                   onChange={handleChange}
                 >
+                  <option value="" disabled selected>Select School</option>
                   {schools ? (
                     schools.map((schoolItem: any) => (
                       <option
@@ -267,6 +269,7 @@ const RegisterPage: React.FC = () => {
                     onBlur={handleBlur}
                     onChange={handleChange}
                   >
+                    <option value="" disabled selected>Select Discipline</option>
                     {specialise ? (
                       specialise.map((specialisationItem: any) => (
                         <option
