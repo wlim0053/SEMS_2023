@@ -20,6 +20,9 @@ import { useEffect } from "react";
 import { color } from "framer-motion";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import 'firebase/compat/auth';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 
 
 const clubOptions = [
@@ -133,6 +136,43 @@ interface OriginalEventData {
 function CreateEventForm() {
   const navigate = useNavigate();
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyCpfgoR8aLHAszQCo2ifa4xiyoMikhBk8U",
+    authDomain: "koinov3-dbaa9.firebaseapp.com",
+    databaseURL: "https://koinov3-dbaa9-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "koinov3-dbaa9",
+    storageBucket: "koinov3-dbaa9.appspot.com",
+    messagingSenderId: "427622516684",
+    appId: "1:427622516684:web:a1b427bbd9a80a19117f69",
+    measurementId: "G-H0FMFV9YF3"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const handleButtonClick = () => {
+    firebase.auth().onAuthStateChanged((user: any) => {
+      if (user) {
+        const googleFormUrl = 'https://forms.gle/gJkH9m6bHcMguMH17'; // Test form
+
+        const openPopup = () => {
+          const width = 600;
+          const height = 600;
+          const left = window.innerWidth / 2 - width / 2;
+          const top = window.innerHeight / 2 - height / 2;
+
+          window.open(
+            googleFormUrl,
+            '_blank',
+            `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
+          );
+        };
+
+        openPopup();
+      } else {
+        firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+      }
+    });
+  };
   const location = useLocation();
   const originalEventData: OriginalEventData = location.state.eventData;
   const isUpdating = originalEventData !== null;
@@ -603,6 +643,9 @@ function CreateEventForm() {
         >
           EMS FORM
         </Text>
+        <span style={{ color: 'red', fontWeight: 'bold' }}>
+          Make sure that your popups are on and that you have allowed popups for the EMS Form
+        </span>
         <FormLabel>
           By submitting this form, you are acknowledging that your event plan is
           final and no changes can be made to said plan. The details submitted
@@ -612,14 +655,9 @@ function CreateEventForm() {
           itself. NOTE: Ensure that you have submitted the SARAH Risk Assessment
           and have completed the venue booking BEFORE you submit this form.
         </FormLabel>
-        <iframe
-          //src="https://forms.gle/Rfzed5ZHWXy5RdA68"
-          src=" https://forms.gle/yujspP6WVvmHBeoU8"
-          width="100%"
-          height="1000"
-        >
-          Loading...
-        </iframe>
+        <button onClick={handleButtonClick} style={{ color: '#ffffff', background: '#006DAE', border: 'none', borderRadius: '4px', padding: '8px 16px' }}>
+          Open Google Form
+        </button>
         <FormControl>
           <FormLabel></FormLabel>
           <Checkbox
