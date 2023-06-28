@@ -53,10 +53,7 @@ function CountdownTimer() {
     };
 
     fetchEvents();
-
-    return () => {
-      // Cleanup function
-    };
+    
   }, []);
 
   useEffect(() => {
@@ -88,7 +85,8 @@ function CountdownTimer() {
         setStartTime(nearestEvent.startTime);
         setEndTime(nearestEvent.endTime);
         setTitle(nearestEvent.title);
-      } else {
+      } else if (events.length > 0) {
+        console.log("No nearest future event found");
         setFutureEvent(false);
       }
     }, 1000);
@@ -103,7 +101,7 @@ function CountdownTimer() {
       month: "short",
       year: "numeric",
     } as const;
-    const formatter = new Intl.DateTimeFormat("en-US", options);
+    const formatter = new Intl.DateTimeFormat("en-GB", options);
     const date = new Date();
     return formatter.format(date);
   }
