@@ -23,7 +23,7 @@ const RegisterPageSchema = Yup.object().shape({
   lastName: Yup.string().required("Required"),
   studentId: Yup.string().required("Required"),
   enrolmentYear: Yup.string().required("Required"),
-  enrolmentIntake: Yup.string().required("Required"),
+  enrolmentSemester: Yup.string().required("Required"),
   gender: Yup.string().required("Required"),
   school: Yup.string().required("Required"),
   discipline: Yup.string().required("Required"),
@@ -114,7 +114,7 @@ const RegisterPage: React.FC = () => {
             lastName: "",
             studentId: "",
             enrolmentYear: "",
-            enrolmentIntake: "",
+            enrolmentSemester: "",
             gender: "",
             school: "",
             discipline: "",
@@ -131,9 +131,9 @@ const RegisterPage: React.FC = () => {
                 user_fname: values.firstName,
                 user_lname: values.lastName,
                 user_id: parseInt(values.studentId),
+                user_enrolment_year: parseInt(values.enrolmentYear),
+                user_enrolment_semester: parseInt(values.enrolmentSemester),
                 user_gender: parseInt(values.gender),
-                enrolment_year: new Date(values.enrolmentYear).toISOString(),
-                enrolment_intake: parseInt(values.enrolmentIntake),
                 user_access_lvl: "S",
               };
 
@@ -210,6 +210,18 @@ const RegisterPage: React.FC = () => {
                   onChange={handleChange}
                 />
                 <FormErrorMessage>{errors.enrolmentYear}</FormErrorMessage>
+              </FormControl>
+              <FormControl isRequired mt={6}>
+                <FormLabel>Enrolment Semester</FormLabel>
+                <Field
+                  type="number"
+                  name="enrolmentSemester"
+                  placeholder="Type semester number here, e.g. 2"
+                  as={Input}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+                <FormErrorMessage>{errors.enrolmentSemester}</FormErrorMessage>
               </FormControl>
               <FormControl isRequired mt={6}>
                 <FormLabel>Gender</FormLabel>
