@@ -3,29 +3,18 @@ import {
 Box,
 Text,
 Heading,
-Center,
 Flex,
 Spacer,
-Accordion,
-AccordionItem,
-AccordionButton,
-AccordionPanel,
-AccordionIcon,
 List,
 ListItem,
 Button,
-Container,
-VStack,
 Divider,
 ButtonGroup,
 Image,
 Card,
 CardHeader, 
 CardBody, 
-CardFooter,
 Stack,
-StackDivider
-
 } from "@chakra-ui/react"
 import { EmailIcon } from '@chakra-ui/icons';
 
