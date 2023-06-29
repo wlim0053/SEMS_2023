@@ -21,7 +21,7 @@ import Testing from "./components/Testing"
 function App() {
 	return (
 		<div className="App">
-			<Testing />
+			<NewLandingPage />
 			{/* <Testlandingpage /> */}
 		</div>
 	)

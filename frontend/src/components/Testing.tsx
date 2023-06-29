@@ -92,7 +92,7 @@ const Testing = () => {
         </Flex>
 
         
-        <Flex position='relative' height='100vh' bg = '#E6E6E6' justifyContent='space-around' flexWrap='wrap'>
+        <Flex position='relative' height='100vh' bg = '#E6E6E6' justifyContent='space-around' flexWrap='wrap' overflow='auto'>
 
             <Heading position = 'absolute' fontWeight='bold'>So Why Join In On Events?</Heading>
            
