@@ -12,16 +12,7 @@ import {
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables } from "../utils/constant"
-
-const user = process.env.email_user;
-const pass = process.env.email_password;
-const trans_obj = {
-    service: "gmail",
-    auth: {
-        user: user, 
-        pass: pass,
-    }
-}
+import { user, trans_obj } from "../utils/email"
 
 export const registrationEmail = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -64,7 +55,7 @@ export const registrationEmail = async (req: Request, res: Response, next: NextF
       
         let message = {
             from: user,
-            to: [userData.user_email],
+            to: userData.user_email,
             subject: "Thank you for your registration!!",
             html: mail
         }
@@ -77,39 +68,6 @@ export const registrationEmail = async (req: Request, res: Response, next: NextF
     });
 }
 
-export const reminderEmail = async (req: Request, res: Response, next: NextFunction) => {
-
-    let transporter = nodemailer.createTransport(trans_obj);
-
-    readFile('./src/utils/template/reminder.html', 'utf8', (err, htmlTemplate) => {
-        if (err) {
-            console.error('Error reading HTML file:', err);
-            return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
-        }
-      
-        const template = handlebars.compile(htmlTemplate);
-      
-        const data = {
-            name: 'John Doe',
-            eventName: 'Tech Talk: Exploring the Future of Artificial Intelligence',
-        };
-      
-        const mail = template(data);
-      
-        let message = {
-            from: user,
-            to: ["xlee0024@student.monash.edu"],
-            subject: "Reminder: SEMS - Important Information before joining the event",
-            html: mail
-        }
-      
-        transporter.sendMail(message).then(() => {
-            return res.sendStatus(StatusCodes.OK);
-        }).catch(() => {
-            return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
-        });
-    });
-}
 
 export const postEventEmail = async (req: Request, res: Response, next: NextFunction) => {
 
