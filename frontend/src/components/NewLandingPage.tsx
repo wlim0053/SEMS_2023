@@ -39,11 +39,11 @@ return(
             </Heading> 
             <ButtonGroup gap = '10' position = 'relative' top = '180px'>
                 
-                <Button colorScheme="gray" leftIcon={<EmailIcon/>}>
+                <Button backgroundColor='white' variant='outline' leftIcon={<EmailIcon/>}>
                 Login
                 </Button>
 
-                <Button colorScheme="gray" leftIcon={<EmailIcon/>} >
+                <Button backgroundColor='white' variant='outline'leftIcon={<EmailIcon/>} >
                 Sign Up
                 </Button>
             </ButtonGroup>
@@ -128,7 +128,8 @@ return(
             <CardBody>
                 <Image
                 src='https://www.monash.edu.my/__data/assets/image/0011/3192581/Monash-Information-Technology-Lab.jpg'
-                borderRadius='lg'
+
+                borderRadius='lg' height='220px'
                 />
                 <Stack mt='6' spacing='3'>
                     <Heading size='md'>Self-Improvement</Heading>
