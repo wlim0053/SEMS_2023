@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionButton,
@@ -10,7 +10,6 @@ import {
   Checkbox,
   Flex,
   FormControl,
-  FormErrorMessage,
   FormLabel,
   IconButton,
   Input,
@@ -63,13 +62,15 @@ function EventPage() {
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [, setCurrentIndex] = useState(0);
   const [events, setEvents] = useState<Event[]>([]);
   const [sortedEvents, setSortedEvents] = useState<Event[]>([]);
   const [enrolmentYear, setEnrolmentYear] = useState(0);
   const [enrolmentIntake, setEnrolmentIntake] = useState(0);
   const [participatedEvents, setParticipatedEvents] = useState<Event[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isFormFilled, setIsFormFilled] = useState(false);
+
 
   const clubs = [
     { name: "IEMMSS", id: "iemmss" },
@@ -202,6 +203,13 @@ function EventPage() {
     } else {
       setSelectedClubs(selectedClubs.filter((c) => c !== club));
     }
+  };
+
+  const getFormIdFromLink = (link: string) => {
+    const url = new URL(link);
+    const pathSegments = url.pathname.split("/");
+    const formId = pathSegments[4];
+    return formId;
   };
 
   return (
@@ -464,6 +472,30 @@ function EventPage() {
                   <option value="1">Sem 1</option>
                   <option value="2">Sem 2</option>
                 </Select>
+              </FormControl>
+              <FormLabel mt={4}>Addtional Queries</FormLabel>
+              <Box>
+                {selectedEvent && (
+                  <iframe
+                    title="Google Form"
+                    src={`https://docs.google.com/forms/d/e/${getFormIdFromLink(
+                      selectedEvent.event_reg_google_form
+                    )}/viewform?embedded=true`}
+                    width="98%"
+                    height="450"
+                    style={{ margin: "10px" }}
+                  ></iframe>
+                )}
+              </Box>
+              <FormControl mt={4} isRequired>
+                <FormLabel>Google Form</FormLabel>
+                <Checkbox
+                  isChecked={isFormFilled}
+                  onChange={(e) => setIsFormFilled(e.target.checked)}
+                  required
+                >
+                  I acknowledge that I have filled out the Google Form
+                </Checkbox>
               </FormControl>
             </ModalBody>
 
