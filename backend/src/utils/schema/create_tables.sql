@@ -5,10 +5,12 @@ BEGIN
         user_fire_id VARCHAR(255) PRIMARY KEY,
         spec_uuid UNIQUEIDENTIFIER,
         user_email VARCHAR(255) NOT NULL,
-        user_fname VARCHAR(255),
-        user_lname VARCHAR(255),
+        user_fname VARCHAR(255) NOT NULL,
+        user_lname VARCHAR(255) NOT NULL,
         user_id INT,
-        user_gender TINYINT CHECK (user_gender IN (0,1)),
+        user_gender TINYINT CHECK (user_gender IN (0,1)) NOT NULL,
+        user_enrolment_year INT NOT NULL,
+        user_enrolment_semester TINYINT NOT NULL CHECK (user_enrolment_semester IN (2, 7, 10)),
         user_access_lvl CHAR(1) NOT NULL CHECK (user_access_lvl IN ('A', 'O', 'S')) DEFAULT 'S',
     )
 END
