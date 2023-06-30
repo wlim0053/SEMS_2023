@@ -17,6 +17,7 @@ CardBody,
 Stack,
 } from "@chakra-ui/react"
 import { EmailIcon } from '@chakra-ui/icons';
+import Grouppic from './Grouppic.jpg'
 
 
 const NewLandingPage = () => { 
@@ -64,8 +65,8 @@ return(
 
 
     <Box>
-        <Image position = 'relative' src = 'https://www.easyuni.my/media/institution/photo/2015/09/21/a53749f57df20f401babc429f03e613fead283.jpg.600x400_q85.jpg'
-        objectFit='contain'  left = '50px' top = '70px'></Image>
+        <Image position = 'relative' src = {Grouppic}
+        objectFit='contain' width = '600px' height = '400px'  left = '50px' top = '70px'></Image>
     </Box>
 
     <Box  position='relative' w = '125vh'>
