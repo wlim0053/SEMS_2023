@@ -20,7 +20,7 @@ import GridViewButton from "../../components/Organizer/GridViewButton";
 import GridEventDashboard from "../../components/Organizer/GridEventDashboard";
 import Calendar from "../../components/Organizer/Calendar";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../utils/api";
 
 interface EventData {
   event_uuid: string;
@@ -55,7 +55,8 @@ function OrganiserMainPage() {
   const [eventData, setEventData] = useState<EventData[]>([]);
 
   const fetchEventsFromDatabase = async () => {
-    const response = await axios.get("http://localhost:3000/api/event");
+    const response = await api.get("/event/for-organiser");
+    console.log(response.data);
     return response.data;
   };
 
