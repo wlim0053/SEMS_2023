@@ -64,8 +64,8 @@ const RegisterPage: React.FC = () => {
 			user_lname: formData.lastName,
 			user_id: parseInt(formData.studentId),
 			user_gender: parseInt(formData.gender),
-			enrolment_year: new Date(formData.enrolmentYear).toISOString(),
-			enrolment_intake: parseInt(formData.enrolmentIntake),
+			user_enrolment_year: parseInt(formData.enrolmentYear),
+			user_enrolment_semester: parseInt(formData.enrolmentIntake),
 			user_access_lvl: "S",
 		}
 
