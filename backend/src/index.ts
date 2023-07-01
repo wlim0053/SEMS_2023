@@ -11,7 +11,8 @@ import { errorHandler } from "./middlewares/errorHandler"
 import { feedbackRouter } from "./routes/feedback"
 import { statsRouter } from "./routes/stats"
 import { studentEventRouter } from "./routes/event.for-student"
-import { organiserEventRouter } from "./routes/event.for-organisers"
+import { organiserEventRouter } from "./routes/event.for-organiser"
+import { adminEventRouter } from "./routes/event.for-admin"
 import { emailRouter } from "./routes/email"
 
 const PORT = process.env.PORT || 3000
@@ -31,7 +32,7 @@ const corsOptions: cors.CorsOptions = {
 	optionsSuccessStatus: 200,
 	credentials: true,
 }
-// app.use(cors(corsOptions))
+app.use(cors(corsOptions))
 app.use(express.json())
 // app.use(helmet())
 // app.use(express.urlencoded());
@@ -56,6 +57,7 @@ app.use("/api/feedback", feedbackRouter)
 // Routes for retrieving events based on student's/organiser's page
 app.use("/api/event/for-student", studentEventRouter)
 app.use("/api/event/for-organiser", organiserEventRouter)
+app.use("/api/event/for-admin", adminEventRouter)
 
 // Route for retrieving statistical data from tables (group by statements)
 app.use("/api/stats", statsRouter)

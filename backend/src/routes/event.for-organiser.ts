@@ -6,7 +6,7 @@ import {
 	getEventParticipationController,
 	getOrganiserEventController,
 	updateEventController,
-} from "../controllers/eventController.for-organisers"
+} from "../controllers/eventController.for-organiser"
 import { EventWithJwt } from "../interfaces/event"
 import { JwtToken } from "../interfaces/jwtToken"
 import { OrganiserEventQueryParams } from "../interfaces/queryParams"
