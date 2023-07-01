@@ -71,7 +71,6 @@ function EventPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isFormFilled, setIsFormFilled] = useState(false);
 
-
   const clubs = [
     { name: "IEMMSS", id: "iemmss" },
     { name: "CHEMECAR", id: "chemecar" },
@@ -210,6 +209,15 @@ function EventPage() {
     const pathSegments = url.pathname.split("/");
     const formId = pathSegments[4];
     return formId;
+  };
+
+  const isValidURL = (string: string): boolean => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
   };
 
   return (
@@ -475,18 +483,27 @@ function EventPage() {
               </FormControl>
               <FormLabel mt={4}>Addtional Queries</FormLabel>
               <Box>
-                {selectedEvent && (
-                  <iframe
-                    title="Google Form"
-                    src={`https://docs.google.com/forms/d/e/${getFormIdFromLink(
-                      selectedEvent.event_reg_google_form
-                    )}/viewform?embedded=true`}
-                    width="98%"
-                    height="450"
-                    style={{ margin: "10px" }}
-                  ></iframe>
-                )}
+                {selectedEvent &&
+                  (isValidURL(selectedEvent.event_reg_google_form) ? (
+                    <iframe
+                      title="Google Form"
+                      src={`https://docs.google.com/forms/d/e/${getFormIdFromLink(
+                        selectedEvent.event_reg_google_form
+                      )}/viewform?embedded=true`}
+                      width="98%"
+                      height="500"
+                      frameBorder="0"
+                      style={{ margin: "10px" }}
+                    ></iframe>
+                  ) : (
+                    <Text>
+                      {selectedEvent.event_reg_google_form
+                        ? "Invalid URL"
+                        : "There are no additional questions for the event."}
+                    </Text>
+                  ))}
               </Box>
+
               <FormControl mt={4} isRequired>
                 <FormLabel>Google Form</FormLabel>
                 <Checkbox
