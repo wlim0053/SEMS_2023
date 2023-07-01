@@ -10,7 +10,6 @@ import { participationRouter } from "./routes/participation"
 import { errorHandler } from "./middlewares/errorHandler"
 import { feedbackRouter } from "./routes/feedback"
 import { statsRouter } from "./routes/stats"
-import { downloadRouter } from "./routes/download"
 import { studentEventRouter } from "./routes/event.for-student"
 import { organiserEventRouter } from "./routes/event.for-organisers"
 import { emailRouter } from "./routes/email"
@@ -53,7 +52,6 @@ app.use("/api/organiser", organiserRouter)
 app.use("/api/specialisation", specialisationRouter)
 app.use("/api/participation", participationRouter)
 app.use("/api/feedback", feedbackRouter)
-app.use("/api/email", emailRouter)
 
 // Routes for retrieving events based on student's/organiser's page
 app.use("/api/event/for-student", studentEventRouter)
@@ -62,8 +60,8 @@ app.use("/api/event/for-organiser", organiserEventRouter)
 // Route for retrieving statistical data from tables (group by statements)
 app.use("/api/stats", statsRouter)
 
-// Route for file transfer
-app.use("/api/download", downloadRouter)
+// Route for sending emails
+app.use("/api/email", emailRouter)
 
 // * Error handling middleware
 app.use(errorHandler)

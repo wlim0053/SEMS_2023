@@ -22,7 +22,7 @@ participationRouter
 	.post(
 		verifyJwtHandler(["S", "O", "A"]),
 		requestValidators({ body: ParticipationWithJwt }),
-		createParticipationController, 
+		createParticipationController,
 		registrationEmail
 	)
 	.get(
