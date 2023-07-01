@@ -78,7 +78,11 @@ export const markParticipationAttendanceController = async (
 	}
 }
 
-// * Used by students on Calendar to show their upcoming events, and on History Page to show their past events (only will show THE USER's event won't show other user's event)
+/**
+ * * Used on Student's Calendar and History Page (endpoint will only show the user's participation)
+ * On Student's Calendar page, will display upcoming events (event_status=A)
+ * On Student's History page, will display completed events and which event requires the student to provide feedback (event_status=C OUTER JOIN tbl_feedback)
+ */
 export const getParticipationController = async (
 	req: Request<
 		{},
@@ -109,11 +113,11 @@ export const getParticipationController = async (
                 p.participation_year,
                 p.participation_semester,
                 p.participation_attendance,
-                e.*
+                e.*,
+                f.feedback_uuid
             FROM 
-                ${DbTables.PARTICIPATION} p JOIN ${DbTables.EVENT} e
-            ON 
-                p.event_uuid=e.event_uuid
+                ${DbTables.PARTICIPATION} p LEFT JOIN ${DbTables.FEEDBACK} f ON p.participation_uuid=f.participation_uuid
+                JOIN ${DbTables.EVENT} e ON p.event_uuid=e.event_uuid
             WHERE
                 p.user_fire_id=@user_fire_id ${eventStatus}
         `)
