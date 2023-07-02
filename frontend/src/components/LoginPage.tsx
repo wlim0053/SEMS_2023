@@ -16,71 +16,14 @@ Image,
 Center,
 } from '@chakra-ui/react';
 import { EmailIcon } from '@chakra-ui/icons';
-
-const axios = require('axios');
-
-
-interface LoginProps {
-onLoginSuccess: () => void;
-}
-
-const auth = getAuth();
-const provider = new GoogleAuthProvider()
-
-const loginWithGoogle= () =>{
-
-    signInWithPopup(auth, provider)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-    // The signed-in user info.
-    const user = result.user;
-    console.log(user);
-    console.log(user.uid);
-    console.log(user.displayName)
-
-    const body = {
-        "stu_fire_id": user.uid,
-        "stu_email": user.email,
-        "stu_name": user.displayName,
-        "stu_id": null,
-        "enrolment_year": null,
-        "enrolment_intake": null,
-        "stu_gender": null,
-        "dis_uuid": null,
-    }
-    async function doPostRequest() {
-
-        let payload = body;
-    
-        let res = await axios.post('localhost:3000/api/student', payload);
-    
-        let data = res.data;
-        console.log(data);
-        console.log("POST Request sent")
-    }
-    
-    doPostRequest();
+import api from '../utils/api';
+import { useNavigate } from "react-router-dom"
 
 
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-  }).then((response)=>{console.log(response)})
-  .catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  });
-}
 
-const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess }) => {
+const LoginPage: React.FC = () => {
 const toast = useToast();
+const navigate = useNavigate();
 const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     toast({
@@ -90,9 +33,103 @@ const handleSubmit = (e: FormEvent) => {
     duration: 3000,
     isClosable: true,
     });
-    onLoginSuccess();
+    // onLoginSuccess();
 };
+// interface LoginProps {
+//   onLoginSuccess: () => void;
+//   }
 
+  const auth = getAuth();
+  const provider = new GoogleAuthProvider()
+  
+  
+  const loginWithGoogle= () =>{
+  
+      signInWithPopup(auth, provider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      if (credential != null){
+          const token = credential.accessToken;
+      }
+      
+      // The signed-in user info.
+      const user = result.user;
+      console.log(user);
+
+      async function doPostRequest() {
+  
+          let payload = { user_fire_id: user.uid};
+  
+          console.log(payload);
+      
+          let res = await api.post('/user/login', payload);
+      
+          let data = res.data;
+          console.log(data);
+          console.log("POST Request sent")
+      }
+      
+      doPostRequest();
+  
+  
+      // IdP data available using getAdditionalUserInfo(result)
+      // ...
+    }).then((response)=>{console.log(response)})
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+    });
+  }
+  
+  const signUpWithGoogle= () =>{
+      signInWithPopup(auth, provider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      if (credential != null){
+          const token = credential.accessToken;
+      }
+      
+      // The signed-in user info.
+      const user = result.user;
+      
+      console.log(user);
+      console.log(user.uid);
+      console.log(user.displayName)
+      console.log(user.email)
+  
+      const body = {uid: user.uid, email: user.email, name: user.displayName}
+  
+      // if (localStorage.getItem("RegUser") != null){
+  
+      // }
+      localStorage.setItem("RegUser", JSON.stringify(body))
+      console.log("User email is not null")
+      navigate("/RegisterPage")
+      
+  
+      
+      // IdP data available using getAdditionalUserInfo(result)
+      // ...
+    }).then((response)=>{console.log(response)})
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+      // ...
+    });
+  }
 return (
     <Box width="100%" maxWidth="400px" margin="0 auto" mt="100px">
         {/* <Center mb={4}>
@@ -107,6 +144,9 @@ return (
             </Text>
             <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon/>} onClick={loginWithGoogle}>
             Login
+            </Button>
+            <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon/>} onClick={signUpWithGoogle}>
+            Sign Up
             </Button>
         </VStack>
     </Box>
