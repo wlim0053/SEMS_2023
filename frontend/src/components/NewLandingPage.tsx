@@ -69,7 +69,7 @@ return(
         objectFit='contain' width = '600px' height = '400px'  left = '50px' top = '70px'></Image>
     </Box>
 
-    <Box  position='relative' w = '125vh'>
+    <Box  position='relative' w = '1000px'>
         <Text position = 'relative' lineHeight='25px'>
         Its primary objective is to keep students informed and involved by providing details such as event descriptions, dates, times, locations, and any registration or ticketing requirements. 
         </Text>
