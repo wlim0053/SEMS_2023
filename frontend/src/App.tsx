@@ -21,11 +21,9 @@ import Testing from "./components/Testing"
 function App() {
 	return (
 		<div className="App">
-			<Router>
-				<Navbar />
-				{/* <RegisterPage /> */}
-				<Outlet /> {/* Render nested routes */}
-			</Router>
+			
+
+			<NewLandingPage />
 		</div>
 	)
 }
