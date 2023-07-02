@@ -26,7 +26,7 @@ import Admin from "../../pages/Admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
 import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
-import CreateEventForm from "../../pages/Organiser/CreateEventForm";
+import CreateEventPage from "../../pages/Organiser/CreateEventPage";
 import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 import LoginPage from "../LoginPage"
 import RegisterPage from "../RegisterPage"
@@ -86,7 +86,7 @@ const Navbar = () => {
         <Route path="/EventHome" element={<EventHome />} />
 				<Route path="/LoginPage" element={<LoginPage />} />
 				<Route path="/RegisterPage" element={<RegisterPage />} />
-        <Route path="/CreateEventForm" element={<CreateEventForm />} />
+        <Route path="/CreateEventPage" element={<CreateEventPage />} />
         <Route path="/EventDetailsDashboard" element={<EventDetailsDashboard date="2023-05-21" time="14:00" capacity={100} venue="Example Venue" recurring={false} eventStatistics={{ gender: { male: 50, female: 50 }, specialization: { engineering: 30, medicine: 40, arts: 30 } }} />} />
       </Routes>
 

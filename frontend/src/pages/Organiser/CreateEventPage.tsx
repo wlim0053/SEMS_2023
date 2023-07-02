@@ -14,16 +14,11 @@ import {
 } from "@chakra-ui/react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Formik, Form, Field, useFormik } from "formik";
+import { useFormik } from "formik";
 import * as yup from "yup";
-import { useEffect } from "react";
-import { color } from "framer-motion";
-import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
-import 'firebase/compat/auth';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-
+import api from "../../utils/api";
+import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const clubOptions = [
   "MUMEC",
@@ -50,18 +45,14 @@ const clubOptions = [
 
 const validationSchema = yup.object().shape({
   eventTitle: yup.string().required("Event Title is required"),
-  venueLink: yup.string().required("Venue Link is required"),
   description: yup.string().required("Description is required"),
   capacity: yup
     .number()
     .required("Capacity is required")
     .positive("Capacity must be a positive number"),
-  club: yup.string().required("Club is required"),
-  semester: yup.string().required("Semester is required"),
-  organiserEmail: yup
-    .string()
-    .email("Invalid Organiser Email")
-    .required("Organiser Email is required"),
+  venue: yup.string().required("Venue is required"),
+  eventStatus: yup.string().required("Event status is required"),
+  eventMode: yup.string().required("Event mode is required"),
   eventStart: yup
     .date()
     .required("Event Start Date and Time are required")
@@ -93,12 +84,11 @@ const validationSchema = yup.object().shape({
     .string()
     .required("Sign Up Form Link is required")
     .url("Invalid Sign Up Form Link"),
-  checkedBox: yup.bool().oneOf([true], "Please fill the EMS form"),
 });
 
 interface SubmittedEventData {
   event_ems_no: string | null;
-  organiser_uuid: string;
+  event_ems_link: string | null;
   event_start_date: string;
   event_end_date: string;
   event_title: string;
@@ -112,168 +102,75 @@ interface SubmittedEventData {
   event_reg_google_form: string;
 }
 
-interface OriginalEventData {
-  //For editing
-  event_uuid: string;
-  event_ems_no: string | null;
-  event_start_date: string;
-  event_end_date: string;
-  event_title: string;
-  event_desc: string;
-  event_mode: string;
-  event_venue: string;
-  event_capacity: number;
-  event_status: string;
-  event_reg_start_date: string;
-  event_reg_end_date: string;
-  event_reg_google_form: string;
-  organiser_uuid: string;
-  parent_uuid: string | null;
-  organiser_name: string;
-  stu_fire_id: string;
-}
-
-function CreateEventForm() {
-  const navigate = useNavigate();
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCpfgoR8aLHAszQCo2ifa4xiyoMikhBk8U",
-    authDomain: "koinov3-dbaa9.firebaseapp.com",
-    databaseURL: "https://koinov3-dbaa9-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "koinov3-dbaa9",
-    storageBucket: "koinov3-dbaa9.appspot.com",
-    messagingSenderId: "427622516684",
-    appId: "1:427622516684:web:a1b427bbd9a80a19117f69",
-    measurementId: "G-H0FMFV9YF3"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-
+function CreateEventPage() {
   const handleButtonClick = () => {
-    firebase.auth().onAuthStateChanged((user: any) => {
-      if (user) {
-        const googleFormUrl = 'https://forms.gle/gJkH9m6bHcMguMH17'; // Test form
+    const googleFormUrl = "https://forms.gle/gJkH9m6bHcMguMH17"; // Test form
+    const openPopup = () => {
+      const width = 600;
+      const height = 600;
+      const left = window.innerWidth / 2 - width / 2;
+      const top = window.innerHeight / 2 - height / 2;
+      window.open(
+        googleFormUrl,
+        "_blank",
+        `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
+      );
+    };
 
-        const openPopup = () => {
-          const width = 600;
-          const height = 600;
-          const left = window.innerWidth / 2 - width / 2;
-          const top = window.innerHeight / 2 - height / 2;
-
-          window.open(
-            googleFormUrl,
-            '_blank',
-            `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${width}, height=${height}, top=${top}, left=${left}`
-          );
-        };
-
-        openPopup();
-      } else {
-        firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
-      }
-    });
+    openPopup();
   };
-  const location = useLocation();
-  const originalEventData: OriginalEventData = location.state.eventData;
-  const isUpdating = originalEventData !== null;
+
+  const navigate = useNavigate();
 
   const createEventInDatabase = async (eventData: SubmittedEventData) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/event",
-        eventData
-      );
+      console.log(eventData);
+      let response = await api.post("/event/for-organiser", eventData);
       console.log(response.data); // Response data from the server
       returnToOrganiserMainPage();
 
       // Handle the response or perform any necessary actions
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.log(`Error: ${error}`);
       // Handle the error appropriately
-    }
-  };
-
-  const updateEventInDatabase = async (
-    event_uuid: string,
-    updatedEventData: SubmittedEventData
-  ) => {
-    try {
-      const response = await axios.put(
-        `http://localhost:3000/api/event/${event_uuid}`,
-        updatedEventData
-      );
-      returnToOrganiserMainPage();
-      return response.data;
-    } catch (error) {
-      // Handle error
-      console.error(error);
-      throw error;
     }
   };
 
   const formik = useFormik({
     initialValues: {
-      eventTitle: isUpdating ? originalEventData.event_title : "",
-      venueLink: isUpdating ? originalEventData.event_venue : "",
-      description: isUpdating ? originalEventData.event_desc : "",
-      capacity: isUpdating ? originalEventData.event_capacity : 0,
-      club: isUpdating ? originalEventData.organiser_name : "",
-      semester: "", // Kidd:: Need to double check db schema, might not exist yet.
-      organiserEmail: "", // Kidd:: Do we need to store it?
-      eventStart: isUpdating ? originalEventData.event_start_date : null,
-      eventEnd: isUpdating ? originalEventData.event_end_date : null,
-      registrationStart: isUpdating
-        ? originalEventData.event_reg_start_date
-        : null,
-      registrationEnd: isUpdating ? originalEventData.event_reg_end_date : null,
-      signUpFormLink: isUpdating ? originalEventData.event_reg_google_form : "", // Kidd:: Need to double check db schema, might not exist yet.
-      checkedBox: false,
+      eventTitle: "",
+      description: "",
+      capacity: 0,
+      venue: "",
+      eventStatus: "",
+      eventMode: "",
+      eventStart: null,
+      eventEnd: null,
+      registrationStart: null,
+      registrationEnd: null,
+      signUpFormLink: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
       const eventData = {
         event_ems_no: null,
-        organiser_uuid: "484E3234-78C3-487F-96F8-92913D805767",
+        event_ems_link: null,
         event_start_date: formik.values.eventStart || "",
         event_end_date: formik.values.eventEnd || "",
         event_title: formik.values.eventTitle,
         event_desc: formik.values.description,
-        event_mode: "P",
-        event_venue: formik.values.venueLink,
+        event_mode: formik.values.eventMode,
+        event_venue: formik.values.venue,
         event_capacity: formik.values.capacity,
-        event_status: "P",
+        event_status: formik.values.eventStatus,
         event_reg_start_date: formik.values.registrationStart || "",
         event_reg_end_date: formik.values.registrationEnd || "",
         event_reg_google_form: formik.values.signUpFormLink,
       };
 
-      if (isUpdating) {
-        updateEventInDatabase(originalEventData.event_uuid, eventData);
-      } else {
-        createEventInDatabase(eventData);
-      }
+      createEventInDatabase(eventData);
     },
   });
-
-  useEffect(() => {
-    if (isUpdating) {
-      formik.setValues({
-        eventTitle: originalEventData.event_title,
-        venueLink: originalEventData.event_venue,
-        description: originalEventData.event_desc,
-        capacity: originalEventData.event_capacity,
-        club: originalEventData.organiser_name,
-        semester: "", // Update this value if necessary
-        organiserEmail: "", // Update this value if necessary
-        eventStart: originalEventData.event_start_date,
-        eventEnd: originalEventData.event_end_date,
-        registrationStart: originalEventData.event_reg_start_date,
-        registrationEnd: originalEventData.event_reg_end_date,
-        signUpFormLink: originalEventData.event_reg_google_form,
-        checkedBox: false, // Update this value if necessary
-      });
-    }
-  }, [isUpdating, originalEventData, formik.setValues]);
 
   const returnToOrganiserMainPage = () => {
     navigate("/OrganiserMainPage");
@@ -367,23 +264,6 @@ function CreateEventForm() {
           )}
         </FormControl>
 
-        {/* Venue Link */}
-        <FormControl>
-          <FormLabel>Venue Link</FormLabel>
-          <Input
-            id="venueLink"
-            name="venueLink"
-            type="text"
-            value={formik.values.venueLink}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="Enter venue link"
-          />
-          {formik.touched.venueLink && formik.errors.venueLink && (
-            <Text color="red">{formik.errors.venueLink}</Text>
-          )}
-        </FormControl>
-
         {/* Description */}
         <FormControl>
           <FormLabel>Description</FormLabel>
@@ -402,7 +282,7 @@ function CreateEventForm() {
           )}
         </FormControl>
 
-        {/* Capacity, Club, Semester, Organiser Email */}
+        {/* Capacity, Venue, Event Mode, Event Semester */}
         <Grid templateColumns="repeat(2, 1fr)" gap={6}>
           {/* Capacity */}
           <FormControl>
@@ -421,61 +301,59 @@ function CreateEventForm() {
             )}
           </FormControl>
 
-          {/* Club */}
+          {/* Venue */}
           <FormControl>
-            <FormLabel>Club</FormLabel>
-            <Select
-              id="club"
-              name="club"
-              value={formik.values.club}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              placeholder="Select Club"
-            >
-              {clubOptions.map((clubOption) => (
-                <option key={clubOption} value={clubOption}>
-                  {clubOption}
-                </option>
-              ))}
-            </Select>
-            {formik.touched.club && formik.errors.club && (
-              <Text color="red">{formik.errors.club}</Text>
-            )}
-          </FormControl>
-
-          {/* Semester */}
-          <FormControl>
-            <FormLabel>Semester</FormLabel>
-            <Select
-              id="semester"
-              name="semester"
-              value={formik.values.semester}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              placeholder="Select Semester"
-            >
-              <option value="1">1</option>
-              <option value="2">2</option>
-            </Select>
-            {formik.touched.semester && formik.errors.semester && (
-              <Text color="red">{formik.errors.semester}</Text>
-            )}
-          </FormControl>
-
-          {/* Organiser Email */}
-          <FormControl>
-            <FormLabel>Organiser Email</FormLabel>
+            <FormLabel>Venue</FormLabel>
             <Input
-              id="organiserEmail"
-              name="organiserEmail"
-              type="email"
-              value={formik.values.organiserEmail}
+              id="venue"
+              name="venue"
+              type="text"
+              value={formik.values.venue}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              placeholder="Enter organiser email"
+              placeholder="Enter venue"
             />
-            {formik.touched.organiserEmail && formik.errors.organiserEmail && (
-              <Text color="red">{formik.errors.organiserEmail}</Text>
+            {formik.touched.venue && formik.errors.venue && (
+              <Text color="red">{formik.errors.venue}</Text>
+            )}
+          </FormControl>
+
+          {/* Event Mode */}
+          <FormControl>
+            <FormLabel>Event Mode</FormLabel>
+            <Select
+              id="eventMode"
+              name="eventMode"
+              value={formik.values.eventMode}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder="Select mode of event"
+            >
+              <option value="P">Physical</option>
+              <option value="V">Virtual</option>
+              <option value="H">Hybrid</option>
+            </Select>
+            {formik.touched.eventMode && formik.errors.eventMode && (
+              <Text color="red">{formik.errors.eventMode}</Text>
+            )}
+          </FormControl>
+
+          {/* Event Status */}
+          <FormControl>
+            <FormLabel>Event Status</FormLabel>
+            <Select
+              id="eventStatus"
+              name="eventStatus"
+              value={formik.values.eventStatus}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder="Select Desired Status"
+            >
+              <option value="D">Draft</option>
+              <option value="P">Pending</option>
+            </Select>
+            {formik.touched.eventStatus && formik.errors.eventStatus && (
+              <Text color="red">{formik.errors.eventStatus}</Text>
             )}
           </FormControl>
         </Grid>
@@ -508,11 +386,21 @@ function CreateEventForm() {
                   ? new Date(formik.values.eventStart)
                   : null
               }
-              onChange={(date) => formik.setFieldValue("eventStart", date)}
+              onChange={(date) => {
+                if (date) {
+                  const formattedDate = format(
+                    date,
+                    "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                  );
+                  formik.setFieldValue("eventStart", formattedDate);
+                } else {
+                  formik.setFieldValue("eventStart", "");
+                }
+              }}
               onBlur={formik.handleBlur}
               showTimeInput
               timeInputLabel="Time:"
-              dateFormat="MM/dd/yyyy h:mm aa"
+              dateFormat="dd/MM/yyyy h:mm aa"
               customInput={<Input />}
               filterDate={(date) =>
                 disableDatesBeforeToday(date) &&
@@ -534,7 +422,17 @@ function CreateEventForm() {
               selected={
                 formik.values.eventEnd ? new Date(formik.values.eventEnd) : null
               }
-              onChange={(date) => formik.setFieldValue("eventEnd", date)}
+              onChange={(date) => {
+                if (date) {
+                  const formattedDate = format(
+                    date,
+                    "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                  );
+                  formik.setFieldValue("eventEnd", formattedDate);
+                } else {
+                  formik.setFieldValue("eventEnd", "");
+                }
+              }}
               onBlur={formik.handleBlur}
               showTimeInput
               timeInputLabel="Time:"
@@ -563,9 +461,17 @@ function CreateEventForm() {
                   ? new Date(formik.values.registrationStart)
                   : null
               }
-              onChange={(date) =>
-                formik.setFieldValue("registrationStart", date)
-              }
+              onChange={(date) => {
+                if (date) {
+                  const formattedDate = format(
+                    date,
+                    "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                  );
+                  formik.setFieldValue("registrationStart", formattedDate);
+                } else {
+                  formik.setFieldValue("registrationStart", "");
+                }
+              }}
               onBlur={formik.handleBlur}
               showTimeInput
               timeInputLabel="Time:"
@@ -593,11 +499,21 @@ function CreateEventForm() {
                   ? new Date(formik.values.registrationEnd)
                   : null
               }
-              onChange={(date) => formik.setFieldValue("registrationEnd", date)}
+              onChange={(date) => {
+                if (date) {
+                  const formattedDate = format(
+                    date,
+                    "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                  );
+                  formik.setFieldValue("registrationEnd", formattedDate);
+                } else {
+                  formik.setFieldValue("registrationEnd", "");
+                }
+              }}
               onBlur={formik.handleBlur}
               showTimeInput
               timeInputLabel="Time:"
-              dateFormat="MM/dd/yyyy h:mm aa"
+              dateFormat="dd/MM/yyyy h:mm aa"
               customInput={<Input />}
               filterDate={(date) =>
                 disableDatesBeforeRegistrationStart(date) &&
@@ -643,33 +559,34 @@ function CreateEventForm() {
         >
           EMS FORM
         </Text>
-        <span style={{ color: 'red', fontWeight: 'bold' }}>
-          Make sure that your popups are on and that you have allowed popups for the EMS Form
+        <span style={{ color: "red", fontWeight: "bold" }}>
+          Make sure that your popups are on and that you have allowed popups for
+          the EMS Form
         </span>
-        <FormLabel>
-          By submitting this form, you are acknowledging that your event plan is
-          final and no changes can be made to said plan. The details submitted
-          along the form will be used to submit the event details to the school.
-          Please ensure there is a minimum of FOURTEEN (14) days between the
-          submission day (every Tuesday/Friday of the week) to the event day
-          itself. NOTE: Ensure that you have submitted the SARAH Risk Assessment
-          and have completed the venue booking BEFORE you submit this form.
-        </FormLabel>
-        <button onClick={handleButtonClick} style={{ color: '#ffffff', background: '#006DAE', border: 'none', borderRadius: '4px', padding: '8px 16px' }}>
-          Open Google Form
-        </button>
         <FormControl>
-          <FormLabel></FormLabel>
-          <Checkbox
-            id="checkedBox"
-            name="checkedBox"
-            onChange={formik.handleChange}
+          <FormLabel>
+            By submitting this form, you are acknowledging that your event plan
+            is final and no changes can be made to said plan. The details
+            submitted along the form will be used to submit the event details to
+            the school. Please ensure there is a minimum of FOURTEEN (14) days
+            between the submission day (every Tuesday/Friday of the week) to the
+            event day itself. NOTE: Ensure that you have submitted the SARAH
+            Risk Assessment and have completed the venue booking BEFORE you
+            submit this form.
+          </FormLabel>
+          <button
+            type="button"
+            onClick={handleButtonClick}
+            style={{
+              color: "#ffffff",
+              background: "#006DAE",
+              border: "none",
+              borderRadius: "4px",
+              padding: "8px 16px",
+            }}
           >
-            EMS Form has been filled and submitted above
-          </Checkbox>
-          {formik.errors.checkedBox && (
-            <Text color="red">{formik.errors.checkedBox}</Text>
-          )}
+            Open Google Form
+          </button>
         </FormControl>
         {/* Submit Button */}
         <Button type="submit">Submit</Button>
@@ -678,4 +595,4 @@ function CreateEventForm() {
   );
 }
 
-export default CreateEventForm;
+export default CreateEventPage;

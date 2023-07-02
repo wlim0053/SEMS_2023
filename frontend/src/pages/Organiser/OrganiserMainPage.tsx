@@ -22,6 +22,7 @@ import Calendar from "../../components/Organizer/Calendar";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
 
+// Might need to add EMSLink
 interface EventData {
   event_uuid: string;
   event_ems_no: string | null;
@@ -134,7 +135,7 @@ function OrganiserMainPage() {
   );
 
   const handleCreateEvent = () => {
-    navigate("/CreateEventForm", { state: { eventData: null } }); // If it's null, /CreateEventForm can recognize that component is called for creation.
+    navigate("/CreateEventPage"); // If it's null, /CreateEventForm can recognize that component is called for creation.
   };
 
   const handleReset = () => {
