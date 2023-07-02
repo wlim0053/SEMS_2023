@@ -22,6 +22,16 @@ export const registerUserController = async (
 			.input("user_fname", mssql.VarChar, req.body.user_fname)
 			.input("user_lname", mssql.VarChar, req.body.user_lname)
 			.input("user_id", mssql.Int, req.body.user_id)
+			.input(
+				"user_enrolment_year",
+				mssql.Int,
+				req.body.user_enrolment_year
+			)
+			.input(
+				"user_enrolment_semester",
+				mssql.TinyInt,
+				req.body.user_enrolment_semester
+			)
 			.input("user_gender", mssql.Int, req.body.user_gender).query(`
                 INSERT INTO ${DbTables.USER}
                 OUTPUT INSERTED.*
@@ -33,6 +43,8 @@ export const registerUserController = async (
                     @user_lname,
                     @user_id,
                     @user_gender,
+                    @user_enrolment_year,
+                    @user_enrolment_semester,
                     DEFAULT
                 )
             `)
@@ -68,7 +80,16 @@ export const updateUserController = async (
 			.input("user_id", mssql.Int, req.body.user_id)
 			.input("user_gender", mssql.Int, req.body.user_gender)
 			.input("user_access_lvl", mssql.Char, req.body.user_access_lvl)
-			.query(`
+			.input(
+				"user_enrolment_year",
+				mssql.Int,
+				req.body.user_enrolment_year
+			)
+			.input(
+				"user_enrolment_semester",
+				mssql.TinyInt,
+				req.body.user_enrolment_semester
+			).query(`
             UPDATE ${DbTables.USER} SET
                 [user_email]=@user_email,
                 [spec_uuid]=@spec_uuid,
@@ -76,6 +97,8 @@ export const updateUserController = async (
                 [user_lname]=@user_lname,
                 [user_id]=@user_id,
                 [user_gender]=@user_gender,
+                [user_enrolment_year]=@user_enrolment_year,
+                [user_enrolment_semester]=@user_enrolment_semester
             OUTPUT INSERTED.*
             WHERE [user_fire_id]=@user_fire_id
         `)

@@ -68,9 +68,9 @@ export const getOrganiserController = async (
 	res: Response<OrganiserWithStudent[]>,
 	next: NextFunction
 ) => {
-	// try {
-	// 	const connection = await pool.connect()
-	// 	const { parent_uuid } = req.query
+	try {
+		const connection = await pool.connect()
+		const { parent_uuid } = req.query
 
 		let parentQuery = ""
 		if (parent_uuid) {

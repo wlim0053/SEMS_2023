@@ -66,6 +66,4 @@ app.use("/api/download", downloadRouter)
 // * Error handling middleware
 app.use(errorHandler)
 
-
-
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))

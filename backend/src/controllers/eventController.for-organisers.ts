@@ -198,13 +198,13 @@ export const getOrganiserEventController = async (
 
                 SELECT
                     e.*,
-                    subquery.no_participants,
+                    COALESCE(subquery.no_participants, 0) as no_participants,
                     o.parent_uuid,
                     o.organiser_name,
                     user_fire_id
                 FROM
                     ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
-                    JOIN (SELECT event_uuid, COUNT(*) as no_participants FROM ${DbTables.PARTICIPATION} GROUP BY event_uuid) AS subquery ON e.event_uuid=subquery.event_uuid
+                    LEFT JOIN (SELECT event_uuid, COUNT(*) as no_participants FROM ${DbTables.PARTICIPATION} GROUP BY event_uuid) AS subquery ON e.event_uuid=subquery.event_uuid
                 WHERE
                     (e.organiser_uuid=@userOrganiserUUID OR o.parent_uuid=@userOrganiserUUID) ${eventStatus}
             `)
@@ -243,7 +243,7 @@ export const getEventByIDController = async (
                 user_fire_id
             FROM
                 ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
-                JOIN (SELECT event_uuid, COUNT(*) as no_participants FROM ${DbTables.PARTICIPATION} GROUP BY event_uuid) AS subquery ON e.event_uuid=subquery.event_uuid
+                LEFT JOIN (SELECT event_uuid, COUNT(*) as no_participants FROM ${DbTables.PARTICIPATION} GROUP BY event_uuid) AS subquery ON e.event_uuid=subquery.event_uuid
             WHERE
                 (e.organiser_uuid=@userOrganiserUUID OR o.parent_uuid=@userOrganiserUUID) AND e.event_uuid=@event_uuid
             `)
