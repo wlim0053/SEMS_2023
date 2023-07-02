@@ -492,7 +492,6 @@ function EventPage() {
                       )}/viewform?embedded=true`}
                       width="98%"
                       height="500"
-                      frameBorder="0"
                       style={{ margin: "10px" }}
                     ></iframe>
                   ) : (
