@@ -4,6 +4,7 @@ import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 import { EventWithUUID } from "../interfaces/event"
 
+// * Used by admins to mark event as approved
 export const approveEventController = async (
 	req: Request<
 		{ id: string },
@@ -40,6 +41,7 @@ export const approveEventController = async (
 	}
 }
 
+// * Used by admins to mark event as rejected
 export const rejectEventController = async (
 	req: Request<{ id: string }, EventWithUUID[], {}, {}>,
 	res: Response<EventWithUUID[]>,

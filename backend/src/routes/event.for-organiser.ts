@@ -1,5 +1,6 @@
 import express from "express"
 import {
+	completeEventController,
 	createEventController,
 	deleteEventController,
 	getEventByIDController,
@@ -33,6 +34,12 @@ organiserEventRouter.get(
 	verifyJwtHandler(["A", "O"]),
 	requestValidators({ body: JwtToken }),
 	getEventParticipationController
+)
+
+organiserEventRouter.patch(
+	"/:id/complete",
+	verifyJwtHandler(["A", "O"]),
+	completeEventController
 )
 
 organiserEventRouter
