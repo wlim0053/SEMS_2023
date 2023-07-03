@@ -1,5 +1,5 @@
 import express from "express"
-import { getStudentEventController } from "../controllers/eventControllers.for-students"
+import { getStudentEventController } from "../controllers/eventControllers.for-student"
 import { StudentEventQueryParams } from "../interfaces/queryParams"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
