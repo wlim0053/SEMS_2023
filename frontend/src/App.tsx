@@ -14,6 +14,7 @@ import NewHistoryPage from "./components/NewHistoryPage";
 // import ActivityLog from "./pages/admin/ActivityLog";
 
 // testing
+import OrganiserMainPage from "./pages/Organiser/OrganiserMainPage"
 import Testlandingpage from "./components/Testlandingpage"
 import StudentEvents from "./components/StudentEvents"
 import NewLandingPage from "./components/NewLandingPage"
