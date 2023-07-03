@@ -5,6 +5,7 @@ import { DbTables, StatusCodes } from "../utils/constant"
 import { User, UserLogin, UserWithFireId } from "../interfaces/user"
 import { EventWithOrganiser } from "../interfaces/event"
 import { generateJwtHandler } from "../middlewares/jwtHandler"
+import { generateJwtHandler } from "../middlewares/jwtHandler"
 
 export const registerUserController = async (
 	req: Request<{}, UserWithFireId[], UserWithFireId>,
