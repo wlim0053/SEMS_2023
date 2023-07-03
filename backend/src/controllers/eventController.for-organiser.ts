@@ -198,13 +198,13 @@ export const getOrganiserEventController = async (
 
                 SELECT
                     e.*,
-                    subquery.no_participants,
+                    COALESCE(subquery.no_participants, 0) as no_participants,
                     o.parent_uuid,
                     o.organiser_name,
                     user_fire_id
                 FROM
                     ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
-                    JOIN (SELECT event_uuid, COUNT(*) as no_participants FROM ${DbTables.PARTICIPATION} GROUP BY event_uuid) AS subquery ON e.event_uuid=subquery.event_uuid
+                    LEFT JOIN (SELECT event_uuid, COUNT(*) as no_participants FROM ${DbTables.PARTICIPATION} GROUP BY event_uuid) AS subquery ON e.event_uuid=subquery.event_uuid
                 WHERE
                     (e.organiser_uuid=@userOrganiserUUID OR o.parent_uuid=@userOrganiserUUID) ${eventStatus}
             `)
@@ -243,7 +243,7 @@ export const getEventByIDController = async (
                 user_fire_id
             FROM
                 ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
-                JOIN (SELECT event_uuid, COUNT(*) as no_participants FROM ${DbTables.PARTICIPATION} GROUP BY event_uuid) AS subquery ON e.event_uuid=subquery.event_uuid
+                LEFT JOIN (SELECT event_uuid, COUNT(*) as no_participants FROM ${DbTables.PARTICIPATION} GROUP BY event_uuid) AS subquery ON e.event_uuid=subquery.event_uuid
             WHERE
                 (e.organiser_uuid=@userOrganiserUUID OR o.parent_uuid=@userOrganiserUUID) AND e.event_uuid=@event_uuid
             `)
@@ -350,6 +350,33 @@ export const getEventParticipationController = async (
 	} catch (error: any) {
 		if (error?.number === 50403) res.status(403)
 		else if (error?.number === 50404) res.status(404)
+		next(error)
+	}
+}
+
+// * Used by organisers to mark event as complete
+export const completeEventController = async (
+	req: Request<{ id: string }, EventWithUUID[], {}, {}>,
+	res: Response<EventWithUUID[]>,
+	next: NextFunction
+) => {
+	try {
+		const connection = await pool.connect()
+		const updated: mssql.IResult<EventWithUUID> = await connection
+			.request()
+			.input("event_uuid", mssql.UniqueIdentifier, req.params.id).query(`
+                UPDATE 
+                    ${DbTables.EVENT}
+                SET 
+                    event_status='C"
+                OUTPUT
+                    INSERTED.*
+                WHERE
+                    event_uuid=@event_uuid
+            `)
+		res.json(updated.recordset)
+		connection.close()
+	} catch (error) {
 		next(error)
 	}
 }
