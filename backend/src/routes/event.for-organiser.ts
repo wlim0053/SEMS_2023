@@ -13,6 +13,7 @@ import { JwtToken } from "../interfaces/jwtToken"
 import { OrganiserEventQueryParams } from "../interfaces/queryParams"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
+import { postEventEmail } from "../middlewares/emailHandler"
 
 export const organiserEventRouter = express.Router()
 
@@ -39,7 +40,8 @@ organiserEventRouter.get(
 organiserEventRouter.patch(
 	"/:id/complete",
 	verifyJwtHandler(["A", "O"]),
-	completeEventController
+	completeEventController,
+	postEventEmail
 )
 
 organiserEventRouter
