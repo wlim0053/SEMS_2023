@@ -4,19 +4,34 @@ import { Grid } from '@chakra-ui/react';
 import GridEventSections from './GridEventSections';
 
 interface EventData {
-  id: string;
-  event: string;
-  venue: string;
-  club: string;
-  participants: string;
-  date: string;
+  event_uuid: string;
+  organiser_uuid: string;
+  event_ems_no: string | null;
+  event_ems_link: string | null;
+  event_start_date: string;
+  event_end_date: string;
+  event_title: string;
+  event_desc: string;
+  event_mode: string;
+  event_venue: string;
+  event_capacity: number;
+  event_status: string;
+  event_reg_start_date: string;
+  event_reg_end_date: string;
+  event_reg_google_form: string;
+  no_participants: number;
+  parent_uuid: string | null;
+  organiser_name: string;
+  user_fire_id: string;
 }
 
 interface GridEventDashboardProps {
   data: EventData[];
+  formatDate: (date: string) => string;
+  updateEventData: () => void;
 }
 
-function GridEventDashboard({ data }: GridEventDashboardProps) {
+function GridEventDashboard({ data, updateEventData  }: GridEventDashboardProps) {
   return (
     <Box mt="20px">
       <Grid templateColumns="repeat(6, 1fr)" gap={0.5}>
@@ -51,7 +66,7 @@ function GridEventDashboard({ data }: GridEventDashboardProps) {
           </Text>
         </Box>
 
-        <GridEventSections data={data}/>
+        <GridEventSections data={data} updateEventData={updateEventData}/>
       </Grid>
     </Box>
   );

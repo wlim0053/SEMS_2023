@@ -3,7 +3,7 @@
 import Navbar from "./components/shared/Navbar"
 import Admin from "./pages/Admin/AdminDashboard"
 
-import { ChakraProvider } from "@chakra-ui/react"
+import { ChakraProvider } from "@chakra-ui/react";
 // components
 // css
 import "./App.css"
