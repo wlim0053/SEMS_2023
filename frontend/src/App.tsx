@@ -15,10 +15,9 @@ import NewHistoryPage from "./components/NewHistoryPage";
 
 // testing
 import OrganiserMainPage from "./pages/Organiser/OrganiserMainPage"
-import Testlandingpage from "./components/Testlandingpage"
 import StudentEvents from "./components/StudentEvents"
 import NewLandingPage from "./components/NewLandingPage"
-import Testing from "./components/Testing"
+
 
 function App() {
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect, useState} from "react";
 import {
   Box,
   Button,
@@ -22,9 +22,8 @@ import {
 
 import NewHistoryPage from "../NewHistoryPage";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import { Link, Route, Routes } from "react-router-dom";
+import { Link, Route, Routes, Navigate, useNavigate, Outlet } from "react-router-dom";
 import OrganiserList from "../../pages/Admin/OrganiserList";
-import ActivityLog from "../../pages/Admin/ActivityLog";
 import Admin from "../../pages/Admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
@@ -36,9 +35,33 @@ import EventApproval from "../../pages/Admin/EventApproval";
 import LoginPage from "../LoginPage";
 import RegisterPage from "../RegisterPage";
 
-const Navbar = () => {
+const Navbar = ({user_access_lvl}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const buttonRef = React.useRef(null);
+  const [accessLevel, setAccessLevel] = useState(user_access_lvl); // Track the user's access level
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Navigate to the appropriate landing page based on the selected view
+    switch (accessLevel) {
+      case "S":
+        navigate("/TestLandingPage");
+        break;
+      case "O":
+        navigate("/OrganiserMainPage");
+        break;
+      case "A":
+        navigate("/Admin");
+        break;
+      default:
+        break;
+    }
+  }, [accessLevel]);
+
+  const handleViewChange = (selectedView) => {
+    setAccessLevel(selectedView); // Update the user's access level
+  };
+
 
   return (
     <>
@@ -58,7 +81,7 @@ const Navbar = () => {
         </Box>
         {/* <Spacer/> */}
         <Image src="../monash_logo.png" height="50px"></Image>
-        <Spacer />
+        
         {/*<Menu>*/}
         {/*  /!* To do: change the sign in sign up to an icon *!/*/}
         {/*  <MenuButton ml={4} mr={4} as={Button} variant="ghost">*/}
@@ -89,7 +112,10 @@ const Navbar = () => {
           <DrawerHeader>Menu</DrawerHeader>
           <DrawerBody>
             <VStack align="start" spacing={4}>
-              <Link to="/Admin">Home</Link>
+            <VStack align="start" spacing={4}>
+            {accessLevel === "S" && (
+              <>
+              <Link to="/NewLandingPage">Home</Link>
               <Link to="/OrganiserList">Organiser List</Link>
               <Link to="/EventApproval">Event Approval</Link>
               <Link to="/StudentHome">Student Home</Link>
