@@ -10,9 +10,10 @@ import { participationRouter } from "./routes/participation"
 import { errorHandler } from "./middlewares/errorHandler"
 import { feedbackRouter } from "./routes/feedback"
 import { statsRouter } from "./routes/stats"
-import { downloadRouter } from "./routes/download"
 import { studentEventRouter } from "./routes/event.for-student"
-import { organiserEventRouter } from "./routes/event.for-organisers"
+import { organiserEventRouter } from "./routes/event.for-organiser"
+import { adminEventRouter } from "./routes/event.for-admin"
+import { emailRouter } from "./routes/email"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -56,16 +57,15 @@ app.use("/api/feedback", feedbackRouter)
 // Routes for retrieving events based on student's/organiser's page
 app.use("/api/event/for-student", studentEventRouter)
 app.use("/api/event/for-organiser", organiserEventRouter)
+app.use("/api/event/for-admin", adminEventRouter)
 
 // Route for retrieving statistical data from tables (group by statements)
 app.use("/api/stats", statsRouter)
 
-// Route for file transfer
-app.use("/api/download", downloadRouter)
+// Route for sending emails
+app.use("/api/email", emailRouter)
 
 // * Error handling middleware
 app.use(errorHandler)
-
-
 
 app.listen(PORT, () => console.log(`Running on PORT ${PORT}`))

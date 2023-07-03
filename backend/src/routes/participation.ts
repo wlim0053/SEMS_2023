@@ -13,6 +13,7 @@ import {
 import { ParticipationQueryParams } from "../interfaces/queryParams"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
+import { registrationEmail } from "../middlewares/emailHandler"
 
 export const participationRouter = express.Router()
 
@@ -21,7 +22,8 @@ participationRouter
 	.post(
 		verifyJwtHandler(["S", "O", "A"]),
 		requestValidators({ body: ParticipationWithJwt }),
-		createParticipationController
+		createParticipationController,
+		registrationEmail
 	)
 	.get(
 		verifyJwtHandler(["S", "O", "A"]),
