@@ -5,7 +5,9 @@ import GridEventSections from './GridEventSections';
 
 interface EventData {
   event_uuid: string;
+  organiser_uuid: string;
   event_ems_no: string | null;
+  event_ems_link: string | null;
   event_start_date: string;
   event_end_date: string;
   event_title: string;
@@ -17,10 +19,10 @@ interface EventData {
   event_reg_start_date: string;
   event_reg_end_date: string;
   event_reg_google_form: string;
-  organiser_uuid: string;
+  no_participants: number;
   parent_uuid: string | null;
   organiser_name: string;
-  stu_fire_id: string;
+  user_fire_id: string;
 }
 
 interface GridEventDashboardProps {

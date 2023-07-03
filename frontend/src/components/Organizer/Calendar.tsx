@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { EventClickArg, EventHoveringArg } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -15,13 +15,17 @@ import {
   Button,
   Box,
 } from "@chakra-ui/react";
+import "./CalendarStyle.css";
 import { IconButton } from "@chakra-ui/react";
 import { DeleteIcon, EditIcon, ViewIcon } from "@chakra-ui/icons";
-import "./CalendarStyle.css";
+import { useNavigate } from "react-router-dom";
+import api from "../../utils/api";
 
 interface EventData {
   event_uuid: string;
+  organiser_uuid: string;
   event_ems_no: string | null;
+  event_ems_link: string | null;
   event_start_date: string;
   event_end_date: string;
   event_title: string;
@@ -33,27 +37,45 @@ interface EventData {
   event_reg_start_date: string;
   event_reg_end_date: string;
   event_reg_google_form: string;
-  organiser_uuid: string;
+  no_participants: number;
   parent_uuid: string | null;
   organiser_name: string;
-  stu_fire_id: string;
+  user_fire_id: string;
 }
 
-function Calendar({ eventData }: { eventData: EventData[] }) {
+
+function Calendar() {
+  const [selectedEventUUID, setSelectedEventUUID] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [modal, setModal] = useState(false);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [eventDate, setEventDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [venue, setVenue] = useState("");
+  const [club, setClub] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [events, setEvents] = useState<EventData[]>([]);
+  
+  const fetchEventsFromDatabase = async () => {
+    const response = await api.get("/event/for-organiser");
+    console.log(response.data);
+    return response.data;
+  };
+
+  const navigate = useNavigate();
 
   const handleViewClick = () => {
-    window.location.href = '/EventDetailsDashboard';
+    navigate("/EventDetailsDashboard", {
+      state: { selectedEventUUID },
+    });
   };
 
   const handleEditClick = () => {
-    window.location.href = '/CreateEventForm';
+    navigate("/EditEventPage", {
+      state: { selectedEventUUID },
+    });
   };
 
   useEffect(() => {
@@ -65,11 +87,48 @@ function Calendar({ eventData }: { eventData: EventData[] }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+
+
+  useEffect(() => {
+    fetchEventsFromDatabase()
+      .then((data) => {
+        const transformedEvents = data.map((event: EventData) => ({
+          event_uuid: event.event_uuid,
+          title: event.event_title,
+          start: event.event_start_date,
+          end: event.event_end_date,
+          description: event.event_desc,
+          startDate: new Date(event.event_start_date).toLocaleDateString(
+            "en-US",
+            { month: "numeric", day: "numeric", year: "numeric" }
+          ),
+          endDate: new Date(event.event_end_date).toLocaleDateString("en-US", {
+            month: "numeric",
+            day: "numeric",
+            year: "numeric",
+          }),
+          venue: event.event_venue,
+          club: event.organiser_name,
+        }));
+        const currentEvents = transformedEvents.filter(
+          (event:any) => new Date(event.start) >= new Date()
+        );
+        setEvents(currentEvents);
+      })
+      .catch((error) => {
+        console.error("Error fetching events:", error);
+      });
+  }, []);
+
   const handleEventClick = (clickInfo: EventClickArg) => {
+    setSelectedEventUUID(clickInfo.event.extendedProps.event_uuid);
     setTitle(clickInfo.event.title);
     setDescription(clickInfo.event.extendedProps.description);
-    setEventDate(
+    setStartDate(
       clickInfo.event.start ? clickInfo.event.start.toLocaleDateString() : ""
+    );
+    setEndDate(
+      clickInfo.event.end ? clickInfo.event.end.toLocaleDateString() : ""
     );
     if (clickInfo.event.start) {
       setStartTime(
@@ -87,6 +146,8 @@ function Calendar({ eventData }: { eventData: EventData[] }) {
         })
       );
     }
+    setVenue(clickInfo.event.extendedProps.venue);
+    setClub(clickInfo.event.extendedProps.club);
     setModal(true);
   };
 
@@ -94,22 +155,9 @@ function Calendar({ eventData }: { eventData: EventData[] }) {
     hoverInfo.el.style.cursor = "pointer";
   };
 
-  const events = eventData.map((event) => ({
-    title: event.event_title,
-    start: event.event_start_date,
-    description: event.event_venue + " - " + event.organiser_name,
-  }));
-
+  
   return (
-    <div
-      className="calendar"
-      style={{
-        fontFamily: "Arial Narrow, sans-serif",
-        padding: 0,
-        margin: "20px 30px",
-        lineHeight: 1.5,
-      }}
-    >
+    <div className="calendar-container">
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={"dayGridMonth"}
@@ -160,14 +208,26 @@ function Calendar({ eventData }: { eventData: EventData[] }) {
               fontSize="lg"
               fontFamily="'Helvetica Neue', 'Arial Narrow', sans-serif"
             >
-                    <p>{description}</p>
-                    <p>Date: {eventDate}</p>
-                    <p>Start Time: {startTime}</p>
-                    <p>End Time: {endTime}</p>
+              <p>{description}</p>
+              <p>Start Date: {startDate}</p>
+              <p>End Date: {endDate}</p>
+              <p>Start Time: {startTime}</p>
+              <p>End Time: {endTime}</p>
+              <p>Venue: {venue}</p>
+              <p>Club: {club}</p>
             </Box>
-                </ModalBody>
-                <ModalFooter>
-            <Box w="100%" p={2} bg="#EDEEEE" display="flex" justifyContent={["center", "space-between"]} alignItems="center" pl={4} pr={4}>
+          </ModalBody>
+          <ModalFooter>
+          <Box
+              w="100%"
+              p={2}
+              bg="#EDEEEE"
+              display="flex"
+              justifyContent={["center", "space-between"]}
+              alignItems="center"
+              pl={4}
+              pr={4}
+            >
               <IconButton
                 colorScheme="blue"
                 aria-label="View Event"
@@ -191,11 +251,14 @@ function Calendar({ eventData }: { eventData: EventData[] }) {
                 size="sm"
               />
 
-              <Button colorScheme="blue" mr={-3} onClick={() => setModal(false)}>
+              <Button
+                colorScheme="blue"
+                mr={-3}
+                onClick={() => setModal(false)}
+              >
                 Close
               </Button>
             </Box>
-
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -204,3 +267,7 @@ function Calendar({ eventData }: { eventData: EventData[] }) {
 }
 
 export default Calendar;
+
+
+
+
