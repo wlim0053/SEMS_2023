@@ -114,7 +114,7 @@ function EditEventPage() {
   const location = useLocation();
 
   // Get the event_uuid of the edited event
-  const originalEventUUID = location.state.eventUUID;
+  const originalEventUUID = location.state.eventDataUUID;
 
   // Original event data
   const [originalEventData, setOriginalEventData] = useState<OriginalEventData>();
@@ -145,7 +145,7 @@ function EditEventPage() {
   const fetchOriginalEventFromDatabase = async () => {
     const response = await api.get(`/event/for-organiser/${originalEventUUID}`);
     console.log(response.data);
-    return response.data;
+    return response.data[0];
   };
 
   useEffect(() => {
@@ -271,7 +271,7 @@ function EditEventPage() {
             textAlign="center"
             color={"blue.600"}
           >
-            Create Event
+            Edit Event
           </Text>
         </Box>
 

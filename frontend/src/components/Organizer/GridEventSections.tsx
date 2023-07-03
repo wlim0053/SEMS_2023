@@ -46,8 +46,9 @@ function GridEventSections({ data, updateEventData }: GridEventSectionsProps) {
 
   const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const index = Number(event.currentTarget.getAttribute("data-index"));
-    const eventData = data[index];
-    navigate("/EditEventPage", { state: { eventData } });
+    const eventDataUUID = data[index].event_uuid;
+    console.log("Event UUID: " + eventDataUUID);
+    navigate("/EditEventPage", { state: { eventDataUUID } });
   };
 
   const deleteEventFromDatabase = async (eventId: String) => {
