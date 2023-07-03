@@ -353,3 +353,30 @@ export const getEventParticipationController = async (
 		next(error)
 	}
 }
+
+// * Used by organisers to mark event as complete
+export const completeEventController = async (
+	req: Request<{ id: string }, EventWithUUID[], {}, {}>,
+	res: Response<EventWithUUID[]>,
+	next: NextFunction
+) => {
+	try {
+		const connection = await pool.connect()
+		const updated: mssql.IResult<EventWithUUID> = await connection
+			.request()
+			.input("event_uuid", mssql.UniqueIdentifier, req.params.id).query(`
+                UPDATE 
+                    ${DbTables.EVENT}
+                SET 
+                    event_status='C"
+                OUTPUT
+                    INSERTED.*
+                WHERE
+                    event_uuid=@event_uuid
+            `)
+		res.json(updated.recordset)
+		connection.close()
+	} catch (error) {
+		next(error)
+	}
+}
