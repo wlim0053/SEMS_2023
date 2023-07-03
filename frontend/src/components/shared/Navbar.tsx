@@ -19,6 +19,8 @@ import {
   Flex,
   Spacer,
 } from "@chakra-ui/react";
+
+import NewHistoryPage from "../NewHistoryPage";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, Route, Routes } from "react-router-dom";
 import OrganiserList from "../../pages/Admin/OrganiserList";
@@ -26,9 +28,13 @@ import ActivityLog from "../../pages/Admin/ActivityLog";
 import Admin from "../../pages/Admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
+import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
+import CreateEventPage from "../../pages/Organiser/CreateEventPage";
+import EditEventPage from "../../pages/Organiser/EditEventPage";
+import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
+import EventApproval from "../../pages/Admin/EventApproval";
 import LoginPage from "../LoginPage";
 import RegisterPage from "../RegisterPage";
-import NewHistoryPage from "../NewHistoryPage";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -85,7 +91,7 @@ const Navbar = () => {
             <VStack align="start" spacing={4}>
               <Link to="/Admin">Home</Link>
               <Link to="/OrganiserList">Organiser List</Link>
-              <Link to="/ActivityLog">Activity Log</Link>
+              <Link to="/EventApproval">Event Approval</Link>
               <Link to="/StudentHome">Student Home</Link>
               <Link to="/EventHome">Event Home</Link>
               <Link to="/LoginPage">Login Page</Link>
@@ -95,17 +101,48 @@ const Navbar = () => {
           <DrawerFooter>Hello3</DrawerFooter>
         </DrawerContent>
       </Drawer>
+      <Drawer
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        colorScheme="blackAlpha"
+      >
+        <DrawerOverlay></DrawerOverlay>
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Menu</DrawerHeader>
+          <DrawerBody>
+            <VStack align="start" spacing={4}>
+              <Link to="/Admin">Home</Link>
+              <Link to="/OrganiserList">Organiser List</Link>
+              <Link to="/ActivityLog">Activity Log</Link>
+              <Link to="/StudentHome">Student Home</Link>
+              <Link to="/EventHome">Event Home</Link>
+              <Link to="/LoginPage">Login Page</Link>
+              <Link to="/OrganiserMainPage">Organiser Main Page</Link>
+            </VStack>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
 
       <Routes>
         <Route path="/" element="" />
         <Route path="/Admin" element={<Admin />} />
         <Route path="/OrganiserList" element={<OrganiserList />} />
+        <Route path="/EventApproval" element={<EventApproval />} />
         <Route path="/ActivityLog" element={<ActivityLog />} />
         <Route path="/StudentHome" element={<StudentHome />} />
         <Route path="/EventHome" element={<EventHome />} />
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/RegisterPage" element={<RegisterPage />} />
         <Route path="/HistoryPage" element={<NewHistoryPage />} />
+        <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
+        <Route path="/CreateEventPage" element={<CreateEventPage />} />
+        <Route path="/EditEventPage" element={<EditEventPage />} />
+        <Route
+          path="/EventDetailsDashboard"
+          element={<EventDetailsDashboard />}
+        />
       </Routes>
     </>
   );
