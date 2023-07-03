@@ -10,10 +10,9 @@ import { requestValidators } from "../middlewares/requestValidator"
 export const adminEventRouter = express.Router()
 
 // * Endpoint to change event status
-// TODO: rememeber to change access level back to admin
 adminEventRouter.patch(
 	"/:id/approve",
-	verifyJwtHandler(["S"]),
+	verifyJwtHandler(["A"]),
 	requestValidators({
 		body: Event.required().pick({
 			event_ems_no: true,
@@ -25,6 +24,6 @@ adminEventRouter.patch(
 
 adminEventRouter.patch(
 	"/:id/reject",
-	verifyJwtHandler(["S"]),
+	verifyJwtHandler(["A"]),
 	rejectEventController
 )
