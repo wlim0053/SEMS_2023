@@ -40,18 +40,21 @@ function NewHistoryPage() {
           let eventResponse = await api.get(`/event/${currentEvent_uuid}`);
           let eventData = eventResponse.data[0];
           console.log(eventResponse);
-          const event: PastEvent = {
-            participation_uuid: data[i]["participation_uuid"],
-            eventNo: i + 1,
-            eventName: eventData["event_title"],
-            club: eventData["organiser_name"],
-            dateTime: new Date(eventData["event_start_date"]),
-            feedbackGiven: !!data[i]["feedback_uuid"],
-          };
-          eventsTemp.push(event);
-          console.log(event);
-          setEvents(eventsTemp);
+          let attendance = data[i]["participation_attendance"];
+          if (attendance) {
+            const event: PastEvent = {
+              participation_uuid: data[i]["participation_uuid"],
+              eventNo: i + 1,
+              eventName: eventData["event_title"],
+              club: eventData["organiser_name"],
+              dateTime: new Date(eventData["event_start_date"]),
+              feedbackGiven: !!data[i]["feedback_uuid"],
+            };
+            eventsTemp.push(event);
+            console.log(event);
+          }
         }
+        setEvents(eventsTemp);
       } catch (err) {
         console.log(`Error: ${err}`);
       }
