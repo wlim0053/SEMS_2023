@@ -53,7 +53,6 @@ function CountdownTimer() {
     };
 
     fetchEvents();
-    
   }, []);
 
   useEffect(() => {
@@ -63,7 +62,10 @@ function CountdownTimer() {
       for (const element of events) {
         const eventDate = new Date(element.event_start_date);
         const timeLeft = eventDate.getTime() - currentDate.getTime();
-        if (timeLeft > 0 && (!nearestEvent || timeLeft < nearestEvent.timeLeft)) {
+        if (
+          timeLeft > 0 &&
+          (!nearestEvent || timeLeft < nearestEvent.timeLeft)
+        ) {
           nearestEvent = {
             timeLeft,
             eventDate,
