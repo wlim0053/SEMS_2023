@@ -32,6 +32,16 @@ import {
   Alert,
   AlertIcon,
   useToast,
+  Link,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  AlertDialogCloseButton,
+  Badge,
+  Tag,
 } from "@chakra-ui/react";
 import { AddIcon, CloseIcon, CheckIcon } from "@chakra-ui/icons";
 import { BiUpload } from "react-icons/bi";
@@ -41,18 +51,26 @@ import api from "../../utils/api";
 const EventApproval = () => {
   const headers = [
     { key: "eventName", value: "Event" },
-    { key: "organiserEmail", value: "Email" },
+    { key: "organiserName", value: "Name" },
     { key: "eventStatus", value: "Statuts" },
-    /* clickable string to store the response from EMS */
     { key: "eventDetails", value: "Details" },
     { key: "actions", value: "Actions", disableSorting: true },
   ];
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
   type sortField = "Event" | "Status" | "Email";
+
+  const [events, setEvents] = useState([]);
+  const [eventID, setEventID] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSort, setSelectedSort] = useState<sortField>("Event");
 
+  const [inputEmsNumber, setInputEmsNumber] = useState("");
+  const [inputEmsLink, setInputEmsLink] = useState("");
+  const [eventStatus, setEventStatus] = useState("");
+  const [eventStatusColor, setEventStatusColor] = useState("");
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
@@ -65,6 +83,73 @@ const EventApproval = () => {
   const handleSort = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSort(event.target.value as sortField);
   };
+
+  const fetchEvent = async () => {
+    try {
+      const response = await api.get("/event/for-organiser?event_status=P");
+      setEvents(response.data);
+      console.log(response.data);
+      switch (response.data[0].event_status) {
+        case "P":
+          setEventStatus("Pending");
+          setEventStatusColor("yellow");
+          break;
+        case "A":
+          setEventStatus("Approved");
+          setEventStatusColor("green");
+          break;
+        case "R":
+          setEventStatus("Rejected");
+          setEventStatusColor("red");
+          break;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // function to set event ems number and link
+  const getEventById = async (id: string) => {
+    try {
+      const response = await api.get(`/event/for-organiser/${id}`);
+      setEventID(id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // function to approve the event
+  const approveEvent = async (id: string) => {
+    const bodyUpdate = {
+      event_ems_no: inputEmsNumber,
+      event_ems_link: inputEmsLink,
+    };
+    console.log(bodyUpdate);
+    try {
+      if (eventStatus != "Approved") {
+        const response = await api.patch(
+          `/event/for-admin/${id}/approve`,
+          bodyUpdate
+        );
+        console.log(response.data);
+        setTimeout(() => fetchEvent(), 200);
+        toast({
+          title: "Event has been approved!",
+          status: "success",
+          position: "top",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //run fetchEvent when the page loads
+  useEffect(() => {
+    fetchEvent();
+  }, []);
 
   return (
     //add each component to box and add flex or wrap to make it responsive
@@ -109,33 +194,53 @@ const EventApproval = () => {
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>Event1</Td>
-            <Td>abc@student.monash.edu</Td>
-            <Td>Pending</Td>
-            <Td>View More</Td>
-            <Td>
-              <HStack spacing={3}>
-                <Button
-                  colorScheme="whatsapp"
-                  variant="outline"
-                  border="2px"
-                  leftIcon={<CheckIcon />}
-                  onClick={onOpen}
-                >
-                  Approve
-                </Button>
-                <Button
-                  colorScheme="red"
-                  variant="outline"
-                  border="2px"
-                  leftIcon={<CloseIcon />}
-                >
-                  Reject
-                </Button>
-              </HStack>
-            </Td>
-          </Tr>
+          {events
+            .filter((event: any) => {
+              return searchTerm.toLowerCase() === ""
+                ? event
+                : event.event_title
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase());
+            })
+            .map((event: any) => (
+              <Tr>
+                <Td>{event.event_title}</Td>
+                <Td>{event.organiser_name}</Td>
+                <Td>
+                  <Tag colorScheme={eventStatusColor}>{eventStatus}</Tag>
+                </Td>
+                <Td>
+                  <Link textColor="blue.600" fontWeight="semibold">
+                    View More
+                  </Link>
+                </Td>
+                <Td>
+                  <HStack spacing={3}>
+                    <Button
+                      colorScheme="whatsapp"
+                      variant="outline"
+                      border="1px"
+                      leftIcon={<CheckIcon />}
+                      onClick={() => {
+                        getEventById(event.event_uuid);
+                        onOpen();
+                      }}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      variant="outline"
+                      border="1px"
+                      leftIcon={<CloseIcon />}
+                    >
+                      Reject
+                    </Button>
+                  </HStack>
+                </Td>
+              </Tr>
+            ))}
+
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
@@ -144,17 +249,30 @@ const EventApproval = () => {
               <ModalBody pb={6}>
                 <FormControl>
                   <FormLabel>EMS Number</FormLabel>
-                  <Input placeholder="EMS Number" />
+                  <Input
+                    placeholder="EMS Number"
+                    onChange={(e) => setInputEmsNumber(e.target.value)}
+                  />
                 </FormControl>
               </ModalBody>
               <ModalBody pb={6}>
                 <FormControl>
                   <FormLabel>EMS Link</FormLabel>
-                  <Input placeholder="EMS Link" />
+                  <Input
+                    placeholder="EMS Link"
+                    onChange={(e) => setInputEmsLink(e.target.value)}
+                  />
                 </FormControl>
               </ModalBody>
               <ModalFooter>
-                <Button colorScheme="blue" mr={3}>
+                <Button
+                  colorScheme="blue"
+                  mr={3}
+                  onClick={() => {
+                    approveEvent(eventID);
+                    onClose();
+                  }}
+                >
                   Submit
                 </Button>
                 <Button onClick={onClose}>Cancel</Button>

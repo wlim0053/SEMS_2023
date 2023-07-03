@@ -128,25 +128,13 @@ const OrganiserList = () => {
   };
 
   //add organiser to database using post
-  //TODO: check if the input name is an admin / assume admin is in organiser list already
-  //TODO: make sure parent_uuid is correct
-  //TODO: so in the admin dashboard no need to show parent club which is not admin.
   /* we need to manually add the admins into the db, can assume admin is in organiser list already */
 
-  // MUSA can be parent club with parent_uuid = null, but no admin
+  // MUSA can be parent club with parent_uuid = null, but not admin
   // not every parent is admin, admin is a parent club
 
   const addOrganiser = async (e: any) => {
     e.preventDefault();
-    // if (inputName === "" || inputEmail === "" || inputClub === "") {
-    //   toast({
-    //     title: "Please fill in all fields!",
-    //     status: "error",
-    //     position: "top",
-    //     duration: 3000,
-    //     isClosable: true,
-    //   });
-    // }
     if (inputClub === "null" || inputClub === "") {
       bodyAdmin.parent_uuid = null;
     }
@@ -171,7 +159,7 @@ const OrganiserList = () => {
     }
   };
 
-  //function to get organiser by id
+  //function to get organiser by organiser uuid
   const getOrganiserById = async (id: any) => {
     try {
       const response = await api.get(`/organiser/${id}`);
