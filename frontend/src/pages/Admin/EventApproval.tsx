@@ -25,6 +25,9 @@ import {
   ModalCloseButton,
   FormControl,
   FormLabel,
+  FormControlProps,
+  FormHelperText,
+  FormErrorMessage,
   CloseButton,
   IconButton,
   Stack,
@@ -51,14 +54,14 @@ import api from "../../utils/api";
 const EventApproval = () => {
   const headers = [
     { key: "eventName", value: "Event" },
-    { key: "organiserName", value: "Name" },
-    { key: "eventStatus", value: "Statuts" },
+    { key: "organiserName", value: "Organiser" },
+    { key: "eventStatus", value: "Status" },
     { key: "eventDetails", value: "Details" },
     { key: "actions", value: "Actions", disableSorting: true },
   ];
 
   type sortField = "Event" | "Status" | "Email";
-
+  const [viewEvent, setViewEvent] = useState([]);
   const [events, setEvents] = useState([]);
   const [eventID, setEventID] = useState("");
 
@@ -71,10 +74,24 @@ const EventApproval = () => {
   const [eventStatusColor, setEventStatusColor] = useState("");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenAlert,
+    onOpen: onOpenAlert,
+    onClose: onCloseAlert,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenDetails,
+    onOpen: onOpenDetails,
+    onClose: onCloseDetails,
+  } = useDisclosure();
+
+  const cancelRef = React.useRef();
   const toast = useToast();
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
   const history = useNavigate();
+  const isErrorEmsNumber = inputEmsNumber === "";
+  const isErrorEmsLink = inputEmsLink === "";
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -112,6 +129,7 @@ const EventApproval = () => {
   const getEventById = async (id: string) => {
     try {
       const response = await api.get(`/event/for-organiser/${id}`);
+      setViewEvent(response.data);
       setEventID(id);
     } catch (error) {
       console.log(error);
@@ -124,9 +142,8 @@ const EventApproval = () => {
       event_ems_no: inputEmsNumber,
       event_ems_link: inputEmsLink,
     };
-    console.log(bodyUpdate);
     try {
-      if (eventStatus != "Approved") {
+      if (eventStatus != "Approved" && eventStatus != "Rejected") {
         const response = await api.patch(
           `/event/for-admin/${id}/approve`,
           bodyUpdate
@@ -136,6 +153,26 @@ const EventApproval = () => {
         toast({
           title: "Event has been approved!",
           status: "success",
+          position: "top",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //function to reject the event
+  const rejectEvent = async (id: string) => {
+    try {
+      if (eventStatus != "Rejected" && eventStatus != "Approved") {
+        const response = await api.patch(`/event/for-admin/${id}/reject`);
+        console.log(response.data);
+        setTimeout(() => fetchEvent(), 200);
+        toast({
+          title: "Event has been rejected!",
+          status: "error",
           position: "top",
           duration: 3000,
           isClosable: true,
@@ -178,8 +215,12 @@ const EventApproval = () => {
           onChange={handleSort}
           value={selectedSort}
         >
-          <option value="option1">Status</option>
-          <option value="option2">Event</option>
+          <option key="option1" value="option1">
+            Status
+          </option>
+          <option key="option2" value="option2">
+            Event
+          </option>
         </Select>
       </Box>
 
@@ -203,18 +244,25 @@ const EventApproval = () => {
                     .includes(searchTerm.toLowerCase());
             })
             .map((event: any) => (
-              <Tr>
-                <Td>{event.event_title}</Td>
-                <Td>{event.organiser_name}</Td>
-                <Td>
+              <Tr key="table">
+                <Td key="event title">{event.event_title}</Td>
+                <Td key="organiser name">{event.organiser_name}</Td>
+                <Td key="status">
                   <Tag colorScheme={eventStatusColor}>{eventStatus}</Tag>
                 </Td>
-                <Td>
-                  <Link textColor="blue.600" fontWeight="semibold">
+                <Td key="details">
+                  <Link
+                    textColor="blue.600"
+                    fontWeight="semibold"
+                    onClick={() => {
+                      getEventById(event.event_uuid);
+                      onOpenDetails();
+                    }}
+                  >
                     View More
                   </Link>
                 </Td>
-                <Td>
+                <Td key="actions">
                   <HStack spacing={3}>
                     <Button
                       colorScheme="whatsapp"
@@ -233,6 +281,10 @@ const EventApproval = () => {
                       variant="outline"
                       border="1px"
                       leftIcon={<CloseIcon />}
+                      onClick={() => {
+                        getEventById(event.event_uuid);
+                        onOpenAlert();
+                      }}
                     >
                       Reject
                     </Button>
@@ -247,7 +299,7 @@ const EventApproval = () => {
               <ModalHeader>Approval of Event</ModalHeader>
               <ModalCloseButton />
               <ModalBody pb={6}>
-                <FormControl>
+                <FormControl isRequired>
                   <FormLabel>EMS Number</FormLabel>
                   <Input
                     placeholder="EMS Number"
@@ -256,7 +308,7 @@ const EventApproval = () => {
                 </FormControl>
               </ModalBody>
               <ModalBody pb={6}>
-                <FormControl>
+                <FormControl isRequired>
                   <FormLabel>EMS Link</FormLabel>
                   <Input
                     placeholder="EMS Link"
@@ -279,6 +331,67 @@ const EventApproval = () => {
               </ModalFooter>
             </ModalContent>
           </Modal>
+
+          <Modal onClose={onCloseDetails} isOpen={isOpenDetails} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Event Details</ModalHeader>
+              <ModalBody>
+                {viewEvent.map((event: any) => (
+                  <Box key="detailBox">
+                    <Text key="details">
+                      Title: {event.event_title} <br />
+                      Description: {event.event_desc} <br />
+                      Organiser: {event.organiser_name} <br />
+                      Start Date: {event.event_start_date} <br />
+                      End Date: {event.event_end_date} <br />
+                      Venue: {event.event_venue} <br />
+                      Capacity: {event.event_capacity} <br />
+                      EMS Number: {event.event_ems_no} <br />
+                      EMS Link: {event.event_ems_link} <br />
+                    </Text>
+                  </Box>
+                ))}
+              </ModalBody>
+              <ModalFooter>
+                <Button onClick={onCloseDetails}>Close</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+
+          <AlertDialog
+            isOpen={isOpenAlert}
+            leastDestructiveRef={cancelRef}
+            onClose={onCloseAlert}
+          >
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Reject Event
+                </AlertDialogHeader>
+
+                <AlertDialogBody>
+                  Are you sure? You won't be able undo this action afterwards.
+                </AlertDialogBody>
+
+                <AlertDialogFooter>
+                  <Button ref={cancelRef} onClick={onCloseAlert}>
+                    Cancel
+                  </Button>
+                  <Button
+                    colorScheme="red"
+                    onClick={() => {
+                      rejectEvent(eventID);
+                      onCloseAlert();
+                    }}
+                    ml={3}
+                  >
+                    Reject
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
         </Tbody>
       </Table>
       <Outlet />
