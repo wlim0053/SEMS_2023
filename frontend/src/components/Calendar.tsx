@@ -60,36 +60,37 @@ function Calendar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const transformEvent = (event: Event) => ({
+    title: event.event_title,
+    start: event.event_start_date,
+    end: event.event_end_date,
+    description: event.event_desc,
+    startDate: new Date(event.event_start_date).toLocaleDateString("en-US", {
+      month: "numeric",
+      day: "numeric",
+      year: "numeric",
+    }),
+    endDate: new Date(event.event_end_date).toLocaleDateString("en-US", {
+      month: "numeric",
+      day: "numeric",
+      year: "numeric",
+    }),
+    venue: event.event_venue,
+    club: event.organiser_name,
+  });
+
   const fetchEventsFromDatabase = async () => {
-    const response = await api.get("/event");
-    return response.data;
+    try {
+      const response = await api.get("/participation?event_status=A");
+      return response.data.map(transformEvent);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      return [];
+    }
   };
 
   useEffect(() => {
-    fetchEventsFromDatabase()
-      .then((data) => {
-        const transformedEvents = data.map((event: Event) => ({
-          title: event.event_title,
-          start: event.event_start_date,
-          end: event.event_end_date,
-          description: event.event_desc,
-          startDate: new Date(event.event_start_date).toLocaleDateString(
-            "en-US",
-            { month: "numeric", day: "numeric", year: "numeric" }
-          ),
-          endDate: new Date(event.event_end_date).toLocaleDateString("en-US", {
-            month: "numeric",
-            day: "numeric",
-            year: "numeric",
-          }),
-          venue: event.event_venue,
-          club: event.organiser_name,
-        }));
-        setEvents(transformedEvents);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
+    fetchEventsFromDatabase().then(setEvents);
   }, []);
 
   const handleEventClick = (clickInfo: EventClickArg) => {

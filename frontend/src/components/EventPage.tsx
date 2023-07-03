@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionButton,
@@ -10,7 +10,6 @@ import {
   Checkbox,
   Flex,
   FormControl,
-  FormErrorMessage,
   FormLabel,
   IconButton,
   Input,
@@ -24,6 +23,7 @@ import {
   Text,
   Wrap,
   WrapItem,
+  useToast,
 } from "@chakra-ui/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
@@ -53,7 +53,7 @@ function EventPage() {
   type SortField =
     | "event_start_date"
     | "event_title"
-    | "event_venue"
+    | "event_end_date"
     | "organiser_name";
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,130 +62,96 @@ function EventPage() {
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [, setCurrentIndex] = useState(0);
   const [events, setEvents] = useState<Event[]>([]);
   const [sortedEvents, setSortedEvents] = useState<Event[]>([]);
-
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [userId, setUserId] = useState<number>(0);
-  const [gender, setGender] = useState<number>(0);
-  const [enrolmentYear, setEnrolmentYear] = useState("");
-  const [enrolmentIntake, setEnrolmentIntake] = useState("");
-  const [specialisation, setSpecialisation] = useState("");
-  const [specUuid, setSpecUuid] = useState("");
-  const [specialisations, setSpecialisations] = useState<string[]>([]);
-
-  const clubs = [
-    { name: "IEMMSS", id: "iemmss" },
-    { name: "CHEMECAR", id: "chemecar" },
-    { name: "OP", id: "messi" },
-    { name: "CSM", id: "cr7" },
-    { name: "JJK", id: "jjk" },
-    { name: "MUMTEC", id: "mumtec" },
-  ];
-
-  useEffect(() => {
-    api
-      .get("/specialisation")
-      .then((response) => {
-        const specialisationNames = response.data.map(
-          (spec: { spec_name: string }) => spec.spec_name
-        );
-        setSpecialisations(specialisationNames);
-      })
-      .catch((error) => {
-        console.error("Error fetching specialisations:", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    api
-      .get("/specialisation")
-      .then((response) => {
-        const filteredSpecialisation = response.data.find(
-          (spec: { spec_name: string; spec_uuid: string }) =>
-            spec.spec_name === specialisation
-        );
-        if (filteredSpecialisation) {
-          setSpecUuid(filteredSpecialisation.spec_uuid);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching specialisations:", error);
-      });
-  }, [specialisation]);
-
+  const [enrolmentYear, setEnrolmentYear] = useState(0);
+  const [enrolmentIntake, setEnrolmentIntake] = useState(0);
+  const [participatedEvents, setParticipatedEvents] = useState<Event[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isFormFilled, setIsFormFilled] = useState(false);
+  const [clubs, setClubs] = useState<string[]>([]);
+  
+  const toast = useToast();
+  const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await api.get("/event");
+        const response = await api.get("/event/for-student?event_status=A");
         const data = response.data;
-        const filteredData = data.filter(
-          (event: Event) => event.event_status === "A"
+        const filteredEvents = data.filter(
+          (event: Event) =>
+            selectedClubs.length === 0 ||
+            selectedClubs.includes(event.organiser_name)
         );
-        setEvents(filteredData);
-        setSortedEvents(filteredData);
-        setSignUpStatus(new Array(filteredData.length).fill(false));
+        setEvents(filteredEvents);
+        setSortedEvents(filteredEvents);
+
+        const uniqueClubNames: string[] = [
+          ...new Set(data.map((event: Event) => event.organiser_name)),
+        ] as string[];
+        setClubs(uniqueClubNames);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchEvents().catch((error) => console.error(error));
-  }, []);
+  }, [selectedClubs]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsSignUpModalOpen(false);
-    setSignUpStatus((prevStatus) =>
-      prevStatus.map((status, i) => (i === currentIndex ? true : status))
-    );
+  // get from /participation and console.log
 
-    const userFireId = `${firstName}${lastName}`
-      .split("")
-      .map((c, i) => (i % 2 === 0 ? c.toUpperCase() : c.toLowerCase()))
-      .join("");
+  useEffect(() => {
+    const fetchParticipation = async () => {
+      try {
+        const response = await api.get("/participation?event_status=A");
+        const data = response.data;
 
-    const data = {
-      user_fire_id: userFireId,
-      spec_uuid: specUuid,
-      user_email: email,
-      user_fname: firstName,
-      user_lname: lastName,
-      user_id: userId,
-      user_gender: gender,
-      user_access_lvl: "S",
-      enrolment_year: new Date(
-        `${enrolmentYear}-01-01T00:00:00.000Z`
-      ).toISOString(),
-      enrolment_intake: convertToIntakeMonth(enrolmentIntake.toString()),
+        setParticipatedEvents(data);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
-    api
-      .post("/user", data)
-      .then((response) => {
-        console.log("User created:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error creating user:", error);
-      });
+    fetchParticipation().catch((error) => console.error(error));
+  }, []);
+
+  const isSignedUp = (eventUuid: string) => {
+    return participatedEvents.some(
+      (participation) => participation.event_uuid === eventUuid
+    );
   };
 
-  const navigate = useNavigate();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-  const convertToIntakeMonth = (selectedValue: string) => {
-    let intakeMonth = 0;
-    if (selectedValue === "February") {
-      intakeMonth = 2;
-    } else if (selectedValue === "July") {
-      intakeMonth = 7;
-    } else if (selectedValue === "October") {
-      intakeMonth = 10;
+    if (!selectedEvent) {
+      console.error("No event found");
+      return;
     }
-    return intakeMonth;
+
+    // Proceed with sign-up if within the registration period
+    // data to be sent
+    const data = {
+      event_uuid: selectedEvent?.event_uuid, // get the uuid of the selected event
+      // user_fire_id: '123', // leave it blank for now
+      participation_year: enrolmentYear,
+      participation_semester: enrolmentIntake,
+      participation_attendance: 0,
+    };
+    console.log(data);
+
+    try {
+      const response = await api.post("/participation", data);
+      console.log(response.data);
+      // Close the modal after successful submission
+      setIsSignUpModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
+
 
   const handleGoToCalendar = () => {
     navigate("/StudentHome");
@@ -195,6 +161,14 @@ function EventPage() {
     setSearchTerm(event.target.value);
   };
 
+  const sortEvents = (field: SortField, order: string, events: Event[]) => {
+    return [...events].sort((a, b) => {
+      if (a[field] < b[field]) return order === "asc" ? -1 : 1;
+      if (a[field] > b[field]) return order === "asc" ? 1 : -1;
+      return 0;
+    });
+  };
+
   const handleSort = (field: SortField) => {
     if (field === sortField) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -202,11 +176,12 @@ function EventPage() {
       setSortField(field);
       setSortOrder("asc");
     }
+    setSortedEvents(sortEvents(field, sortOrder, events));
   };
 
   const handleReset = () => {
     setSortField("event_start_date");
-    setSortOrder("asc");
+    setSortOrder("desc");
     setSelectedClubs([]);
   };
 
@@ -219,47 +194,21 @@ function EventPage() {
     }
   };
 
-  const filteredEvents = events.filter((event) => {
-    const matchesSearchTerm = event.event_title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesSelectedClubs =
-      selectedClubs.length === 0 ||
-      selectedClubs.includes(event.organiser_name);
-    return matchesSearchTerm && matchesSelectedClubs;
-  });
+  const getFormIdFromLink = (link: string) => {
+    const url = new URL(link);
+    const pathSegments = url.pathname.split("/");
+    const formId = pathSegments[4];
+    return formId;
+  };
 
-  useEffect(() => {
-    const sortEvents = (a: Event, b: Event) => {
-      switch (sortField) {
-        case "event_start_date":
-          return sortOrder === "asc"
-            ? new Date(a.event_start_date).getTime() -
-                new Date(b.event_start_date).getTime()
-            : new Date(b.event_start_date).getTime() -
-                new Date(a.event_start_date).getTime();
-        case "event_title":
-          return sortOrder === "asc"
-            ? a.event_title.localeCompare(b.event_title)
-            : b.event_title.localeCompare(a.event_title);
-        case "event_venue":
-          return sortOrder === "asc"
-            ? a.event_venue.localeCompare(b.event_venue)
-            : b.event_venue.localeCompare(a.event_venue);
-        default:
-          return sortOrder === "asc"
-            ? a.organiser_name.localeCompare(b.organiser_name)
-            : b.organiser_name.localeCompare(a.organiser_name);
-      }
-    };
-
-    const sorted = [...filteredEvents].sort(sortEvents);
-    setSortedEvents(sorted);
-  }, [filteredEvents, sortField, sortOrder]);
-
-  const [signUpStatus, setSignUpStatus] = useState<boolean[]>(
-    Array(sortedEvents.length).fill(false)
-  );
+  const isValidURL = (string: string): boolean => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
 
   return (
     <Box width="100%" p={5} overflowX="auto">
@@ -343,14 +292,41 @@ function EventPage() {
         {sortedEvents.map((event, index) => {
           const startDate = new Date(event.event_start_date);
           const endDate = new Date(event.event_end_date);
-          const startTime = startDate.toLocaleTimeString([], {
+          const startTime = startDate.toLocaleTimeString("en-GB", {
             hour: "2-digit",
             minute: "2-digit",
           });
-          const endTime = endDate.toLocaleTimeString([], {
+          const endTime = endDate.toLocaleTimeString("en-GB", {
             hour: "2-digit",
             minute: "2-digit",
           });
+
+          const handleSignUp = () => {
+            // Check if sign-up is allowed during the registration period
+            const currentDate = new Date();
+            const registrationStartDate = new Date(event.event_reg_start_date);
+            const registrationEndDate = new Date(event.event_reg_end_date);
+
+            if (
+              currentDate < registrationStartDate ||
+              currentDate > registrationEndDate
+            ) {
+              // Display a toast message indicating that sign-up is not possible
+              toast({
+                title: "Cannot Sign Up",
+                description:
+                  "Sign-up is only allowed during the registration period.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+              });
+
+              return;
+            }
+            setIsSignUpModalOpen(true);
+            setCurrentIndex(index);
+            setSelectedEvent(event);
+          };
 
           return (
             <AccordionItem key={event.event_uuid}>
@@ -368,9 +344,9 @@ function EventPage() {
                   </Box>
                   <Box flex="1">
                     <Text>
-                      {startDate.toLocaleString("en-US", {
-                        month: "numeric",
-                        day: "numeric",
+                      {startDate.toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
                         year: "numeric",
                         hour: "numeric",
                         minute: "numeric",
@@ -386,17 +362,17 @@ function EventPage() {
                 <Text>Club: {event.organiser_name}</Text>
                 <Text>
                   Start Date:{" "}
-                  {startDate.toLocaleDateString("en-US", {
-                    month: "numeric",
-                    day: "numeric",
+                  {startDate.toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
                     year: "numeric",
                   })}
                 </Text>
                 <Text>
                   End Date:{" "}
-                  {endDate.toLocaleDateString("en-US", {
-                    month: "numeric",
-                    day: "numeric",
+                  {endDate.toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
                     year: "numeric",
                   })}
                 </Text>
@@ -410,11 +386,8 @@ function EventPage() {
                   _hover={{ backgroundColor: "#005c8c" }}
                   color={"white"}
                   size="sm"
-                  onClick={() => {
-                    setIsSignUpModalOpen(true);
-                    setCurrentIndex(index);
-                  }}
-                  isDisabled={signUpStatus[index]}
+                  onClick={handleSignUp}
+                  isDisabled={isSignedUp(event.event_uuid)}
                   mt={4}
                 >
                   Sign Up
@@ -443,20 +416,20 @@ function EventPage() {
           <ModalCloseButton />
           <Box borderBottom="1px solid" borderColor="gray.400" />
           <ModalBody mt={2}>
-            {clubs.map((club) => (
+            {clubs.map((clubName) => (
               <Box
-                key={club.id}
+                key={clubName}
                 display="flex"
                 flexDirection="row"
                 alignItems="center"
                 mb={2}
               >
                 <Checkbox
-                  value={club.name}
-                  isChecked={selectedClubs.includes(club.name)}
+                  value={clubName}
+                  isChecked={selectedClubs.includes(clubName)}
                   onChange={handleClubFilter}
                 />
-                <Text ml={3}>{club.name}</Text>
+                <Text ml={3}>{clubName}</Text>
               </Box>
             ))}
           </ModalBody>
@@ -473,85 +446,13 @@ function EventPage() {
           <form onSubmit={handleSubmit}>
             <ModalBody pb={6}>
               <FormControl mt={4} isRequired>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <FormErrorMessage>Email is required.</FormErrorMessage>
-              </FormControl>
-
-              {/* Add more form controls here for the other fields... */}
-
-              <FormControl mt={4} isRequired>
-                <FormLabel>First Name</FormLabel>
-                <Input
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-                <FormErrorMessage>First Name is required.</FormErrorMessage>
-              </FormControl>
-
-              <FormControl mt={4} isRequired>
-                <FormLabel>Last Name</FormLabel>
-                <Input
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-                <FormErrorMessage>Last Name is required.</FormErrorMessage>
-              </FormControl>
-
-              <FormControl mt={4} isRequired>
-                <FormLabel>Student ID</FormLabel>
-                <Input
-                  type="number"
-                  value={userId}
-                  onChange={(e) => setUserId(parseInt(e.target.value))}
-                />
-                <FormErrorMessage>Student ID is required.</FormErrorMessage>
-              </FormControl>
-
-              <FormControl mt={4} isRequired>
-                <FormLabel>Gender</FormLabel>
+                <FormLabel>Current Course Year</FormLabel>
                 <Select
-                  placeholder="Select gender"
-                  value={gender === 0 ? "male" : "female"}
-                  onChange={(e) => setGender(e.target.value === "male" ? 0 : 1)}
-                >
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </Select>
-              </FormControl>
-
-              <FormControl mt={4} isRequired>
-                <FormLabel>Specialisation</FormLabel>
-                <Select
-                  placeholder="Select specialisation"
-                  value={specialisation}
-                  onChange={(e) => setSpecialisation(e.target.value)}
-                >
-                  {specialisations.map((spec) => (
-                    <option key={spec} value={spec}>
-                      {spec}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl mt={4} isRequired>
-                <FormLabel>Enrolment Year</FormLabel>
-                <Select
-                  placeholder="Select enrolment year"
+                  placeholder="Select current course year"
                   value={enrolmentYear}
-                  onChange={(e) => setEnrolmentYear(e.target.value)}
+                  onChange={(e) => setEnrolmentYear(parseInt(e.target.value))}
                 >
-                  {Array.from(
-                    { length: new Date().getFullYear() - 1960 },
-                    (_, i) => 1961 + i
-                  ).map((year) => (
+                  {Array.from({ length: 4 }, (_, i) => i + 1).map((year) => (
                     <option key={year} value={year}>
                       {year}
                     </option>
@@ -560,16 +461,47 @@ function EventPage() {
               </FormControl>
 
               <FormControl mt={4} isRequired>
-                <FormLabel>Enrolment Intake</FormLabel>
+                <FormLabel>Current Semester</FormLabel>
                 <Select
-                  placeholder="Select enrolment intake"
+                  placeholder="Select current semester"
                   value={enrolmentIntake}
-                  onChange={(e) => setEnrolmentIntake(e.target.value)}
+                  onChange={(e) => setEnrolmentIntake(parseInt(e.target.value))}
                 >
-                  <option value="February">February</option>
-                  <option value="July">July</option>
-                  <option value="October">October</option>
+                  <option value="1">Sem 1</option>
+                  <option value="2">Sem 2</option>
                 </Select>
+              </FormControl>
+              <FormLabel mt={4}>Addtional Queries</FormLabel>
+              <Box>
+                {selectedEvent &&
+                  (isValidURL(selectedEvent.event_reg_google_form) ? (
+                    <iframe
+                      title="Google Form"
+                      src={`https://docs.google.com/forms/d/e/${getFormIdFromLink(
+                        selectedEvent.event_reg_google_form
+                      )}/viewform?embedded=true`}
+                      width="98%"
+                      height="500"
+                      style={{ margin: "10px" }}
+                    ></iframe>
+                  ) : (
+                    <Text>
+                      {selectedEvent.event_reg_google_form
+                        ? "Invalid URL"
+                        : "There are no additional questions for the event."}
+                    </Text>
+                  ))}
+              </Box>
+
+              <FormControl mt={4} isRequired>
+                <FormLabel>Google Form</FormLabel>
+                <Checkbox
+                  isChecked={isFormFilled}
+                  onChange={(e) => setIsFormFilled(e.target.checked)}
+                  required
+                >
+                  I acknowledge that I have filled out the Google Form
+                </Checkbox>
               </FormControl>
             </ModalBody>
 

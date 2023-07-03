@@ -35,7 +35,7 @@ function StudentEvents() {
 
   useEffect(() => {
     api
-      .get("/event")
+      .get("/participation?event_status=A")
       .then((response) => setEvents(response.data))
       .catch((error) => console.log(error));
   }, []);
@@ -61,7 +61,7 @@ function StudentEvents() {
         {events.map((event) => {
           const startDate = new Date(event.event_start_date);
           const endDate = new Date(event.event_end_date);
-          const startDateTime = startDate.toLocaleString("en-US", {
+          const startDateTime = startDate.toLocaleString("en-GB", {
             month: "numeric",
             day: "numeric",
             year: "numeric",
@@ -69,12 +69,12 @@ function StudentEvents() {
             minute: "numeric",
             hour12: true,
           });
-          const startTime = startDate.toLocaleString("en-US", {
+          const startTime = startDate.toLocaleString("en-GB", {
             hour: "numeric",
             minute: "numeric",
             hour12: true,
           });
-          const endTime = endDate.toLocaleString("en-US", {
+          const endTime = endDate.toLocaleString("en-GB", {
             hour: "numeric",
             minute: "numeric",
             hour12: true,
@@ -105,7 +105,7 @@ function StudentEvents() {
                 <Text>Club: {event.organiser_name}</Text>
                 <Text>
                   Start Date:{" "}
-                  {startDate.toLocaleDateString("en-US", {
+                  {startDate.toLocaleDateString("en-GB", {
                     month: "numeric",
                     day: "numeric",
                     year: "numeric",
@@ -113,7 +113,7 @@ function StudentEvents() {
                 </Text>
                 <Text>
                   End Date:{" "}
-                  {endDate.toLocaleDateString("en-US", {
+                  {endDate.toLocaleDateString("en-GB", {
                     month: "numeric",
                     day: "numeric",
                     year: "numeric",
