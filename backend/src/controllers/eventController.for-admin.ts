@@ -36,6 +36,7 @@ export const approveEventController = async (
             `)
 		res.json(update.recordset)
 		connection.close()
+		next()
 	} catch (error) {
 		next(error)
 	}
@@ -63,6 +64,7 @@ export const rejectEventController = async (
         `)
 		res.json(update.recordset)
 		connection.close()
+		next()
 	} catch (error) {
 		next(error)
 	}
