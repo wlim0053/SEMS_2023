@@ -16,6 +16,7 @@ import {
   Image,
   HStack,
   Button,
+  filter,
 } from "@chakra-ui/react";
 
 import { CalendarIcon } from "@chakra-ui/icons";
@@ -40,11 +41,11 @@ import {
 import { Spinner } from "@chakra-ui/react";
 import { Route, Outlet } from "react-router-dom";
 import api from "../../utils/api";
+import SimpleBarChart from "../../components/admin/SimpleBarChart";
 
 /*
 /api/stats/organiser/event-count?semester=true&year=2023&organiser=parent
 */
-
 const Admin = () => {
   const data = [
     {
@@ -146,6 +147,50 @@ const Admin = () => {
 
   const [semester, setSemester] = useState("true");
 
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [eventCount, setEventCount] = useState([]);
+  const [eventCountFiltered, setEventCountFiltered] = useState([]);
+
+  const [parentClubSelection, setParentClubSelection] = useState<
+    Object[] | null
+  >(null);
+
+  //get event count stats from api
+  const fetchEventCount = async () => {
+    try {
+      const response = await api.get(
+        "/stats/organiser/event-count?semester=true&year=2023&organiser=parent"
+      );
+      setEventCount(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const filterEventCount = async (selectedOrganiser: string) => {
+    let filtered: any = [];
+    if (selectedOrganiser === "") {
+      setErrorMessage("Please select a club to show chart!");
+    } else {
+      setErrorMessage("");
+    }
+    for (let i = 0; i < eventCount.length; i++) {
+      if (eventCount[i].organiser_name === selectedOrganiser) {
+        filtered.push(eventCount[i]);
+      }
+    }
+    setEventCountFiltered(filtered);
+    console.log(filtered);
+  };
+
+  useEffect(() => {
+    fetchEventCount();
+  }, []);
+
+  //api.get(`/stats/organiser/event-count?semester=${semester}&year=2023&organiser=child`)
+
   //Customize box style
   const boxStyle = {
     color: "white",
@@ -153,7 +198,7 @@ const Admin = () => {
     bg: "white",
     boxShadow: "2xl",
     rounded: "md",
-    height: "520px",
+    height: "530px",
     mr: "10px",
   };
 
@@ -243,37 +288,25 @@ const Admin = () => {
         <Select
           variant="outline"
           textColor="black"
-          placeholder="Select option"
           width="30%"
           p="3"
+          onChange={(e) => {
+            filterEventCount(e.target.value);
+          }}
         >
-          <option value="option1">MUMEC</option>
-          <option value="option2">MUMTEC</option>
-          <option value="option3">Monash Staff</option>
+          <option value="">Select option</option>
+          <option value="MUMEC">MUMEC</option>
+          <option value="MUMTEC">MUMTEC</option>
         </Select>
+        <Text textColor="black">{errorMessage}</Text>
         <Center>
-          <BarChart
-            width={460}
-            height={300}
-            data={data1}
-            margin={{
-              top: 25,
-              right: 30,
-              left: 15,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Bar dataKey="uv" fill="#2471A3" />
-          </BarChart>
+          <SimpleBarChart data={eventCountFiltered}></SimpleBarChart>
         </Center>
         <Button
           variant="solid"
           colorScheme="blue"
           leftIcon={<BiExport />}
-          mt="5"
+          mt="4"
         >
           Export
         </Button>

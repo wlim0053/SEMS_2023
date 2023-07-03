@@ -52,6 +52,10 @@ const OrganiserList = () => {
   ];
 
   type sortField = "ID" | "Name" | "Club" | "Email";
+
+  const [organisers, setOrganiser] = useState([]);
+  const [organiserID, setOrganiserID] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSort, setSelectedSort] = useState<sortField>("Name");
 
@@ -63,9 +67,10 @@ const OrganiserList = () => {
   const [editEmail, setEditEmail] = useState("");
   const [editClub, setEditClub] = useState("");
 
-  const [organiserID, setOrganiserID] = useState("");
+  const [parentClubSelection, setParentClubSelection] = useState<
+    Object[] | null
+  >(null);
 
-  const [organisers, setOrganiser] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isOpenEdit,
@@ -92,10 +97,10 @@ const OrganiserList = () => {
   //json body for adding organiser
   const bodyAdmin = {
     organiser_name: inputName,
-    parent_uuid: null,
+    parent_uuid: inputClub === "" ? null : inputClub,
     user_fire_id: inputEmail,
   };
-  //get data from api whenever the organinser list's length changes
+  //get organiser from api
   const fetchOrganiser = async () => {
     try {
       const response = await api.get("/organiser");
@@ -111,39 +116,58 @@ const OrganiserList = () => {
     fetchOrganiser();
   }, []);
 
+  const extractParentClub = async () => {
+    try {
+      //localhost:3000/api/organiser?parent_uuid=null
+      const response = await api.get("/organiser?parent_uuid=null");
+      setParentClubSelection(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //add organiser to database using post
+  //TODO: check if the input name is an admin / assume admin is in organiser list already
+  //TODO: make sure parent_uuid is correct
+  //TODO: so in the admin dashboard no need to show parent club which is not admin.
+  /* we need to manually add the admins into the db, can assume admin is in organiser list already */
+
+  // MUSA can be parent club with parent_uuid = null, but no admin
+  // not every parent is admin, admin is a parent club
+
   const addOrganiser = async (e: any) => {
     e.preventDefault();
-    console.log(bodyAdmin);
-    organisers.map((organiser: any) => {
-      if (organiser.user_fire_id === inputEmail) {
-      }
-    });
-
-    /*if (inputName === "" || inputEmail === "" || inputClub === "") {
-      toast({
-        title: "Please fill in all fields!",
-        status: "error",
-        position: "top"
-        duration: 3000,
-        isClosable: true,
-      });
-    */
+    // if (inputName === "" || inputEmail === "" || inputClub === "") {
+    //   toast({
+    //     title: "Please fill in all fields!",
+    //     status: "error",
+    //     position: "top",
+    //     duration: 3000,
+    //     isClosable: true,
+    //   });
+    // }
+    if (inputClub === "null" || inputClub === "") {
+      bodyAdmin.parent_uuid = null;
+    }
     try {
       const response = await api.post("/organiser", bodyAdmin);
       setTimeout(() => fetchOrganiser(), 200);
       toast({
         title: "Organiser added successfully!",
         status: "success",
+        position: "top",
         duration: 3000,
         isClosable: true,
       });
       setInputName("");
       setInputEmail("");
       setInputClub("");
-      //console.log(response.data);
     } catch (error) {
       console.log(error);
+      setInputName("");
+      setInputEmail("");
+      setInputClub("");
     }
   };
 
@@ -154,7 +178,7 @@ const OrganiserList = () => {
       setEditName(response.data[0].organiser_name);
       setEditEmail(response.data[0].user_fire_id);
       /**
-       * club should be obtained organiser's parent uuid
+       * club should be obtained by organiser's parent uuid
        */
       //setInputClub(response.data[0].club);
       //console.log(response.data[0].club);
@@ -180,13 +204,13 @@ const OrganiserList = () => {
       toast({
         title: "Organiser updated successfully!",
         status: "success",
+        position: "top",
         duration: 3000,
         isClosable: true,
       });
       setEditName("");
       setEditEmail("");
       setEditClub("");
-      //console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -196,6 +220,7 @@ const OrganiserList = () => {
    * Eg IC and Car, Want to sell car, but the car is tie to your IC.
    * How do u settle the car.*/
   //function to delete organiser by calling api delete
+  //TODO: cannot delete parent if parent got child
   const deleteOrganiser = async (id: any) => {
     try {
       // change to alert dialog in chakra (use boolean)
@@ -205,6 +230,7 @@ const OrganiserList = () => {
         toast({
           title: "Organiser deleted successfully!",
           status: "success",
+          position: "top",
           duration: 3000,
           isClosable: true,
         });
@@ -213,6 +239,7 @@ const OrganiserList = () => {
       toast({
         title: "Cannot delete organiser that created event!",
         status: "error",
+        position: "top",
         duration: 3000,
         isClosable: true,
       });
@@ -255,7 +282,10 @@ const OrganiserList = () => {
           colorScheme="telegram"
           ml="auto"
           variant="solid"
-          onClick={onOpen}
+          onClick={() => {
+            onOpen();
+            extractParentClub();
+          }}
           ref={finalRef}
         >
           Add organiser
@@ -299,9 +329,22 @@ const OrganiserList = () => {
                 value={inputClub}
                 onChange={(e) => setInputClub(e.target.value)}
               >
-                <option value="option1">MUMEC</option>
-                <option value="option2">MUMTEC</option>
-                <option value="option3">Monash Staff</option>
+                /* Assuming that the admin is already in organiser list*/
+                <option value="null" key="None">
+                  None
+                </option>
+                {parentClubSelection ? (
+                  parentClubSelection.map((club: any) => (
+                    <option
+                      value={club.organiser_uuid}
+                      key={club.organiser_name}
+                    >
+                      {club.organiser_name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" key="None"></option>
+                )}
               </Select>
             </FormControl>
 
@@ -338,7 +381,7 @@ const OrganiserList = () => {
         <Thead bg="#006DAE">
           <Tr>
             {headers.map((header) => (
-              <Td color="white" key={header.key}>
+              <Td key={header.key} color="white">
                 {header.value}
               </Td>
             ))}
@@ -349,7 +392,7 @@ const OrganiserList = () => {
             .filter((organiser: any) => {
               return searchTerm.toLowerCase() === ""
                 ? organiser
-                : organiser.stu_name
+                : organiser.user_fname
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase());
             })
@@ -423,9 +466,9 @@ const OrganiserList = () => {
                     value={editClub}
                     onChange={(e) => setEditClub(e.target.value)}
                   >
-                    <option value="option1">MUMEC</option>
-                    <option value="option2">MUMTEC</option>
-                    <option value="option3">Monash Staff</option>
+                    <option value="MUMEC">MUMEC</option>
+                    <option value="MUMTEC">MUMTEC</option>
+                    <option value="Monash Staff">Monash Staff</option>
                   </Select>
                 </FormControl>
               </ModalBody>

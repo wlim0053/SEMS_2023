@@ -6,13 +6,9 @@ import {
   Input,
   Table,
   Thead,
-  Flex,
-  Icon,
   Tbody,
   Select,
   Button,
-  ButtonGroup,
-  Tfoot,
   Tr,
   Th,
   Td,
@@ -36,9 +32,8 @@ import {
   Alert,
   AlertIcon,
   useToast,
-  List,
 } from "@chakra-ui/react";
-import { AddIcon, CloseIcon } from "@chakra-ui/icons";
+import { AddIcon, CloseIcon, CheckIcon } from "@chakra-ui/icons";
 import { BiUpload } from "react-icons/bi";
 import { MdOutlineModeEdit } from "react-icons/md";
 import api from "../../utils/api";
@@ -98,8 +93,8 @@ const EventApproval = () => {
           onChange={handleSort}
           value={selectedSort}
         >
-          <option value="option1">Club</option>
-          <option value="option2">Name</option>
+          <option value="option1">Status</option>
+          <option value="option2">Event</option>
         </Select>
       </Box>
 
@@ -113,6 +108,60 @@ const EventApproval = () => {
             ))}
           </Tr>
         </Thead>
+        <Tbody>
+          <Tr>
+            <Td>Event1</Td>
+            <Td>abc@student.monash.edu</Td>
+            <Td>Pending</Td>
+            <Td>View More</Td>
+            <Td>
+              <HStack spacing={3}>
+                <Button
+                  colorScheme="whatsapp"
+                  variant="outline"
+                  border="2px"
+                  leftIcon={<CheckIcon />}
+                  onClick={onOpen}
+                >
+                  Approve
+                </Button>
+                <Button
+                  colorScheme="red"
+                  variant="outline"
+                  border="2px"
+                  leftIcon={<CloseIcon />}
+                >
+                  Reject
+                </Button>
+              </HStack>
+            </Td>
+          </Tr>
+          <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Approval of Event</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                <FormControl>
+                  <FormLabel>EMS Number</FormLabel>
+                  <Input placeholder="EMS Number" />
+                </FormControl>
+              </ModalBody>
+              <ModalBody pb={6}>
+                <FormControl>
+                  <FormLabel>EMS Link</FormLabel>
+                  <Input placeholder="EMS Link" />
+                </FormControl>
+              </ModalBody>
+              <ModalFooter>
+                <Button colorScheme="blue" mr={3}>
+                  Submit
+                </Button>
+                <Button onClick={onClose}>Cancel</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </Tbody>
       </Table>
       <Outlet />
     </Box>

@@ -27,6 +27,8 @@ import Admin from "../../pages/admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
 import EventApproval from "../../pages/Admin/EventApproval";
+import LoginPage from "../LoginPage";
+import RegisterPage from "../RegisterPage";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -87,6 +89,7 @@ const Navbar = () => {
               <Link to="/ActivityLog">Activity Log</Link>
               <Link to="/StudentHome">Student Home</Link>
               <Link to="/EventHome">Event Home</Link>
+              <Link to="/LoginPage">Login Page</Link>
             </VStack>
           </DrawerBody>
           <DrawerFooter>Hello3</DrawerFooter>
@@ -101,6 +104,8 @@ const Navbar = () => {
         <Route path="/ActivityLog" element={<ActivityLog />} />
         <Route path="/StudentHome" element={<StudentHome />} />
         <Route path="/EventHome" element={<EventHome />} />
+        <Route path="/LoginPage" element={<LoginPage />} />
+        <Route path="/RegisterPage" element={<RegisterPage />} />
       </Routes>
     </>
   );
