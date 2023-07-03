@@ -70,22 +70,16 @@ function EventPage() {
   const [participatedEvents, setParticipatedEvents] = useState<Event[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isFormFilled, setIsFormFilled] = useState(false);
-
-  const clubs = [
-    { name: "IEMMSS", id: "iemmss" },
-    { name: "CHEMECAR", id: "chemecar" },
-    { name: "OP", id: "messi" },
-    { name: "CSM", id: "cr7" },
-    { name: "JJK", id: "jjk" },
-    { name: "MUMTEC", id: "mumtec" },
-  ];
-
+  const [clubs, setClubs] = useState<string[]>([]);
+  
+  const toast = useToast();
+  const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await api.get("/event/for-student?event_status=A");
         const data = response.data;
-        console.log(data);
         const filteredEvents = data.filter(
           (event: Event) =>
             selectedClubs.length === 0 ||
@@ -93,6 +87,11 @@ function EventPage() {
         );
         setEvents(filteredEvents);
         setSortedEvents(filteredEvents);
+
+        const uniqueClubNames: string[] = [
+          ...new Set(data.map((event: Event) => event.organiser_name)),
+        ] as string[];
+        setClubs(uniqueClubNames);
       } catch (error) {
         console.error(error);
       }
@@ -108,7 +107,6 @@ function EventPage() {
       try {
         const response = await api.get("/participation?event_status=A");
         const data = response.data;
-        console.log(data);
 
         setParticipatedEvents(data);
       } catch (error) {
@@ -128,11 +126,6 @@ function EventPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    console.log(selectedEvent);
-    console.log(selectedEvent?.event_uuid);
-    console.log(enrolmentYear);
-    console.log(enrolmentIntake);
-
     if (!selectedEvent) {
       console.error("No event found");
       return;
@@ -147,6 +140,7 @@ function EventPage() {
       participation_semester: enrolmentIntake,
       participation_attendance: 0,
     };
+    console.log(data);
 
     try {
       const response = await api.post("/participation", data);
@@ -158,8 +152,6 @@ function EventPage() {
     }
   };
 
-  const toast = useToast();
-  const navigate = useNavigate();
 
   const handleGoToCalendar = () => {
     navigate("/StudentHome");
@@ -187,14 +179,12 @@ function EventPage() {
     setSortedEvents(sortEvents(field, sortOrder, events));
   };
 
-  // Fix
   const handleReset = () => {
     setSortField("event_start_date");
     setSortOrder("desc");
     setSelectedClubs([]);
   };
 
-  // Fix
   const handleClubFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     const club = event.target.value;
     if (event.target.checked) {
@@ -426,20 +416,20 @@ function EventPage() {
           <ModalCloseButton />
           <Box borderBottom="1px solid" borderColor="gray.400" />
           <ModalBody mt={2}>
-            {clubs.map((club) => (
+            {clubs.map((clubName) => (
               <Box
-                key={club.id}
+                key={clubName}
                 display="flex"
                 flexDirection="row"
                 alignItems="center"
                 mb={2}
               >
                 <Checkbox
-                  value={club.name}
-                  isChecked={selectedClubs.includes(club.name)}
+                  value={clubName}
+                  isChecked={selectedClubs.includes(clubName)}
                   onChange={handleClubFilter}
                 />
-                <Text ml={3}>{club.name}</Text>
+                <Text ml={3}>{clubName}</Text>
               </Box>
             ))}
           </ModalBody>
