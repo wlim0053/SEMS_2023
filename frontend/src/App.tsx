@@ -9,8 +9,9 @@ import { ChakraProvider } from "@chakra-ui/react";
 // css
 import "./App.css";
 import { BrowserRouter as Router, Route, Outlet } from "react-router-dom";
-import OrganiserList from "./pages/admin/OrganiserList";
-import ActivityLog from "./pages/admin/ActivityLog";
+import NewHistoryPage from "./components/NewHistoryPage";
+// import OrganiserList from "./pages/admin/OrganiserList";
+// import ActivityLog from "./pages/admin/ActivityLog";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Router>
         <Navbar />
         <Outlet /> {/* Render nested routes */}
+        {/* <NewHistoryPage /> */}
       </Router>
     </div>
   );

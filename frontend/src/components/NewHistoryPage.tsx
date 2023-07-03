@@ -31,7 +31,7 @@ function NewHistoryPage() {
   useEffect(() => {
     const fetchParticipations = async () => {
       try {
-        const response = await api.get("/participation");
+        const response = await api.get("/participation?event_status=C");
         let data = response.data;
         console.log(response.data);
         const eventsTemp: PastEvent[] = [];
@@ -46,6 +46,7 @@ function NewHistoryPage() {
             eventName: eventData["event_title"],
             club: eventData["organiser_name"],
             dateTime: new Date(eventData["event_start_date"]),
+            feedbackGiven: !!data[i]["feedback_uuid"],
           };
           eventsTemp.push(event);
           console.log(event);
@@ -59,46 +60,52 @@ function NewHistoryPage() {
   }, []);
 
   // Fetches clubs from the database
-  useEffect(() => {
-    const fetchClubs = async () => {
-      try {
-        const response = await api.get("/organiser");
-        let data = response.data;
-        console.log(data);
-        const clubsTemp: string[] = [];
-        for (let i = 0; i < data["length"]; i++) {
-          const club = data[i]["organiser_name"];
-          clubsTemp.push(club);
-        }
-        setClubs(clubsTemp);
-      } catch (err) {
-        console.log(`Error: ${err}`);
-      }
-    };
-    fetchClubs();
-  }, []);
+  // useEffect(() => {
+  //   const fetchClubs = async () => {
+  //     try {
+  //       const response = await api.get("/organiser");
+  //       let data = response.data;
+  //       console.log(data);
+  //       const clubsTemp: string[] = [];
+  //       for (let i = 0; i < data["length"]; i++) {
+  //         const club = data[i]["organiser_name"];
+  //         clubsTemp.push(club);
+  //       }
+  //       setClubs(clubsTemp);
+  //     } catch (err) {
+  //       console.log(`Error: ${err}`);
+  //     }
+  //   };
+  //   fetchClubs();
+  // }, []);
 
   // Example event data
   // const events: PastEvent[] = [
-  // {
-  //   eventNo: 1,
-  //   eventName: "Sustainability, Safety, Chem or Not?",
-  //   club: "IEMMSS",
-  //   dateTime: new Date("2023-05-06T10:00:00"),
-  // },
-  // {
-  //   eventNo: 2,
-  //   eventName:
-  //     "Beyond the Blue Skies: The Exciting Frontier of Aerospace Engineering",
-  //   club: "IEMMSS",
-  //   dateTime: new Date("2023-05-13T14:00:00"),
-  // },
-  // {
-  //   eventNo: 3,
-  //   eventName: "ChemE Car Workshop",
-  //   club: "CHEMECAR",
-  //   dateTime: new Date("2023-05-06T09:00:00"),
-  // },
+  //   {
+  //     participation_uuid: "1",
+  //     eventNo: 1,
+  //     eventName: "Sustainability, Safety, Chem or Not?",
+  //     club: "IEMMSS",
+  //     dateTime: new Date("2023-05-06T10:00:00"),
+  //     feedbackGiven: true,
+  //   },
+  //   {
+  //     participation_uuid: "2",
+  //     eventNo: 2,
+  //     eventName:
+  //       "Beyond the Blue Skies: The Exciting Frontier of Aerospace Engineering",
+  //     club: "IEMMSS",
+  //     dateTime: new Date("2023-05-13T14:00:00"),
+  //     feedbackGiven: false,
+  //   },
+  //   {
+  //     participation_uuid: "3",
+  //     eventNo: 3,
+  //     eventName: "ChemE Car Workshop",
+  //     club: "CHEMECAR",
+  //     dateTime: new Date("2023-05-06T09:00:00"),
+  //     feedbackGiven: false,
+  //   },
   // ];
 
   // State variables
@@ -110,7 +117,7 @@ function NewHistoryPage() {
     "eventNo" | "eventName" | "dateTime" | "club"
   >("eventNo");
   const [events, setEvents] = useState<PastEvent[]>([]);
-  const [clubs, setClubs] = useState<string[]>([]);
+  // const [clubs, setClubs] = useState<string[]>([]);
   const [feedbackModal, setFeedbackModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<PastEvent>();
 
@@ -121,6 +128,7 @@ function NewHistoryPage() {
     eventName: string;
     club: string;
     dateTime: Date;
+    feedbackGiven: Boolean;
   };
   // Example club data
   // const clubs = [
@@ -130,6 +138,7 @@ function NewHistoryPage() {
   //   { name: "CSM", id: "cr7" },
   //   { name: "JJK", id: "jjk" },
   // ];
+  const clubs = ["IEMMSS", "CHEMECAR", "OP", "CSM", "JJK", "MUMTEC"];
 
   // Table Styling
   const tableStyles: CSSObject = {
@@ -284,25 +293,29 @@ function NewHistoryPage() {
                   </Text>
                 </Td>
                 <Td>
-                  <Button
-                    colorScheme="blue"
-                    size="sm"
-                    onClick={() =>
-                      // toast({
-                      //   title: "Feedback Received",
-                      //   description: "Thank you for your feedback :)",
-                      //   status: "success",
-                      //   duration: 9000,
-                      //   isClosable: true,
-                      // })
-                      {
-                        setSelectedEvent(event);
-                        setFeedbackModal(true);
+                  {event.feedbackGiven === true ? (
+                    <Text>None</Text>
+                  ) : (
+                    <Button
+                      colorScheme="blue"
+                      size="sm"
+                      onClick={() =>
+                        // toast({
+                        //   title: "Feedback Received",
+                        //   description: "Thank you for your feedback :)",
+                        //   status: "success",
+                        //   duration: 9000,
+                        //   isClosable: true,
+                        // })
+                        {
+                          setSelectedEvent(event);
+                          setFeedbackModal(true);
+                        }
                       }
-                    }
-                  >
-                    Provide Feedback
-                  </Button>
+                    >
+                      Provide Feedback
+                    </Button>
+                  )}
                 </Td>
               </Tr>
             ))}
@@ -317,7 +330,7 @@ function NewHistoryPage() {
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
-          <ModalBody borderWidth={2} borderColor={"#000000"}>
+          <ModalBody>
             <FeedbackForm
               eventTitle={selectedEvent ? selectedEvent.eventName : ""}
               participationID={
