@@ -84,6 +84,7 @@ const RegisterPage: React.FC = () => {
   }, []);
 
   async function doPostRequest(body: Object) {
+    console.log(body);
     try {
       let payload = body;
       let res = await api.post("/user/register", payload);
@@ -112,6 +113,7 @@ const RegisterPage: React.FC = () => {
           initialValues={{
             firstName: "",
             lastName: "",
+            // email: "",
             studentId: "",
             enrolmentYear: "",
             enrolmentSemester: "",
@@ -175,7 +177,7 @@ const RegisterPage: React.FC = () => {
                 />
                 <FormErrorMessage>{errors.lastName}</FormErrorMessage>
               </FormControl>
-              <FormControl isRequired mt={6}>
+              {/* <FormControl isRequired mt={6}>
                 <FormLabel>Email</FormLabel>
                 <Field
                   type="text"
@@ -186,7 +188,7 @@ const RegisterPage: React.FC = () => {
                   onChange={handleChange}
                 />
                 <FormErrorMessage>{errors.email}</FormErrorMessage>
-              </FormControl>
+              </FormControl> */}
               <FormControl isRequired mt={6}>
                 <FormLabel>Student ID</FormLabel>
                 <Field
@@ -217,10 +219,22 @@ const RegisterPage: React.FC = () => {
                   type="number"
                   name="enrolmentSemester"
                   placeholder="Type semester number here, e.g. 2"
-                  as={Input}
+                  as={Select}
                   onBlur={handleBlur}
                   onChange={handleChange}
                 />
+                <option value="" disabled>
+                  Select Enrolment Semester
+                </option>
+                <option value="2" key="February">
+                  February
+                </option>
+                <option value="7" key="July">
+                  July
+                </option>
+                <option value="10" key="October">
+                  October
+                </option>
                 <FormErrorMessage>{errors.enrolmentSemester}</FormErrorMessage>
               </FormControl>
               <FormControl isRequired mt={6}>
@@ -231,7 +245,9 @@ const RegisterPage: React.FC = () => {
                   onBlur={handleBlur}
                   onChange={handleChange}
                 >
-                  <option value="" disabled selected>Select Gender</option>
+                  <option value="" disabled>
+                    Select Gender
+                  </option>
                   <option value="0" key="Female">
                     Female
                   </option>
@@ -254,7 +270,9 @@ const RegisterPage: React.FC = () => {
                   onBlur={handleBlur}
                   onChange={handleChange}
                 >
-                  <option value="" disabled selected>Select School</option>
+                  <option value="" disabled>
+                    Select School
+                  </option>
                   {schools ? (
                     schools.map((schoolItem: any) => (
                       <option
@@ -281,7 +299,9 @@ const RegisterPage: React.FC = () => {
                     onBlur={handleBlur}
                     onChange={handleChange}
                   >
-                    <option value="" disabled selected>Select Discipline</option>
+                    <option value="" disabled>
+                      Select Discipline
+                    </option>
                     {specialise ? (
                       specialise.map((specialisationItem: any) => (
                         <option

@@ -16,9 +16,7 @@ function App() {
   return (
     <div className="App">
       <Router>
-        {/* <Navbar /> */}
-        {/* <RegisterPage /> */}
-        <RegisterPage />
+        <Navbar />
       </Router>
     </div>
   );
