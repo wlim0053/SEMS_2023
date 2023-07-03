@@ -216,25 +216,24 @@ const RegisterPage: React.FC = () => {
               <FormControl isRequired mt={6}>
                 <FormLabel>Enrolment Semester</FormLabel>
                 <Field
-                  type="number"
+                  as="select"
                   name="enrolmentSemester"
-                  placeholder="Type semester number here, e.g. 2"
-                  as={Select}
                   onBlur={handleBlur}
                   onChange={handleChange}
-                />
-                <option value="" disabled>
-                  Select Enrolment Semester
-                </option>
-                <option value="2" key="February">
-                  February
-                </option>
-                <option value="7" key="July">
-                  July
-                </option>
-                <option value="10" key="October">
-                  October
-                </option>
+                >
+                  <option value="" disabled>
+                    Select Enrolment Semester
+                  </option>
+                  <option value="2" key="February">
+                    February
+                  </option>
+                  <option value="7" key="July">
+                    July
+                  </option>
+                  <option value="10" key="October">
+                    October
+                  </option>
+                </Field>
                 <FormErrorMessage>{errors.enrolmentSemester}</FormErrorMessage>
               </FormControl>
               <FormControl isRequired mt={6}>
