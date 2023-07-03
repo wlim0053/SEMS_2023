@@ -19,34 +19,8 @@ import {
   Flex,
   Spacer,
 } from "@chakra-ui/react";
-import { HamburgerIcon } from "@chakra-ui/icons";
-import { Link, Route, Routes } from "react-router-dom";
-import OrganiserList from "../../pages/Admin/OrganiserList";
-import ActivityLog from "../../pages/Admin/ActivityLog";
-import Admin from "../../pages/Admin/AdminDashboard";
-import StudentHome from "../../pages/student/StudentHome";
-import EventHome from "../../pages/student/EventHome";
-import LoginPage from "../LoginPage";
-import RegisterPage from "../RegisterPage";
+
 import NewHistoryPage from "../NewHistoryPage";
-  Box,
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  useDisclosure,
-  VStack,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Image,
-  Flex,
-  Spacer,
-} from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, Route, Routes } from "react-router-dom";
 import OrganiserList from "../../pages/Admin/OrganiserList";
@@ -160,25 +134,11 @@ const Navbar = () => {
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/RegisterPage" element={<RegisterPage />} />
         <Route path="/HistoryPage" element={<NewHistoryPage />} />
-      </Routes>
-    </>
-  );
-};
-      <Routes>
-        <Route path="/" element={<Admin />} />
         <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
-        <Route path="/Admin" element={<Admin />} />
-        <Route path="/OrganiserList" element={<OrganiserList />} />
-        <Route path="/ActivityLog" element={<ActivityLog />} />
-        <Route path="/StudentHome" element={<StudentHome />} />
-        <Route path="/EventHome" element={<EventHome />} />
-				<Route path="/LoginPage" element={<LoginPage />} />
-				<Route path="/RegisterPage" element={<RegisterPage />} />
         <Route path="/CreateEventPage" element={<CreateEventPage />} />
         <Route path="/EditEventPage" element={<EditEventPage />} />
         <Route path="/EventDetailsDashboard" element={<EventDetailsDashboard />} />
       </Routes>
-
     </>
   );
 };
