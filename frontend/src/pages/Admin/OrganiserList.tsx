@@ -33,13 +33,17 @@ import {
   IconButton,
   Stack,
   HStack,
+  Alert,
+  AlertIcon,
+  useToast,
+  List,
 } from "@chakra-ui/react";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import { BiUpload } from "react-icons/bi";
 import { MdOutlineModeEdit } from "react-icons/md";
 import api from "../../utils/api";
 
-function OrganiserList() {
+const OrganiserList = () => {
   const headers = [
     { key: "name", value: "Name" },
     { key: "email", value: "Email" },
@@ -48,6 +52,10 @@ function OrganiserList() {
   ];
 
   type sortField = "ID" | "Name" | "Club" | "Email";
+
+  const [organisers, setOrganiser] = useState([]);
+  const [organiserID, setOrganiserID] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSort, setSelectedSort] = useState<sortField>("Name");
 
@@ -55,8 +63,21 @@ function OrganiserList() {
   const [inputEmail, setInputEmail] = useState("");
   const [inputClub, setInputClub] = useState("");
 
-  const [organisers, setOrganiser] = useState([]);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editClub, setEditClub] = useState("");
+
+  const [parentClubSelection, setParentClubSelection] = useState<
+    Object[] | null
+  >(null);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenEdit,
+    onOpen: onOpenEdit,
+    onClose: onCloseEdit,
+  } = useDisclosure();
+  const toast = useToast();
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
   const history = useNavigate();
@@ -69,42 +90,147 @@ function OrganiserList() {
     setSelectedSort(event.target.value as sortField);
   };
 
-  //const addOrEditOrganiser = (organiser: any) => {};
-
-  //get data from api whenever the organinser list's length changes
-  useEffect(() => {
-    const fetchOrganiser = async () => {
-      try {
-        const response = await api.get("/organiser");
-        setOrganiser(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchOrganiser();
-  }, [organisers.length]);
+  const handleEdit = (id: any) => {
+    onOpenEdit();
+  };
 
   //json body for adding organiser
   const bodyAdmin = {
     organiser_name: inputName,
-    parent_uuid: null,
-    stu_fire_id: inputEmail,
+    parent_uuid: inputClub === "" ? null : inputClub,
+    user_fire_id: inputEmail,
+  };
+  //get organiser from api
+  const fetchOrganiser = async () => {
+    try {
+      const response = await api.get("/organiser");
+      setOrganiser(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //run fetchOrganiser when the page loads
+  useEffect(() => {
+    fetchOrganiser();
+  }, []);
+
+  const extractParentClub = async () => {
+    try {
+      //localhost:3000/api/organiser?parent_uuid=null
+      const response = await api.get("/organiser?parent_uuid=null");
+      setParentClubSelection(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //add organiser to database using post
-  const addOrganiser = async (e) => {
+  /* we need to manually add the admins into the db, can assume admin is in organiser list already */
+
+  // MUSA can be parent club with parent_uuid = null, but not admin
+  // not every parent is admin, admin is a parent club
+
+  const addOrganiser = async (e: any) => {
     e.preventDefault();
-    console.log(bodyAdmin);
+    if (inputClub === "null" || inputClub === "") {
+      bodyAdmin.parent_uuid = null;
+    }
     try {
       const response = await api.post("/organiser", bodyAdmin);
-      const allOrganiser = [...organisers, response.data];
-      setOrganiser(allOrganiser);
+      setTimeout(() => fetchOrganiser(), 200);
+      toast({
+        title: "Organiser added successfully!",
+        status: "success",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
       setInputName("");
       setInputEmail("");
-      console.log(response.data);
+      setInputClub("");
     } catch (error) {
+      console.log(error);
+      setInputName("");
+      setInputEmail("");
+      setInputClub("");
+    }
+  };
+
+  //function to get organiser by organiser uuid
+  const getOrganiserById = async (id: any) => {
+    try {
+      const response = await api.get(`/organiser/${id}`);
+      setEditName(response.data[0].organiser_name);
+      setEditEmail(response.data[0].user_fire_id);
+      /**
+       * club should be obtained by organiser's parent uuid
+       */
+      //setInputClub(response.data[0].club);
+      //console.log(response.data[0].club);
+      //console.log(response.data);
+      setOrganiserID(id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  //update organiser details
+  const updateOrganiser = async (id: any) => {
+    const bodyUpdate = {
+      organiser_name: editName,
+      parent_uuid: null,
+      user_fire_id: editEmail,
+    };
+    try {
+      if (organiserID === id) {
+        const response = await api.put(`/organiser/${id}`, bodyUpdate);
+      }
+      setTimeout(() => fetchOrganiser(), 200);
+      toast({
+        title: "Organiser updated successfully!",
+        status: "success",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
+      setEditName("");
+      setEditEmail("");
+      setEditClub("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  /**organiser that created event cant be deleted.
+   * Eg IC and Car, Want to sell car, but the car is tie to your IC.
+   * How do u settle the car.*/
+  //function to delete organiser by calling api delete
+  //TODO: cannot delete parent if parent got child
+  const deleteOrganiser = async (id: any) => {
+    try {
+      // change to alert dialog in chakra (use boolean)
+      if (window.confirm("Are you sure you want to delete this organiser?")) {
+        await api.delete(`/organiser/${id}`);
+        setTimeout(() => fetchOrganiser(), 300);
+        toast({
+          title: "Organiser deleted successfully!",
+          status: "success",
+          position: "top",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Cannot delete organiser that created event!",
+        status: "error",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
       console.log(error);
     }
   };
@@ -144,13 +270,15 @@ function OrganiserList() {
           colorScheme="telegram"
           ml="auto"
           variant="solid"
-          onClick={onOpen}
+          onClick={() => {
+            onOpen();
+            extractParentClub();
+          }}
           ref={finalRef}
         >
           Add organiser
         </Button>
       </Box>
-
       <Modal
         isOpen={isOpen}
         onClose={onClose}
@@ -189,9 +317,22 @@ function OrganiserList() {
                 value={inputClub}
                 onChange={(e) => setInputClub(e.target.value)}
               >
-                <option value="option1">MUMEC</option>
-                <option value="option2">MUMTEC</option>
-                <option value="option3">Monash Staff</option>
+                /* Assuming that the admin is already in organiser list*/
+                <option value="null" key="None">
+                  None
+                </option>
+                {parentClubSelection ? (
+                  parentClubSelection.map((club: any) => (
+                    <option
+                      value={club.organiser_uuid}
+                      key={club.organiser_name}
+                    >
+                      {club.organiser_name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" key="None"></option>
+                )}
               </Select>
             </FormControl>
 
@@ -212,7 +353,6 @@ function OrganiserList() {
               onClick={(e) => {
                 e.preventDefault();
                 addOrganiser(e);
-                alert("Organiser added successfully");
                 onClose();
               }}
               colorScheme="blue"
@@ -229,7 +369,7 @@ function OrganiserList() {
         <Thead bg="#006DAE">
           <Tr>
             {headers.map((header) => (
-              <Td color="white" key={header.key}>
+              <Td key={header.key} color="white">
                 {header.value}
               </Td>
             ))}
@@ -237,17 +377,19 @@ function OrganiserList() {
         </Thead>
         <Tbody>
           {organisers
-            .filter((organiser) => {
+            .filter((organiser: any) => {
               return searchTerm.toLowerCase() === ""
                 ? organiser
-                : organiser.name
+                : organiser.user_fname
                     .toLowerCase()
                     .includes(searchTerm.toLowerCase());
             })
-            .map((organiser) => (
+            .map((organiser: any) => (
               <Tr>
-                <Td>{organiser.stu_name}</Td>
-                <Td>{organiser.stu_email}</Td>
+                <Td>
+                  {organiser.user_fname} {organiser.user_lname}
+                </Td>
+                <Td>{organiser.user_email}</Td>
                 <Td>{organiser.organiser_name}</Td>
                 <Td>
                   <HStack spacing={3}>
@@ -255,9 +397,16 @@ function OrganiserList() {
                       colorScheme="blue"
                       variant="outline"
                       aria-label="Edit Organiser"
+                      onClick={() => {
+                        getOrganiserById(organiser.organiser_uuid);
+                        onOpenEdit();
+                      }}
                       icon={<MdOutlineModeEdit />}
                     ></IconButton>
                     <IconButton
+                      onClick={() => {
+                        deleteOrganiser(organiser.organiser_uuid);
+                      }}
                       colorScheme="red"
                       variant="outline"
                       aria-label="Edit Organiser"
@@ -267,11 +416,72 @@ function OrganiserList() {
                 </Td>
               </Tr>
             ))}
+          <Modal
+            isOpen={isOpenEdit}
+            onClose={onCloseEdit}
+            initialFocusRef={initialRef}
+            finalFocusRef={finalRef}
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Edit organiser</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody pb={6}>
+                <FormControl>
+                  <FormLabel>Name</FormLabel>
+                  <Input
+                    value={editName}
+                    placeholder="Name"
+                    onChange={(e) => setEditName(e.target.value)}
+                  />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    value={editEmail}
+                    placeholder="Email"
+                    onChange={(e) => setEditEmail(e.target.value)}
+                  />
+                </FormControl>
+
+                <FormControl mt={4}>
+                  <FormLabel>Club</FormLabel>
+                  <Select
+                    variant="outline"
+                    placeholder="--select an option--"
+                    width="50%"
+                    value={editClub}
+                    onChange={(e) => setEditClub(e.target.value)}
+                  >
+                    <option value="MUMEC">MUMEC</option>
+                    <option value="MUMTEC">MUMTEC</option>
+                    <option value="Monash Staff">Monash Staff</option>
+                  </Select>
+                </FormControl>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    updateOrganiser(organiserID);
+                    onCloseEdit();
+                  }}
+                  colorScheme="blue"
+                  mr={3}
+                >
+                  Update
+                </Button>
+                <Button onClick={onCloseEdit}>Cancel</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
         </Tbody>
       </Table>
       <Outlet />
     </Box>
   );
-}
+};
 
 export default OrganiserList;
