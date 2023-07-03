@@ -34,6 +34,7 @@ export const verifyJwtHandler = (access_level: string[]) => {
 				access_level.includes(user.user_access_lvl)
 			) {
 				req.body.user = user
+				// res.sendStatus(200)
 				next()
 			} else {
 				res.status(403)
@@ -43,4 +44,17 @@ export const verifyJwtHandler = (access_level: string[]) => {
 			next(error)
 		}
 	}
+}
+
+export const checkLoginHandler = () => {
+	return (req: Request, res: Response, next: NextFunction) => {
+		const token = req.cookies.token
+		if (token) {
+			res.sendStatus(200)
+		} else {
+			res.sendStatus(401)
+		}
+	}
+
+	
 }

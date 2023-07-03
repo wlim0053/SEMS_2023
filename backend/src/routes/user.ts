@@ -6,6 +6,7 @@ import {
 } from "../controllers/userController"
 import { User, UserLogin, UserWithFireId } from "../interfaces/user"
 import { requestValidators } from "../middlewares/requestValidator"
+import { verifyJwtHandler } from "../middlewares/jwtHandler"
 
 export const userRouter = express.Router()
 
@@ -16,6 +17,10 @@ userRouter
 userRouter
 	.route("/register")
 	.post(requestValidators({ body: UserWithFireId }), registerUserController)
+
+userRouter
+	.route("/auth")
+	.get(verifyJwtHandler(["A","O","S"]))
 
 userRouter
 	.route("/:id")
