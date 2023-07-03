@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { EventClickArg, EventHoveringArg } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -16,6 +16,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import "./CalendarStyle.css";
+import api from "../utils/api";
 
 function Calendar() {
   const [title, setTitle] = useState("");
@@ -23,8 +24,32 @@ function Calendar() {
   const [modal, setModal] = useState(false);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [eventDate, setEventDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [venue, setVenue] = useState("");
+  const [club, setClub] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [events, setEvents] = useState<Event[]>([]);
+
+  interface Event {
+    event_uuid: string;
+    event_ems_no: string | null;
+    event_start_date: string;
+    event_end_date: string;
+    event_title: string;
+    event_desc: string;
+    event_mode: string;
+    event_venue: string;
+    event_capacity: number;
+    event_status: string;
+    event_reg_start_date: string;
+    event_reg_end_date: string;
+    event_reg_google_form: string;
+    organiser_uuid: string;
+    parent_uuid: string | null;
+    organiser_name: string;
+    stu_fire_id: string;
+  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,11 +60,47 @@ function Calendar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const transformEvent = (event: Event) => ({
+    title: event.event_title,
+    start: event.event_start_date,
+    end: event.event_end_date,
+    description: event.event_desc,
+    startDate: new Date(event.event_start_date).toLocaleDateString("en-US", {
+      month: "numeric",
+      day: "numeric",
+      year: "numeric",
+    }),
+    endDate: new Date(event.event_end_date).toLocaleDateString("en-US", {
+      month: "numeric",
+      day: "numeric",
+      year: "numeric",
+    }),
+    venue: event.event_venue,
+    club: event.organiser_name,
+  });
+
+  const fetchEventsFromDatabase = async () => {
+    try {
+      const response = await api.get("/participation?event_status=A");
+      return response.data.map(transformEvent);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    fetchEventsFromDatabase().then(setEvents);
+  }, []);
+
   const handleEventClick = (clickInfo: EventClickArg) => {
     setTitle(clickInfo.event.title);
     setDescription(clickInfo.event.extendedProps.description);
-    setEventDate(
+    setStartDate(
       clickInfo.event.start ? clickInfo.event.start.toLocaleDateString() : ""
+    );
+    setEndDate(
+      clickInfo.event.end ? clickInfo.event.end.toLocaleDateString() : ""
     );
     if (clickInfo.event.start) {
       setStartTime(
@@ -57,33 +118,14 @@ function Calendar() {
         })
       );
     }
+    setVenue(clickInfo.event.extendedProps.venue);
+    setClub(clickInfo.event.extendedProps.club);
     setModal(true);
   };
 
   const handleEventHover = (hoverInfo: EventHoveringArg) => {
     hoverInfo.el.style.cursor = "pointer";
   };
-
-  const events = [
-    {
-      title: "MUM Event",
-      start: "2023-04-05T08:00:00",
-      end: "2023-04-05T09:00:00",
-      description: "This is a MUM event",
-    },
-    {
-      title: "MUM Event 2",
-      start: "2023-05-02T12:26:00",
-      end: "2023-05-02T13:00:00",
-      description: "This is a MUM event",
-    },
-    {
-      title: "MUM Event 3",
-      start: "2023-05-04T12:26:00",
-      end: "2023-05-04T13:00:00",
-      description: "This is a MUM event",
-    },
-  ];
 
   return (
     <div className="calendar-container">
@@ -138,9 +180,12 @@ function Calendar() {
               fontFamily="'Helvetica Neue', 'Arial Narrow', sans-serif"
             >
               <p>{description}</p>
-              <p>Date: {eventDate}</p>
+              <p>Start Date: {startDate}</p>
+              <p>End Date: {endDate}</p>
               <p>Start Time: {startTime}</p>
               <p>End Time: {endTime}</p>
+              <p>Venue: {venue}</p>
+              <p>Club: {club}</p>
             </Box>
           </ModalBody>
           <ModalFooter>
