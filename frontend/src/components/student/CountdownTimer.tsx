@@ -1,3 +1,4 @@
+import api from "../../utils/api";
 import { useEffect, useState } from "react";
 import { Box, Text, Flex } from "@chakra-ui/react";
 
@@ -9,31 +10,31 @@ function CountdownTimer() {
   const [title, setTitle] = useState("");
   const [, setIsMobile] = useState(false);
   const [futureEvent, setFutureEvent] = useState(true);
+  const [events, setEvents] = useState<Event[]>([]);
 
-  const events = [
-    {
-      title: "MUM Event",
-      start: "2023-04-05T08:00:00",
-      end: "2023-04-05T09:00:00",
-      description: "This is a MUM event",
-    },
-    {
-      title: "MUM Event 2",
-      start: "2023-05-02T12:24:00",
-      end: "2023-05-02T13:00:00",
-      description: "This is a MUM event",
-    },
-    {
-      title: "MUM Event 3",
-      start: "2023-05-16T12:26:00",
-      end: "2023-05-16T13:00:00",
-      description: "This is a MUM event",
-    },
-  ];
+  interface Event {
+    event_uuid: string;
+    event_ems_no: string | null;
+    event_start_date: string;
+    event_end_date: string;
+    event_title: string;
+    event_desc: string;
+    event_mode: string;
+    event_venue: string;
+    event_capacity: number;
+    event_status: string;
+    event_reg_start_date: string;
+    event_reg_end_date: string;
+    event_reg_google_form: string;
+    organiser_uuid: string;
+    parent_uuid: string | null;
+    organiser_name: string;
+    stu_fire_id: string;
+  }
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 845);
+      setIsMobile(window.innerWidth <= 500);
     };
     window.addEventListener("resize", handleResize);
     handleResize();
@@ -41,11 +42,25 @@ function CountdownTimer() {
   }, []);
 
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await api.get("/participation?event_status=A");
+        const data = response.data;
+        setEvents(data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       const currentDate = new Date();
       let nearestEvent = null;
       for (const element of events) {
-        const eventDate = new Date(element.start);
+        const eventDate = new Date(element.event_start_date);
         const timeLeft = eventDate.getTime() - currentDate.getTime();
         if (
           timeLeft > 0 &&
@@ -58,11 +73,11 @@ function CountdownTimer() {
               hour: "numeric",
               minute: "numeric",
             }),
-            endTime: new Date(element.end).toLocaleTimeString([], {
+            endTime: new Date(element.event_end_date).toLocaleTimeString([], {
               hour: "numeric",
               minute: "numeric",
             }),
-            title: element.title,
+            title: element.event_title,
           };
         }
       }
@@ -72,12 +87,14 @@ function CountdownTimer() {
         setStartTime(nearestEvent.startTime);
         setEndTime(nearestEvent.endTime);
         setTitle(nearestEvent.title);
-      } else {
+      } else if (events.length > 0) {
+        console.log("No nearest future event found");
         setFutureEvent(false);
       }
     }, 1000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [events]);
 
   // get current date of today in "DD(th/st/nd/rd) MMM YYYY" format
   function getCurrentDate() {
@@ -86,7 +103,7 @@ function CountdownTimer() {
       month: "short",
       year: "numeric",
     } as const;
-    const formatter = new Intl.DateTimeFormat("en-US", options);
+    const formatter = new Intl.DateTimeFormat("en-GB", options);
     const date = new Date();
     return formatter.format(date);
   }
@@ -177,7 +194,7 @@ function CountdownTimer() {
               { label: "Seconds", value: Math.floor((timeLeft / 1000) % 60) },
             ].map((item, index) => (
               <Flex
-                key=""
+                key={item.label}
                 className="countdown-item"
                 textAlign="center"
                 flex="1"
