@@ -45,6 +45,7 @@ export const createParticipationController = async (
             `)
 		res.json(create.recordset)
 		connection.close()
+		next()
 	} catch (error) {
 		next(error)
 	}
