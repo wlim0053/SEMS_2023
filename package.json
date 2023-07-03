@@ -1,5 +1,6 @@
 {
   "dependencies": {
+<<<<<<< HEAD
     "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.6.1",
     "@fullcalendar/core": "^6.1.5",
@@ -29,5 +30,10 @@
     "@vitejs/plugin-react": "^3.1.0",
     "typescript": "^4.9.5",
     "vite": "^4.2.0"
+=======
+    "axios": "^1.4.0",
+    "formik": "^2.4.2",
+    "yup": "^1.2.0"
+>>>>>>> 274c32a3e49aa1b2bcf450e2033f8680a3797b3c
   }
 }
