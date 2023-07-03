@@ -71,10 +71,10 @@ function EventPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isFormFilled, setIsFormFilled] = useState(false);
   const [clubs, setClubs] = useState<string[]>([]);
-  
+
   const toast = useToast();
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -152,7 +152,6 @@ function EventPage() {
     }
   };
 
-
   const handleGoToCalendar = () => {
     navigate("/StudentHome");
   };
@@ -194,18 +193,28 @@ function EventPage() {
     }
   };
 
-  const getFormIdFromLink = (link: string) => {
+  const getFormIdFromLink = (link: string | null): string | null => {
+    if (!link) {
+      console.log("Google Form URL is null");
+      return null;
+    }
     const url = new URL(link);
-    const pathSegments = url.pathname.split("/");
-    const formId = pathSegments[4];
+    const path = url.pathname.split("/");
+    const formId = path[path.length - 2];
+    console.log("Google Form ID:", formId);
     return formId;
   };
 
   const isValidURL = (string: string): boolean => {
     try {
-      new URL(string);
-      return true;
-    } catch (_) {
+      const url = new URL(string);
+      console.log("Parsed URL:", url);
+      const isGoogleFormsUrl =
+        url.hostname === "docs.google.com";
+      console.log("Is Google Forms URL:", isGoogleFormsUrl);
+      return isGoogleFormsUrl;
+    } catch (error) {
+      console.error("Error parsing URL:", error);
       return false;
     }
   };
@@ -474,23 +483,27 @@ function EventPage() {
               <FormLabel mt={4}>Addtional Queries</FormLabel>
               <Box>
                 {selectedEvent &&
-                  (isValidURL(selectedEvent.event_reg_google_form) ? (
-                    <iframe
-                      title="Google Form"
-                      src={`https://docs.google.com/forms/d/e/${getFormIdFromLink(
-                        selectedEvent.event_reg_google_form
-                      )}/viewform?embedded=true`}
-                      width="98%"
-                      height="500"
-                      style={{ margin: "10px" }}
-                    ></iframe>
-                  ) : (
-                    <Text>
-                      {selectedEvent.event_reg_google_form
-                        ? "Invalid URL"
-                        : "There are no additional questions for the event."}
-                    </Text>
-                  ))}
+                  (() => {
+                    const googleFormUrl = selectedEvent.event_reg_google_form;
+                    console.log("Google Form URL:", googleFormUrl);
+                    const formId = getFormIdFromLink(googleFormUrl);
+                    console.log("Google Form ID:", formId);
+                    return isValidURL(googleFormUrl) ? (
+                      <iframe
+                        title="Google Form"
+                        src={`https://docs.google.com/forms/d/e/${formId}/viewform?embedded=true`}
+                        width="98%"
+                        height="500"
+                        style={{ margin: "10px" }}
+                      ></iframe>
+                    ) : (
+                      <Text>
+                        {googleFormUrl
+                          ? "Invalid URL"
+                          : "There are no additional questions for the event."}
+                      </Text>
+                    );
+                  })()}
               </Box>
 
               <FormControl mt={4} isRequired>
