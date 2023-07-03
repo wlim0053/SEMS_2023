@@ -31,7 +31,7 @@ import { Link, Route, Routes, Navigate, useNavigate, useLocation, Outlet } from 
 import OrganiserList from "../../pages/Admin/OrganiserList";
 import ActivityLog from "../../pages/Admin/ActivityLog";
 import Admin from "../../pages/Admin/AdminDashboard";
-import LoginPage from "../LoginPage";
+import LoginPage from "../../pages/shared/LoginPage";
 import Testlandingpage from "../Testlandingpage";
 import AttendanceHome from "../../pages/student/AttendanceHome";
 import AttendancePage from "../AttendancePage";
@@ -43,34 +43,36 @@ import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
 import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 import Page1 from "../../pages/Organiser/CreateEventForm";
 import theme from "../../utils/theme";
+import RegisterPage from "../../pages/shared/RegisterPage";
 
-const Navbar = () => {
+const Navbar = ({user_access_lvl}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const buttonRef = React.useRef(null);
-  const [view, setView] = useState("student");
+  const [accessLevel, setAccessLevel] = useState(user_access_lvl); // Track the user's access level
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     // Navigate to the appropriate landing page based on the selected view
-    switch (view) {
-      case "student":
+    switch (accessLevel) {
+      case "S":
         navigate("/TestLandingPage");
         break;
-      case "organiser":
+      case "O":
         navigate("/OrganiserMainPage");
         break;
-      case "admin":
+      case "A":
         navigate("/Admin");
         break;
       default:
         break;
     }
-  }, [view]);
+  }, [accessLevel, navigate]);
 
   const handleViewChange = (selectedView) => {
-    setView(selectedView);
+    setAccessLevel(selectedView); // Update the user's access level
   };
+
   const { colorMode, toggleColorMode } = useColorMode();
 
   return (
@@ -92,22 +94,15 @@ const Navbar = () => {
         <Box>
           <Image src='/monash_logo.png' height='50px'></Image>
         </Box>
-        <Box ml="auto" mr="20px">
+        {/* <Box ml="auto" mr="20px">
         <IconButton
           icon={<Icon as={FiUser} boxSize={6} />}
           aria-label="Login"
           variant="ghost"
           color='white'
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/LoginPage")}
         />
-        </Box>
-        <IconButton
-            icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
-            aria-label="Toggle Dark Mode"
-            variant="ghost"
-            color="white"
-            onClick={toggleColorMode}
-          />
+        </Box> */}
       </Flex>
 
 
@@ -125,47 +120,47 @@ const Navbar = () => {
           <DrawerHeader>Menu</DrawerHeader>
           <DrawerBody>
             <VStack align="start" spacing={4}>
-            {view === "student" && (
+            {accessLevel === "S" && (
               <>
-                <Link to="/TestLandingPage" onClick={() => handleViewChange("student")}>
+                <Link to="/TestLandingPage" onClick={() => handleViewChange("s")}>
                 Home
                 </Link>
-                <Link to="/StudentHome" onClick={() => handleViewChange("student")}>
+                <Link to="/StudentHome" onClick={() => handleViewChange("S")}>
                 Student Home
                 </Link>
-                <Link to="/AttendanceHome" onClick={() => handleViewChange("student")}>
+                <Link to="/AttendanceHome" onClick={() => handleViewChange("S")}>
                 Attendance Home
                 </Link>
-                <Link to="/HistoryPage" onClick={() => handleViewChange("student")}>
+                <Link to="/HistoryPage" onClick={() => handleViewChange("S")}>
                 History Page
                 </Link>
-                <Link to="/FeedbackForm" onClick={() => handleViewChange("student")}>
+                <Link to="/FeedbackForm" onClick={() => handleViewChange("S")}>
                 Feedback Form
                 </Link>
               </>
               )}
-            {view === "organiser" && (
+            {accessLevel === "O" && (
               <>
-                <Link to="/OrganiserMainPage" onClick={() => handleViewChange("organiser")}>
+                <Link to="/OrganiserMainPage" onClick={() => handleViewChange("O")}>
                 Organiser Home
                 </Link>
-                <Link to="/Event" onClick={() => handleViewChange("organiser")}>
+                <Link to="/Event" onClick={() => handleViewChange("O")}>
                 View Event Details
                 </Link>
-                <Link to="/page1" onClick={() => handleViewChange("organiser")}>
+                <Link to="/page1" onClick={() => handleViewChange("O")}>
                 Event Form
                 </Link>
               </>
             )}
-            {view === "admin" && (
+            {accessLevel === "A" && (
               <>
-                <Link to="/Admin" onClick={() => handleViewChange("admin")}>
+                <Link to="/Admin" onClick={() => handleViewChange("A")}>
                 Admin Dashboard
                 </Link>
-                <Link to="/OrganiserList" onClick={() => handleViewChange("admin")}>
+                <Link to="/OrganiserList" onClick={() => handleViewChange("A")}>
                 Organiser List
                 </Link>
-                <Link to="/ActivityLog" onClick={() => handleViewChange("admin")}>
+                <Link to="/ActivityLog" onClick={() => handleViewChange("A")}>
                 Activity Log
                 </Link>
               </>
@@ -179,20 +174,20 @@ const Navbar = () => {
               </MenuButton>
               <MenuList>
                 <MenuItem
-                  onClick={() => handleViewChange("student")}
-                  disabled={view === "student"}
+                  onClick={() => handleViewChange("S")}
+                  disabled={accessLevel === "S"}
                 >
                   Student View
                 </MenuItem>
                 <MenuItem
-                  onClick={() => handleViewChange("organiser")}
-                  disabled={view === "organiser"}
+                  onClick={() => handleViewChange("O")}
+                  disabled={accessLevel === "O"}
                 >
                   Organiser View
                 </MenuItem>
                 <MenuItem
-                  onClick={() => handleViewChange("admin")}
-                  disabled={view === "admin"}
+                  onClick={() => handleViewChange("A")}
+                  disabled={accessLevel === "A"}
                 >
                   Admin View
                 </MenuItem>
@@ -203,8 +198,10 @@ const Navbar = () => {
       </Drawer>
 
       <Routes>
-      <Route path="/" element={<Outlet />} />
-    
+        <Route path="/" element={<Outlet />} />
+          {/* Render links and routes based on the user's access level */}
+          {accessLevel === "S" && (
+            <>
           <Route path="/" element={<Navigate to="/TestLandingPage" replace />} />
           <Route path="/TestLandingPage" element={<Testlandingpage />} />
           <Route path="/AttendanceHome" element={<AttendancePage />} />
@@ -212,7 +209,11 @@ const Navbar = () => {
           <Route path="/HistoryPage" element={<Historypage />} />
           <Route path="/EventHome" element={<EventHome />} />
           <Route path="/FeedbackForm" element={<FeedbackForm />} />
-   
+          </>
+          )}
+          {accessLevel === "O" && (
+            <>
+              {/* Organiser view */}
           <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
           <Route path="/Event" element={<EventDetailsDashboard name={""} description={""} date={""} time={""} capacity={0} venue={""} recurring={false} eventStatistics={{
               gender: {
@@ -226,11 +227,19 @@ const Navbar = () => {
               }
             }} />} />
           <Route path="/page1" element={<Page1 />} />
-          
-         
+          </>
+          )}
+
+          {accessLevel === "A" && (
+            <>
+              {/* Admin view */}
           <Route path="/Admin" element={<Admin />} />
           <Route path="/OrganiserList" element={<OrganiserList />} />
           <Route path="/ActivityLog" element={<ActivityLog />} />
+          <Route path="/LoginPage" element={<LoginPage />} />
+          <Route path="/RegisterPage" element={<RegisterPage />} />
+          </>
+          )}
       </Routes>
     </>
     </ChakraProvider>

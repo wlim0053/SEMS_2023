@@ -1,7 +1,7 @@
 // LoginPage.tsx
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
-import './firebase-config';
+import '../../components/firebase-config';
 import React, { useState, FormEvent } from 'react';
 import {
 Box,
@@ -14,11 +14,12 @@ Text,
 useToast,
 Image,
 Center,
+ChakraProvider
 } from '@chakra-ui/react';
 import { EmailIcon } from '@chakra-ui/icons';
-import api from '../utils/api';
+import api from '../../utils/api';
 import { useNavigate } from "react-router-dom"
-
+import theme from "../../utils/theme";
 
 
 const LoginPage: React.FC = () => {
@@ -131,6 +132,8 @@ const handleSubmit = (e: FormEvent) => {
     });
   }
 return (
+  <ChakraProvider theme={theme}>
+    <>
     <Box width="100%" maxWidth="400px" margin="0 auto" mt="100px">
         {/* <Center mb={4}>
         </Center> */}
@@ -142,14 +145,16 @@ return (
             <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb={4}>
                 Login
             </Text>
-            <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon/>} onClick={loginWithGoogle}>
+            <Button color="blue" mt={4} leftIcon={<EmailIcon/>} onClick={loginWithGoogle}>
             Login
             </Button>
-            <Button colorScheme="blue" mt={4} leftIcon={<EmailIcon/>} onClick={signUpWithGoogle}>
+            <Button color="blue" mt={4} leftIcon={<EmailIcon/>} onClick={signUpWithGoogle}>
             Sign Up
             </Button>
         </VStack>
     </Box>
+    </>
+    </ChakraProvider>
 );
 };
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, FormControl, FormLabel, Input, Image, Heading, Select } from "@chakra-ui/react";
-import api from '../utils/api';
+import api from '../../utils/api';
 import { s } from "@fullcalendar/core/internal-common";
 import { useNavigate } from "react-router-dom"
 

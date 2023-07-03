@@ -9,6 +9,7 @@ import { ChakraProvider } from "@chakra-ui/react"
 import "./App.css"
 import { BrowserRouter as Router, Route, Outlet } from "react-router-dom"
 import theme from "./utils/theme"
+import LoginPage from "./pages/shared/LoginPage"
 
 function App() {
 	return (
