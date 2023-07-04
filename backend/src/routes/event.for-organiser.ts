@@ -14,6 +14,8 @@ import { OrganiserEventQueryParams } from "../interfaces/queryParams"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
 import { postEventEmail } from "../middlewares/emailHandler"
+import { createEmailReminderController } from "../controllers/emailController"
+
 
 export const organiserEventRouter = express.Router()
 
@@ -60,4 +62,11 @@ organiserEventRouter
 		verifyJwtHandler(["A", "O"]),
 		requestValidators({ body: JwtToken }),
 		deleteEventController
+	)
+
+organiserEventRouter
+	.route("/:id/reminder")
+	.post(
+		verifyJwtHandler(["A", "O"]),
+		createEmailReminderController
 	)
