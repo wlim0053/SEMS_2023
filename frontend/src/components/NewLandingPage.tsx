@@ -15,9 +15,11 @@ Card,
 CardHeader, 
 CardBody, 
 Stack,
+Center,
 } from "@chakra-ui/react"
 import { EmailIcon } from '@chakra-ui/icons';
 import Grouppic from './Grouppic.jpg'
+import Devteam2022 from './Devteam2022.jpg'
 
 
 const NewLandingPage = () => { 
@@ -55,29 +57,41 @@ return(
 
     
     <Box   w = '400px'>
-        <Heading position = 'relative' top = '150px' fontWeight='bold' color = 'black'> About This Page </Heading>
-        <Text position = 'relative' top = '170px' lineHeight='25px'> This page serves as a starting point for students in School of Information Technology and School of 
+        <Heading position = 'relative' top = '100px' fontWeight='bold' color = 'black'> About This Page </Heading>
+        <Text position = 'relative' top = '120px' lineHeight='25px'> This page serves as a starting point for students in School of Information Technology and School of 
                 Engineering to start on thier exciting journey to explore and engage with various events and activities happening around Monash campus
         </Text>
-        <Text position = 'relative' top = '190px' lineHeight='25px'> This page acts as a hub of information, offering students a comprehensive overview of upcoming events, including social gatherings, workshops, club activities, sports competitions, and many more.
+        <Text position = 'relative' top = '140px' lineHeight='25px'> This page acts as a hub of information, offering students a comprehensive overview of upcoming events, including social gatherings, workshops, club activities, sports competitions, and many more.
         </Text>
     </Box>
 
-
-    <Box>
-        <Image position = 'relative' src = {Grouppic}
-        objectFit='contain' width = '600px' height = '400px'  left = '50px' top = '70px'></Image>
-    </Box>
-
-    <Box  position='relative' w = '1000px'>
-        <Text position = 'relative' lineHeight='25px'>
+    <Box   w = '400px'>
+        <Text position = 'relative' lineHeight='25px' top = '160px' marginLeft='20px' >
         Its primary objective is to keep students informed and involved by providing details such as event descriptions, dates, times, locations, and any registration or ticketing requirements. 
         </Text>
-        <Text position = 'relative' lineHeight='25px'>
+        <Text position = 'relative' lineHeight='25px' top = '180px' marginLeft='20px' >
         This page allows students to easily browse through the wide range of options available to them and select events that align with their interests, academic pursuits, or personal development goals.
         </Text>
-
     </Box>
+
+    
+
+    <Flex  position='relative' w = '1000px'>
+
+        <Box>
+            <Image position = 'relative' src = {Devteam2022}
+            objectFit='contain' width = '600px' height = '250px'  left = '40px' top = '55px'></Image>
+            <Center position='relative' top = '55px' left = '35px'>2022 Development Team</Center>
+        </Box>
+
+        <Box>
+            <Image position = 'relative' src = {Devteam2022}
+            objectFit='contain' width = '600px' height = '250px'  right = '30px' top = '55px'></Image>
+            <Center position='relative' top = '55px' right = '35px'>2023 Development Team</Center>
+        </Box>
+        
+
+    </Flex>
 
     </Flex>
 

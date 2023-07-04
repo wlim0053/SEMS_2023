@@ -14,19 +14,14 @@ import NewHistoryPage from "./components/NewHistoryPage";
 // import ActivityLog from "./pages/admin/ActivityLog";
 
 // testing
-import Testlandingpage from "./components/Testlandingpage"
+
 import StudentEvents from "./components/StudentEvents"
 import NewLandingPage from "./components/NewLandingPage"
-import Testing from "./components/Testing"
 
 function App() {
   return (
     <div className="App">
-      <Router>
-        <Navbar />
-        <Outlet /> {/* Render nested routes */}
-        {/* <NewHistoryPage /> */}
-      </Router>
+      <NewLandingPage/>
     </div>
   );
 }
