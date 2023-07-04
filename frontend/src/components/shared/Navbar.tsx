@@ -34,18 +34,21 @@ import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 import EventApproval from "../../pages/Admin/EventApproval";
 import LoginPage from "../LoginPage";
 import RegisterPage from "../RegisterPage";
+import NewLandingPage from "../NewLandingPage";
+import AttendanceHome from "../../pages/student/AttendanceHome";
+import FeedbackPage from "../../pages/student/FeedbackPage";
 
-const Navbar = ({user_access_lvl}) => {
+const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const buttonRef = React.useRef(null);
-  const [accessLevel, setAccessLevel] = useState(user_access_lvl); // Track the user's access level
+  const [accessLevel, setAccessLevel] = useState("S"); // Track the user's access level
   const navigate = useNavigate();
 
   useEffect(() => {
     // Navigate to the appropriate landing page based on the selected view
     switch (accessLevel) {
       case "S":
-        navigate("/TestLandingPage");
+        navigate("/NewLandingPage");
         break;
       case "O":
         navigate("/OrganiserMainPage");
@@ -66,7 +69,7 @@ const Navbar = ({user_access_lvl}) => {
   return (
     <>
       {/* Change the gap between hamburger icon and the logo */}
-      <Flex bg="#006DAE" h="60px" alignItems="center" gap="10" justify="end">
+      <Flex bg="#006DAE" h="60px" alignItems="center" gap="10">
         <Box>
           <HamburgerIcon
             ref={buttonRef}
@@ -76,12 +79,11 @@ const Navbar = ({user_access_lvl}) => {
             css={{
               margin: "20px",
               cursor: "pointer",
-            }}
-          />
+            }} />
         </Box>
         {/* <Spacer/> */}
         <Image src="../monash_logo.png" height="50px"></Image>
-        
+
         {/*<Menu>*/}
         {/*  /!* To do: change the sign in sign up to an icon *!/*/}
         {/*  <MenuButton ml={4} mr={4} as={Button} variant="ghost">*/}
@@ -100,75 +102,108 @@ const Navbar = ({user_access_lvl}) => {
 
       {/* </Button> */}
       <Drawer
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        finalFocusRef={buttonRef}
-        colorScheme="blackAlpha"
+      isOpen ={isOpen}
+      placement="left"
+      onClose={onClose}
+      finalFocusRef={buttonRef}
+      colorScheme="blackAlpha"
       >
-        <DrawerOverlay></DrawerOverlay>
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Menu</DrawerHeader>
-          <DrawerBody>
-            <VStack align="start" spacing={4}>
-            <VStack align="start" spacing={4}>
+      <DrawerOverlay></DrawerOverlay>
+      <DrawerContent>
+        <DrawerCloseButton />
+        <DrawerHeader>Menu</DrawerHeader>
+        <DrawerBody>
+          <VStack align="start" spacing={4}>
             {accessLevel === "S" && (
               <>
-              <Link to="/NewLandingPage">Home</Link>
-              <Link to="/OrganiserList">Organiser List</Link>
-              <Link to="/EventApproval">Event Approval</Link>
-              <Link to="/StudentHome">Student Home</Link>
-              <Link to="/EventHome">Event Home</Link>
-              <Link to="/LoginPage">Login Page</Link>
-              <Link to="/HistoryPage">History Page</Link>
-            </VStack>
-          </DrawerBody>
-          <DrawerFooter>Hello3</DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-      <Drawer
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        colorScheme="blackAlpha"
-      >
-        <DrawerOverlay></DrawerOverlay>
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Menu</DrawerHeader>
-          <DrawerBody>
-            <VStack align="start" spacing={4}>
-              <Link to="/Admin">Home</Link>
-              <Link to="/OrganiserList">Organiser List</Link>
-              <Link to="/ActivityLog">Activity Log</Link>
-              <Link to="/StudentHome">Student Home</Link>
-              <Link to="/EventHome">Event Home</Link>
-              <Link to="/LoginPage">Login Page</Link>
-              <Link to="/OrganiserMainPage">Organiser Main Page</Link>
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
+                <Link to="/NewLandingPage" onClick={() => handleViewChange("S")}>Home</Link>
+                <Link to="/StudentHome" onClick={() => handleViewChange("S")}>Student Home</Link>
+                <Link to="/EventHome" onClick={() => handleViewChange("S")}>Event Home</Link>
+                <Link to="/AttendanceHome" onClick={() => handleViewChange("S")}>Attendance Home</Link>
+                <Link to="/NewHistoryPage" onClick={() => handleViewChange("S")}>History Page</Link>
+                <Link to="/FeedbackPage" onClick={() => handleViewChange("S")}>Feedback Page</Link>
+                <Link to="/LoginPage" onClick={() => handleViewChange("S")}>Login Page</Link>
+              </>
+            )}
+            {accessLevel === "O" && (
+              <>
+                <Link to="/OrganiserMainPage" onClick={() => handleViewChange("O")}>Home</Link>
+                <Link to="/CreateEventPage" onClick={() => handleViewChange("O")}>Create Event</Link>
+                <Link to="EditEventPage" onClick={() => handleViewChange("O")}>Edit Event</Link>
+                <Link to="/EventDetailsDashboard" onClick={() => handleViewChange("O")}>Event Details</Link>
+              </>
+            )}
+            {accessLevel === "A" && (
+              <>
+                <Link to="/Admin" onClick={() => handleViewChange("A")}>AdminDashboard</Link>
+                <Link to="/OrganiserList" onClick={() => handleViewChange("A")}>Organiser List</Link>
+                <Link to="/EventApproval" onClick={() => handleViewChange("A")}>Event Approval</Link>
+              </>
+            )}
+          </VStack>
+        </DrawerBody>
+        <DrawerFooter>
+          <Menu>
+            <MenuButton as={Button} variant="outline">
+              View
+            </MenuButton>
+            <MenuList>
+              <MenuItem
+                onClick={() => handleViewChange("S")}
+                disabled={accessLevel === "S"}
+              >
+                Student View
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleViewChange("O")}
+                disabled={accessLevel === "O"}
+              >
+                Organiser View
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleViewChange("A")}
+                disabled={accessLevel === "A"}
+              >
+                Admin View
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
 
-      <Routes>
-        <Route path="/" element="" />
+    <Routes>
+          {/* Render links and routes based on the user's access level */}
+          {accessLevel === "S" && (
+            <>
+        <Route path="/" element={<Navigate to="/NewLandingPage" replace />} />
+        <Route path="/NewLandingPage" element={<NewLandingPage />} />
+        <Route path="/StudentHome" element={<StudentHome />} />
+        <Route path="/EventHome" element={<EventHome />} />
+        <Route path="/AttendanceHome" element={<AttendanceHome />} />
+        <Route path="/NewHistoryPage" element={<NewHistoryPage />} />
+        <Route path="/FeedbackPage" element={<FeedbackPage />} />
+        <Route path="/LoginPage" element={<LoginPage />} />
+        <Route path="/RegisterPage" element={<RegisterPage />} />
+        </>
+          )}
+          {accessLevel === "O" && (
+            <>
+              {/* Organiser view */}
+        <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
+        <Route path="/CreateEventPage" element={<CreateEventPage />} />
+        <Route path="/EditEventPage" element={<RegisterPage />} />
+        <Route path="/EventDetailsDashboard" element={<EventDetailsDashboard />} />
+        </>
+          )}
+          {accessLevel === "A" && (
+            <>
+              {/* Admin view */}
         <Route path="/Admin" element={<Admin />} />
         <Route path="/OrganiserList" element={<OrganiserList />} />
         <Route path="/EventApproval" element={<EventApproval />} />
-        <Route path="/ActivityLog" element={<ActivityLog />} />
-        <Route path="/StudentHome" element={<StudentHome />} />
-        <Route path="/EventHome" element={<EventHome />} />
-        <Route path="/LoginPage" element={<LoginPage />} />
-        <Route path="/RegisterPage" element={<RegisterPage />} />
-        <Route path="/HistoryPage" element={<NewHistoryPage />} />
-        <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
-        <Route path="/CreateEventPage" element={<CreateEventPage />} />
-        <Route path="/EditEventPage" element={<EditEventPage />} />
-        <Route
-          path="/EventDetailsDashboard"
-          element={<EventDetailsDashboard />}
-        />
+       </>
+          )}
       </Routes>
     </>
   );

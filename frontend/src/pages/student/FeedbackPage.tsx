@@ -5,7 +5,6 @@ import FeedbackForm from "../../components/FeedbackForm";
 function FeedbackPage() {
   return (
     <div>
-      <Navbar />
       <FeedbackForm />
     </div>
   );
