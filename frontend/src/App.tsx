@@ -2,7 +2,6 @@
 // components
 import Navbar from "./components/shared/Navbar";
 import Admin from "./pages/Admin/AdminDashboard";
-import RegisterPage from "./components/RegisterPage";
 
 import { ChakraProvider } from "@chakra-ui/react";
 // components
@@ -26,7 +25,6 @@ function App() {
       <Router>
         <Navbar />
         <Outlet /> {/* Render nested routes */}
-        {/* <NewHistoryPage /> */}
       </Router>
     </div>
   );
