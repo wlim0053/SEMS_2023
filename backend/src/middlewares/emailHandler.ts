@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer"
 import { NextFunction, Request, Response } from "express"
 import handlebars from "handlebars"
-import { EventWithOrganiser, EventWithUser } from "../interfaces/event"
+import { EventWithOrganiser, EventWithOrganiserUser, EventWithUser } from "../interfaces/event"
 import { UserWithFireId } from "../interfaces/user"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
@@ -18,17 +18,14 @@ export const registrationEmail = async (
 		const transporter = nodemailer.createTransport(trans_obj)
 		const connection = await pool.connect()
 
-		const event: mssql.IResult<EventWithOrganiser> = await connection
+		const event: mssql.IResult<EventWithOrganiserUser> = await connection
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, req.body.event_uuid)
 			.query(`
-                    SELECT 
-                        e.*,
-                        o.parent_uuid,
-                        o.organiser_name,
-                        user_fire_id
-                    FROM 
-                        ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
+                    SELECT *
+                    FROM ${DbTables.EVENT} e 
+					JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
+					JOIN ${DbTables.USER} u on o.user_fire_id = u.user_fire_id
                     WHERE 
                         event_uuid=@event_uuid
                 `)
@@ -54,14 +51,15 @@ export const registrationEmail = async (
 				" " +
 				userData.user_lname.toUpperCase(),
 			eventName: eventData.event_title.toUpperCase(),
+			organiserEmail: eventData.user_email,
 		}
 
 		const mail = emailTemplate(data)
 
 		await transporter.sendMail({
 			from: user,
-			to: [userData.user_email],
-			subject: "Thank you for your registration!",
+			to: userData.user_email,
+			subject: "SEMS - Thank you for your registration!",
 			html: mail,
 		})
 	} catch (error) {
@@ -69,7 +67,7 @@ export const registrationEmail = async (
 	}
 }
 
-export const postEventEmail = async (
+export const requestForFeedbackEmail = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -109,7 +107,7 @@ export const postEventEmail = async (
 			await transporter.sendMail({
 				from: user,
 				to: eventUserData.user_email,
-				subject: "Reminder: SEMS - Important Information before joining the event",
+				subject: "SEMS - Your Feedback Matters! Share Your Experience of the event that you've joined!",
 				html: mail,
 			})
 		});
@@ -170,7 +168,7 @@ export const isEventApprovedEmail = async (
 		await transporter.sendMail({
 			from: user,
 			to: userData.user_email,
-			subject: (isApproved ? "SEMS - Event Approval Confirmation" : "SEMS - Event Rejection Confirmation"),
+			subject: (isApproved ? "SEMS - Event Approval Notice" : "SEMS - Event Rejection Notice"),
 			html: mail,
 		})
 	} catch (error) {

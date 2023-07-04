@@ -13,7 +13,7 @@ import { JwtToken } from "../interfaces/jwtToken"
 import { OrganiserEventQueryParams } from "../interfaces/queryParams"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
-import { postEventEmail } from "../middlewares/emailHandler"
+import { requestForFeedbackEmail } from "../middlewares/emailHandler"
 import { createEmailReminderController } from "../controllers/emailController"
 
 
@@ -43,7 +43,7 @@ organiserEventRouter.patch(
 	"/:id/complete",
 	verifyJwtHandler(["A", "O"]),
 	completeEventController,
-	postEventEmail
+	requestForFeedbackEmail
 )
 
 organiserEventRouter

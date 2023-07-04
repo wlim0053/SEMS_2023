@@ -35,6 +35,8 @@ export const EventWithOrganiser = EventWithUUID.merge(
 
 export const EventWithUser = EventWithUUID.merge(User)
 
+export const EventWithOrganiserUser = EventWithUUID.merge(User).merge(Organiser)
+
 export type Event = zod.infer<typeof Event>
 
 export type EventWithUUID = zod.infer<typeof EventWithUUID>
@@ -49,3 +51,5 @@ export const EventWithJwt = Event.omit({
 export type EventWithJwt = zod.infer<typeof EventWithJwt>
 
 export type EventWithUser = zod.infer<typeof EventWithUser>
+
+export type EventWithOrganiserUser = zod.infer<typeof EventWithOrganiserUser>
