@@ -34,10 +34,9 @@ import CreateEventPage from "../../pages/Organiser/CreateEventPage";
 import EditEventPage from "../../pages/Organiser/EditEventPage";
 import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 import EventApproval from "../../pages/Admin/EventApproval";
-import LoginPage from "../LoginPage";
-import RegisterPage from "../RegisterPage";
-import NewLandingPage from "../NewLandingPage";
-import AttendanceHome from "../../pages/student/AttendanceHome";
+import NewHistoryPage from "../../pages/student/HistoryPage";
+import NewLandingPage from "../../pages/student/NewLandingPage";
+// import AttendanceHome from "../../pages/student/AttendanceHome";
 import FeedbackPage from "../../pages/student/FeedbackPage";
 
 const Navbar = () => {
@@ -182,7 +181,7 @@ const Navbar = () => {
         <Route path="/NewLandingPage" element={<NewLandingPage />} />
         <Route path="/StudentHome" element={<StudentHome />} />
         <Route path="/EventHome" element={<EventHome />} />
-        <Route path="/AttendanceHome" element={<AttendanceHome />} />
+        {/* <Route path="/AttendanceHome" element={<AttendanceHome />} /> */}
         <Route path="/NewHistoryPage" element={<NewHistoryPage />} />
         <Route path="/FeedbackPage" element={<FeedbackPage />} />
         <Route path="/LoginPage" element={<LoginPage />} />
