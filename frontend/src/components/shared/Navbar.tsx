@@ -20,7 +20,6 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 
-import NewHistoryPage from "../NewHistoryPage";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, Route, Routes } from "react-router-dom";
 import OrganiserList from "../../pages/Admin/OrganiserList";
@@ -28,13 +27,14 @@ import ActivityLog from "../../pages/Admin/ActivityLog";
 import Admin from "../../pages/Admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
+import LoginPage from "../../pages/student/LoginPage";
+import RegisterPage from "../../pages/student/RegisterPage";
+import HistoryPage from "../../pages/student/HistoryPage";
 import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
 import CreateEventPage from "../../pages/Organiser/CreateEventPage";
 import EditEventPage from "../../pages/Organiser/EditEventPage";
 import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 import EventApproval from "../../pages/Admin/EventApproval";
-import LoginPage from "../LoginPage";
-import RegisterPage from "../RegisterPage";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -135,14 +135,7 @@ const Navbar = () => {
         <Route path="/EventHome" element={<EventHome />} />
         <Route path="/LoginPage" element={<LoginPage />} />
         <Route path="/RegisterPage" element={<RegisterPage />} />
-        <Route path="/HistoryPage" element={<NewHistoryPage />} />
-        <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
-        <Route path="/CreateEventPage" element={<CreateEventPage />} />
-        <Route path="/EditEventPage" element={<EditEventPage />} />
-        <Route
-          path="/EventDetailsDashboard"
-          element={<EventDetailsDashboard />}
-        />
+        <Route path="/HistoryPage" element={<HistoryPage />} />
       </Routes>
     </>
   );
