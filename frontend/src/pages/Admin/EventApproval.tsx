@@ -54,7 +54,7 @@ import api from "../../utils/api";
 const EventApproval = () => {
   const headers = [
     { key: "eventName", value: "Event" },
-    { key: "organiserName", value: "Organiser" },
+    { key: "organiserName", value: "Club" },
     { key: "eventStatus", value: "Status" },
     { key: "eventDetails", value: "Details" },
     { key: "actions", value: "Actions", disableSorting: true },
