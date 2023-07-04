@@ -1,7 +1,7 @@
 import { CSSObject } from "@emotion/react";
 import { useState, useEffect } from "react";
 import { Heading, useToast } from "@chakra-ui/react";
-import api from "../../utils/api";
+import api from "../utils/api";
 import {
   Table,
   Thead,
@@ -24,62 +24,10 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { SearchIcon, CloseIcon } from "@chakra-ui/icons";
-import FeedbackForm from "../../components/FeedbackForm";
+import FeedbackForm from "./FeedbackForm";
 
 function NewHistoryPage() {
-  // State variables
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [sortField, setSortField] = useState<
-    "eventNo" | "eventName" | "dateTime" | "club"
-  >("eventNo");
-  const [events, setEvents] = useState<Object[]>([]);
-  const [pastEvents, setPastEvents] = useState<PastEvent[]>([]);
-  const [clubs, setClubs] = useState<Club[]>([]);
-  const [feedbackModal, setFeedbackModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<PastEvent>();
-
   // Fetches participated events from the database
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        let eventResponse = await api.get(`/event/for-student?event_status=C`);
-        let data = eventResponse.data;
-        console.log(data);
-        let eventTemp: Object[] = [];
-        // for (let i in data) {
-        //   eventTemp.push(data[i]);
-        // }
-        setEvents(data);
-        console.log(data);
-
-        const uniqueClubIds: string[] = [
-          ...new Set(data.map((event: Event) => event["organiser_uuid"])),
-        ] as string[];
-
-        const uniqueClubNames: string[] = [
-          ...new Set(data.map((event: Event) => event["organiser_name"])),
-        ] as string[];
-
-        let uniqueClubs: Club[] = [];
-        for (let i in uniqueClubIds) {
-          const club: Club = {
-            id: uniqueClubIds[i],
-            name: uniqueClubNames[i],
-          };
-          uniqueClubs.push(club);
-        }
-
-        setClubs(uniqueClubs);
-      } catch (err) {
-        console.log(`Error: ${err}`);
-      }
-    };
-    fetchEvents();
-  }, []);
-
   useEffect(() => {
     const fetchParticipations = async () => {
       try {
@@ -88,37 +36,31 @@ function NewHistoryPage() {
         console.log(response.data);
         const eventsTemp: PastEvent[] = [];
         for (let i = 0; i < data["length"]; i++) {
-          const currentOrg_uuid = data[i]["organiser_uuid"];
-          let organiserName = "";
-          for (let j in clubs) {
-            console.log("club:", clubs[j]);
-            console.log("org_uuid:", currentOrg_uuid);
-            if (clubs[j].id == currentOrg_uuid) {
-              organiserName = clubs[j].name;
-            }
-          }
+          const currentEvent_uuid = data[i]["event_uuid"];
+          let eventResponse = await api.get(`/event/${currentEvent_uuid}`);
+          let eventData = eventResponse.data[0];
+          console.log(eventResponse);
           let attendance = data[i]["participation_attendance"];
           if (attendance) {
             const event: PastEvent = {
               participation_uuid: data[i]["participation_uuid"],
               eventNo: i + 1,
-              eventName: data[i]["event_title"],
-              club: organiserName,
-              dateTime: new Date(data[i]["event_start_date"]),
+              eventName: eventData["event_title"],
+              club: eventData["organiser_name"],
+              dateTime: new Date(eventData["event_start_date"]),
               feedbackGiven: !!data[i]["feedback_uuid"],
             };
             eventsTemp.push(event);
             console.log(event);
           }
         }
-        setPastEvents(eventsTemp);
-        console.log("events", pastEvents);
+        setEvents(eventsTemp);
       } catch (err) {
         console.log(`Error: ${err}`);
       }
     };
     fetchParticipations();
-  }, [clubs, events]);
+  }, []);
 
   // Fetches clubs from the database
   // useEffect(() => {
@@ -169,6 +111,19 @@ function NewHistoryPage() {
   //   },
   // ];
 
+  // State variables
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<
+    "eventNo" | "eventName" | "dateTime" | "club"
+  >("eventNo");
+  const [events, setEvents] = useState<PastEvent[]>([]);
+  // const [clubs, setClubs] = useState<string[]>([]);
+  const [feedbackModal, setFeedbackModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<PastEvent>();
+
   // Defining Past events
   type PastEvent = {
     participation_uuid: string;
@@ -178,11 +133,6 @@ function NewHistoryPage() {
     dateTime: Date;
     feedbackGiven: Boolean;
   };
-
-  type Club = {
-    id: string;
-    name: string;
-  };
   // Example club data
   // const clubs = [
   //   { name: "IEMMSS", id: "iemmss" },
@@ -191,7 +141,7 @@ function NewHistoryPage() {
   //   { name: "CSM", id: "cr7" },
   //   { name: "JJK", id: "jjk" },
   // ];
-  // const clubs = ["IEMMSS", "CHEMECAR", "OP", "CSM", "JJK", "MUMTEC"];
+  const clubs = ["IEMMSS", "CHEMECAR", "OP", "CSM", "JJK", "MUMTEC"];
 
   // Table Styling
   const tableStyles: CSSObject = {
@@ -225,7 +175,7 @@ function NewHistoryPage() {
   };
 
   // Filter events based on search term and selected clubs
-  const filteredEvents = pastEvents.filter((event) => {
+  const filteredEvents = events.filter((event) => {
     const matchesSearchTerm = event.eventName
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -403,18 +353,18 @@ function NewHistoryPage() {
           <ModalBody mt={2}>
             {clubs.map((club) => (
               <Box
-                key={club.id}
+                key={club}
                 display="flex"
                 flexDirection="row"
                 alignItems="center"
                 mb={2}
               >
                 <Checkbox
-                  value={club.name}
-                  isChecked={selectedClubs.includes(club.name)}
+                  value={club}
+                  isChecked={selectedClubs.includes(club)}
                   onChange={handleClubFilter}
                 />
-                <Text ml={3}>{club.name}</Text>
+                <Text ml={3}>{club}</Text>
               </Box>
             ))}
           </ModalBody>
