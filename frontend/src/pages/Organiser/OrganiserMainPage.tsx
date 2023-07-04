@@ -24,7 +24,9 @@ import api from "../../utils/api";
 
 interface EventData {
   event_uuid: string;
+  organiser_uuid: string;
   event_ems_no: string | null;
+  event_ems_link: string | null;
   event_start_date: string;
   event_end_date: string;
   event_title: string;
@@ -36,10 +38,10 @@ interface EventData {
   event_reg_start_date: string;
   event_reg_end_date: string;
   event_reg_google_form: string;
-  organiser_uuid: string;
+  no_participants: number;
   parent_uuid: string | null;
   organiser_name: string;
-  stu_fire_id: string;
+  user_fire_id: string;
 }
 
 function OrganiserMainPage() {
@@ -53,21 +55,12 @@ function OrganiserMainPage() {
 
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [eventData, setEventData] = useState<EventData[]>([]);
-
+  const [refreshGrid, setRefreshGrid] = useState(false);
+  
   const fetchEventsFromDatabase = async () => {
     const response = await api.get("/event/for-organiser");
     console.log(response.data);
     return response.data;
-  };
-
-  const updateEventData = () => {
-    fetchEventsFromDatabase()
-      .then((data) => {
-        setEventData(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
   };
 
   useEffect(() => {
@@ -79,6 +72,20 @@ function OrganiserMainPage() {
         console.error("Error fetching events:", error);
       });
   }, []);
+
+  useEffect(() => {
+    if (refreshGrid) {
+      fetchEventsFromDatabase()
+        .then((data) => {
+          setEventData(data);
+          setRefreshGrid(false); // Reset refreshGrid back to false
+        })
+        .catch((error) => {
+          console.error("Error fetching events:", error);
+          setRefreshGrid(false); // Reset refreshGrid back to false even on error
+        });
+    }
+  }, [refreshGrid]);
 
   function toggleView() {
     setCalendarViewFlag(!calendarViewFlag);
@@ -92,27 +99,34 @@ function OrganiserMainPage() {
     let sortedData: EventData[] = [...events]; // Create a copy of the events array
 
     sortedData.sort((a, b) => {
-      // Kidd:: Need to ask Kennedy and understand how to get participation
-      /* 
-      if (sortField === "participants") {
-        const participantsA = parseInt(a[sortField].split("/")[0]);
-        const participantsB = parseInt(b[sortField].split("/")[0]);
+      if (sortField === "no_participants") {
+        const participantsA = a.no_participants;
+        const participantsB = b.no_participants;
 
         if (sortOrder === "asc") {
           return participantsA - participantsB;
         } else {
           return participantsB - participantsA;
         }
-      } */
+      } 
+
       if (sortField === "event_start_date") {
         const dateA = new Date(a.event_start_date);
         const dateB = new Date(b.event_start_date);
         return sortOrder === "asc"
           ? dateA.getTime() - dateB.getTime()
           : dateB.getTime() - dateA.getTime();
-      } else {
-        return 0;
       }
+
+      if (sortField === "event_status") {
+        const statusA = a.event_status.toLowerCase();
+        const statusB = b.event_status.toLowerCase();
+        return sortOrder === "asc"
+          ? statusA.localeCompare(statusB)
+          : statusB.localeCompare(statusA);
+      } 
+      
+      return 0;
     });
 
     return sortedData;
@@ -121,8 +135,7 @@ function OrganiserMainPage() {
   const filteredEvents = eventData.filter((event) => {
     const eventMatches = event.event_title.toLowerCase().includes(searchTerm);
     const venueMatches = event.event_venue.toLowerCase().includes(searchTerm);
-    const clubMatches = event.organiser_name.toLowerCase().includes(searchTerm); // Kidd:: Apparently organiser_name is club name (Need to confirm)
-    return eventMatches || venueMatches || clubMatches;
+    return eventMatches || venueMatches;
   });
 
   const sortedEvents = sortEvents(filteredEvents);
@@ -134,7 +147,7 @@ function OrganiserMainPage() {
   );
 
   const handleCreateEvent = () => {
-    navigate("/CreateEventForm", { state: { eventData: null } }); // If it's null, /CreateEventForm can recognize that component is called for creation.
+    navigate("/CreateEventPage"); 
   };
 
   const handleReset = () => {
@@ -186,7 +199,7 @@ function OrganiserMainPage() {
             ml={"25px"}
           >
             <Input
-              placeholder="Search Venue, Event, or Club"
+              placeholder="Search Venue or Event"
               onChange={handleSearch}
             />
           </Box>
@@ -211,8 +224,9 @@ function OrganiserMainPage() {
               value={sortField}
               onChange={(e) => setSortField(e.target.value as SortField)}
             >
-              <option value="participants">Number of Participants</option>
-              <option value="date">Date</option>
+              <option value="no_of_participants">Number of Participants</option>
+              <option value="event_start_date">Date</option>
+              <option value="event_status">Event Status</option>
             </Select>
 
             <Select
@@ -256,20 +270,20 @@ function OrganiserMainPage() {
                 <GridEventDashboard
                   data={currentEvents}
                   formatDate={formatDate}
-                  updateEventData={updateEventData}
+                  setRefreshGrid={setRefreshGrid}
                 />
               </TabPanel>
               <TabPanel p={0}>
                 <GridEventDashboard
                   data={pastEvents}
                   formatDate={formatDate}
-                  updateEventData={updateEventData}
+                  setRefreshGrid={setRefreshGrid}
                 />
               </TabPanel>
             </TabPanels>
           </Tabs>
         ) : (
-          <Calendar eventData={eventData} />
+          <Calendar setRefreshGrid={setRefreshGrid}/>
         )}
       </Box>
     </>

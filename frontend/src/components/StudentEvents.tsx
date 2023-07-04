@@ -7,46 +7,38 @@ import {
   Box,
   Text,
 } from "@chakra-ui/react";
-function StudentEvents() {
-  type Event = {
-    eventNo: number;
-    eventName: string;
-    club: string;
-    dateTime: Date;
-    venue: string;
-    description: string;
-  };
+import { useState, useEffect } from "react";
+import api from "../utils/api";
 
-  const events: Event[] = [
-    {
-      eventNo: 1,
-      eventName: "Sustainability, Safety, Chem or Not?",
-      club: "IEMMSS",
-      dateTime: new Date("2023-05-06T10:00:00"),
-      venue: "Zoom Meeting",
-      description:
-        "This webinar will introduce different aspects of engineering, with a focus on chemical engineering. We will explore the principles and applications of this interdisciplinary field, including the design of complex processes and the development of renewable energy sources.",
-    },
-    {
-      eventNo: 2,
-      eventName:
-        "Beyond the Blue Skies: The Exciting Frontier of Aerospace Engineering",
-      club: "IEMMSS",
-      dateTime: new Date("2023-05-13T14:00:00"),
-      venue: "Zoom Meeting",
-      description:
-        "This event is focused on exploring the promising advancements in space exploration and the significance of collaboration with various engineering industries in the future of aerospace engineering. Attendees will delve into the exciting possibilities that lie ahead, including commercial satellites, interstellar travel, and sustainable solutions that will shape the aircraft and spacecraft of tomorrow. Join us for a journey into the thrilling future of space exploration that promises to take us beyond our wildest dreams.",
-    },
-    {
-      eventNo: 3,
-      eventName: "ChemE Car Workshop",
-      club: "CHEMECAR",
-      dateTime: new Date("2023-05-06T09:00:00"),
-      venue: "The Porch",
-      description:
-        "This workshop aims to provide students with hands-on experience in building a ChemE Car. Students will construct a simple chemically operated (to start and stop from chemical reaction(s)) A4-sized car",
-    },
-  ];
+function StudentEvents() {
+  interface Event {
+    event_uuid: string;
+    event_ems_no: string | null;
+    event_start_date: string;
+    event_end_date: string;
+    event_title: string;
+    event_desc: string;
+    event_mode: string;
+    event_venue: string;
+    event_capacity: number;
+    event_status: string;
+    event_reg_start_date: string;
+    event_reg_end_date: string;
+    event_reg_google_form: string;
+    organiser_uuid: string;
+    parent_uuid: string | null;
+    organiser_name: string;
+    stu_fire_id: string;
+  }
+
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    api
+      .get("/participation?event_status=A")
+      .then((response) => setEvents(response.data))
+      .catch((error) => console.log(error));
+  }, []);
 
   return (
     <Box>
@@ -62,34 +54,78 @@ function StudentEvents() {
         My Events
       </Text>
       <Accordion
-        allowToggle
         allowMultiple
         ml={{ base: "1rem", md: "2rem" }}
         mr={{ base: "1rem", md: "2rem" }}
       >
-        {events.map((event) => (
-          <AccordionItem key={event.eventNo}>
-            <h2>
-              <AccordionButton borderBottom="1px solid #ccc" bg="#d9d9d9">
-                <Box flex="3" textAlign="left">
-                  {event.eventName}
-                </Box>
-                <Box flex="1">
-                  <Text as="time" dateTime={event.dateTime.toISOString()}>
-                    {event.dateTime.toLocaleString()}
-                  </Text>
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-            </h2>
-            <AccordionPanel pb={4}>
-              <Text>Event No: {event.eventNo}</Text>
-              <Text>Club: {event.club}</Text>
-              <Text>Venue: {event.venue}</Text>
-              <Text>Description: {event.description}</Text>
-            </AccordionPanel>
-          </AccordionItem>
-        ))}
+        {events.map((event) => {
+          const startDate = new Date(event.event_start_date);
+          const endDate = new Date(event.event_end_date);
+          const startDateTime = startDate.toLocaleString("en-GB", {
+            month: "numeric",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          });
+          const startTime = startDate.toLocaleString("en-GB", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          });
+          const endTime = endDate.toLocaleString("en-GB", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          });
+
+          return (
+            <AccordionItem key={event.event_uuid}>
+              <h2>
+                <AccordionButton
+                  borderBottom="1px solid #ccc"
+                  bg="#d9d9d9"
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  p={2}
+                >
+                  <Box flex="3" textAlign="left" mr={2}>
+                    {event.event_title}
+                  </Box>
+                  <Box flex="1">
+                    <Text>{startDateTime}</Text>
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4} pt={2} pl={2} pr={4}>
+                <Text>Description: {event.event_desc}</Text>
+                <Text>Club: {event.organiser_name}</Text>
+                <Text>
+                  Start Date:{" "}
+                  {startDate.toLocaleDateString("en-GB", {
+                    month: "numeric",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </Text>
+                <Text>
+                  End Date:{" "}
+                  {endDate.toLocaleDateString("en-GB", {
+                    month: "numeric",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </Text>
+                <Text>Start Time: {startTime}</Text>
+                <Text>End Time: {endTime}</Text>
+                <Text>Venue: {event.event_venue}</Text>
+              </AccordionPanel>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
     </Box>
   );

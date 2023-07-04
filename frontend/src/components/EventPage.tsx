@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionButton,
@@ -10,7 +10,6 @@ import {
   Checkbox,
   Flex,
   FormControl,
-  FormErrorMessage,
   FormLabel,
   IconButton,
   Input,
@@ -20,73 +19,139 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Select,
   Text,
   Wrap,
   WrapItem,
+  useToast,
 } from "@chakra-ui/react";
-import { CSSObject } from "@emotion/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
 
 function EventPage() {
-  const events: Event[] = [
-    {
-      eventNo: 1,
-      eventName: "Sustainability, Safety, Chem or Not?",
-      club: "IEMMSS",
-      dateTime: new Date("2023-05-06T10:00:00"),
-      venue: "Zoom Meeting",
-      description:
-        "This webinar will introduce different aspects of engineering, with a focus on chemical engineering. We will explore the principles and applications of this interdisciplinary field, including the design of complex processes and the development of renewable energy sources.",
-    },
-    {
-      eventNo: 2,
-      eventName:
-        "Beyond the Blue Skies: The Exciting Frontier of Aerospace Engineering",
-      club: "IEMMSS",
-      dateTime: new Date("2023-05-13T14:00:00"),
-      venue: "Zoom Meeting",
-      description:
-        "This event is focused on exploring the promising advancements in space exploration and the significance of collaboration with various engineering industries in the future of aerospace engineering. Attendees will delve into the exciting possibilities that lie ahead, including commercial satellites, interstellar travel, and sustainable solutions that will shape the aircraft and spacecraft of tomorrow. Join us for a journey into the thrilling future of space exploration that promises to take us beyond our wildest dreams.",
-    },
-    {
-      eventNo: 3,
-      eventName: "ChemE Car Workshop",
-      club: "CHEMECAR",
-      dateTime: new Date("2023-05-06T09:00:00"),
-      venue: "The Porch",
-      description:
-        "This workshop aims to provide students with hands-on experience in building a ChemE Car. Students will construct a simple chemically operated (to start and stop from chemical reaction(s)) A4-sized car",
-    },
-  ];
+  interface Event {
+    event_uuid: string;
+    event_ems_no: string | null;
+    event_start_date: string;
+    event_end_date: string;
+    event_title: string;
+    event_desc: string;
+    event_mode: string;
+    event_venue: string;
+    event_capacity: number;
+    event_status: string;
+    event_reg_start_date: string;
+    event_reg_end_date: string;
+    event_reg_google_form: string;
+    organiser_uuid: string;
+    parent_uuid: string | null;
+    organiser_name: string;
+    stu_fire_id: string;
+  }
 
-  type SortField = "eventNo" | "eventName" | "dateTime" | "club";
+  type SortField =
+    | "event_start_date"
+    | "event_title"
+    | "event_end_date"
+    | "organiser_name";
 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [sortField, setSortField] = useState<SortField>("eventNo");
+  const [sortField, setSortField] = useState<SortField>("event_start_date");
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  const [, setCurrentIndex] = useState(0);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [sortedEvents, setSortedEvents] = useState<Event[]>([]);
+  const [enrolmentYear, setEnrolmentYear] = useState(0);
+  const [enrolmentIntake, setEnrolmentIntake] = useState(0);
+  const [participatedEvents, setParticipatedEvents] = useState<Event[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isFormFilled, setIsFormFilled] = useState(false);
+  const [clubs, setClubs] = useState<string[]>([]);
+  
+  const toast = useToast();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await api.get("/event/for-student?event_status=A");
+        const data = response.data;
+        const filteredEvents = data.filter(
+          (event: Event) =>
+            selectedClubs.length === 0 ||
+            selectedClubs.includes(event.organiser_name)
+        );
+        setEvents(filteredEvents);
+        setSortedEvents(filteredEvents);
 
-  const clubs = [
-    { name: "IEMMSS", id: "iemmss" },
-    { name: "CHEMECAR", id: "chemecar" },
-    { name: "OP", id: "messi" },
-    { name: "CSM", id: "cr7" },
-    { name: "JJK", id: "jjk" },
-  ];
+        const uniqueClubNames: string[] = [
+          ...new Set(data.map((event: Event) => event.organiser_name)),
+        ] as string[];
+        setClubs(uniqueClubNames);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  type Event = {
-    eventNo: number;
-    eventName: string;
-    club: string;
-    dateTime: Date;
-    venue: string;
-    description: string;
+    fetchEvents().catch((error) => console.error(error));
+  }, [selectedClubs]);
+
+  // get from /participation and console.log
+
+  useEffect(() => {
+    const fetchParticipation = async () => {
+      try {
+        const response = await api.get("/participation?event_status=A");
+        const data = response.data;
+
+        setParticipatedEvents(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchParticipation().catch((error) => console.error(error));
+  }, []);
+
+  const isSignedUp = (eventUuid: string) => {
+    return participatedEvents.some(
+      (participation) => participation.event_uuid === eventUuid
+    );
   };
 
-  const navigate = useNavigate();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!selectedEvent) {
+      console.error("No event found");
+      return;
+    }
+
+    // Proceed with sign-up if within the registration period
+    // data to be sent
+    const data = {
+      event_uuid: selectedEvent?.event_uuid, // get the uuid of the selected event
+      // user_fire_id: '123', // leave it blank for now
+      participation_year: enrolmentYear,
+      participation_semester: enrolmentIntake,
+      participation_attendance: 0,
+    };
+    console.log(data);
+
+    try {
+      const response = await api.post("/participation", data);
+      console.log(response.data);
+      // Close the modal after successful submission
+      setIsSignUpModalOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
 
   const handleGoToCalendar = () => {
     navigate("/StudentHome");
@@ -95,6 +160,15 @@ function EventPage() {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
+
+  const sortEvents = (field: SortField, order: string, events: Event[]) => {
+    return [...events].sort((a, b) => {
+      if (a[field] < b[field]) return order === "asc" ? -1 : 1;
+      if (a[field] > b[field]) return order === "asc" ? 1 : -1;
+      return 0;
+    });
+  };
+
   const handleSort = (field: SortField) => {
     if (field === sortField) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -102,17 +176,17 @@ function EventPage() {
       setSortField(field);
       setSortOrder("asc");
     }
+    setSortedEvents(sortEvents(field, sortOrder, events));
   };
 
   const handleReset = () => {
-    setSortField("eventNo");
-    setSortOrder("asc");
+    setSortField("event_start_date");
+    setSortOrder("desc");
     setSelectedClubs([]);
   };
 
   const handleClubFilter = (event: React.ChangeEvent<HTMLInputElement>) => {
     const club = event.target.value;
-    console.log(club);
     if (event.target.checked) {
       setSelectedClubs([...selectedClubs, club]);
     } else {
@@ -120,39 +194,21 @@ function EventPage() {
     }
   };
 
-  const filteredEvents = events.filter((event) => {
-    const matchesSearchTerm = event.eventName
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesSelectedClubs =
-      selectedClubs.length === 0 || selectedClubs.includes(event.club);
-    return matchesSearchTerm && matchesSelectedClubs;
-  });
+  const getFormIdFromLink = (link: string) => {
+    const url = new URL(link);
+    const pathSegments = url.pathname.split("/");
+    const formId = pathSegments[4];
+    return formId;
+  };
 
-  const sortedEvents = [...filteredEvents].sort((a, b) => {
-    if (sortField === "eventNo") {
-      return sortOrder === "asc"
-        ? a.eventNo - b.eventNo
-        : b.eventNo - a.eventNo;
-    } else if (sortField === "eventName") {
-      return sortOrder === "asc"
-        ? a.eventName.localeCompare(b.eventName)
-        : b.eventName.localeCompare(a.eventName);
-    } else if (sortField === "dateTime") {
-      return sortOrder === "asc"
-        ? a.dateTime.getTime() - b.dateTime.getTime()
-        : b.dateTime.getTime() - a.dateTime.getTime();
-    } else {
-      return sortOrder === "asc"
-        ? a.club.localeCompare(b.club)
-        : b.club.localeCompare(a.club);
+  const isValidURL = (string: string): boolean => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
     }
-  });
-
-  const [signUpStatus, setSignUpStatus] = useState(
-    Array(sortedEvents.length).fill(false)
-  );
-  const [currentIndex, setCurrentIndex] = useState(0);
+  };
 
   return (
     <Box width="100%" p={5} overflowX="auto">
@@ -192,10 +248,10 @@ function EventPage() {
               _hover={{ backgroundColor: "#005c8c" }}
               color="white"
               size="sm"
-              onClick={() => handleSort("eventName")}
+              onClick={() => handleSort("event_title")}
             >
               Sort by Event Name{" "}
-              {sortField === "eventName" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortField === "event_title" && (sortOrder === "asc" ? "↑" : "↓")}
             </Button>
           </WrapItem>
           <WrapItem>
@@ -204,10 +260,11 @@ function EventPage() {
               _hover={{ backgroundColor: "#005c8c" }}
               color="white"
               size="sm"
-              onClick={() => handleSort("dateTime")}
+              onClick={() => handleSort("event_start_date")}
             >
               Sort by Date & Time{" "}
-              {sortField === "dateTime" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortField === "event_start_date" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
             </Button>
           </WrapItem>
           <WrapItem>
@@ -231,48 +288,114 @@ function EventPage() {
       </Flex>
 
       {/* Accordion */}
-      <Accordion allowToggle allowMultiple>
-        {sortedEvents.map((event, index) => (
-          <AccordionItem key={event.eventNo}>
-            {/* Accordion header */}
-            <AccordionButton bg="#d9d9d9" borderBottom="2px solid #ccc">
-              <Box flex="3" textAlign="left">
-                {event.eventName}
-              </Box>
-              <Box flex="1">
-                <Text as="time" dateTime={event.dateTime.toISOString()}>
-                  {event.dateTime.toLocaleString()}
+      <Accordion allowMultiple>
+        {sortedEvents.map((event, index) => {
+          const startDate = new Date(event.event_start_date);
+          const endDate = new Date(event.event_end_date);
+          const startTime = startDate.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          const endTime = endDate.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+          const handleSignUp = () => {
+            // Check if sign-up is allowed during the registration period
+            const currentDate = new Date();
+            const registrationStartDate = new Date(event.event_reg_start_date);
+            const registrationEndDate = new Date(event.event_reg_end_date);
+
+            if (
+              currentDate < registrationStartDate ||
+              currentDate > registrationEndDate
+            ) {
+              // Display a toast message indicating that sign-up is not possible
+              toast({
+                title: "Cannot Sign Up",
+                description:
+                  "Sign-up is only allowed during the registration period.",
+                status: "warning",
+                duration: 3000,
+                isClosable: true,
+              });
+
+              return;
+            }
+            setIsSignUpModalOpen(true);
+            setCurrentIndex(index);
+            setSelectedEvent(event);
+          };
+
+          return (
+            <AccordionItem key={event.event_uuid}>
+              <h2>
+                <AccordionButton
+                  borderBottom="1px solid #ccc"
+                  bg="#bfe6ff"
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  p={2}
+                >
+                  <Box flex="3" textAlign="left" mr={2}>
+                    {event.event_title}
+                  </Box>
+                  <Box flex="1">
+                    <Text>
+                      {startDate.toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </Text>
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4} pt={2} pl={2} pr={4}>
+                <Text>Description: {event.event_desc}</Text>
+                <Text>Club: {event.organiser_name}</Text>
+                <Text>
+                  Start Date:{" "}
+                  {startDate.toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
                 </Text>
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
+                <Text>
+                  End Date:{" "}
+                  {endDate.toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </Text>
+                <Text>Start Time: {startTime}</Text>
+                <Text>End Time: {endTime}</Text>
+                <Text>Venue: {event.event_venue}</Text>
 
-            {/* Accordion panel */}
-            <AccordionPanel pb={4}>
-              {/* Event details */}
-              <Text>Event No: {event.eventNo}</Text>
-              <Text>Club: {event.club}</Text>
-              <Text>Venue: {event.venue}</Text>
-              <Text>Description: {event.description}</Text>
-
-              {/* Sign-up button */}
-              <Button
-                backgroundColor="#006dac"
-                _hover={{ backgroundColor: "#005c8c" }}
-                color={"white"}
-                size="sm"
-                onClick={() => {
-                  setIsSignUpModalOpen(true);
-                  setCurrentIndex(index);
-                }}
-                isDisabled={signUpStatus[index]}
-                mt={4}
-              >
-                Sign Up
-              </Button>
-            </AccordionPanel>
-          </AccordionItem>
-        ))}
+                {/* Sign-up button */}
+                <Button
+                  backgroundColor="#006dac"
+                  _hover={{ backgroundColor: "#005c8c" }}
+                  color={"white"}
+                  size="sm"
+                  onClick={handleSignUp}
+                  isDisabled={isSignedUp(event.event_uuid)}
+                  mt={4}
+                >
+                  Sign Up
+                </Button>
+              </AccordionPanel>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
 
       {/* Go to Calendar View button */}
@@ -293,20 +416,20 @@ function EventPage() {
           <ModalCloseButton />
           <Box borderBottom="1px solid" borderColor="gray.400" />
           <ModalBody mt={2}>
-            {clubs.map((club) => (
+            {clubs.map((clubName) => (
               <Box
-                key={club.id}
+                key={clubName}
                 display="flex"
                 flexDirection="row"
                 alignItems="center"
                 mb={2}
               >
                 <Checkbox
-                  value={club.name}
-                  isChecked={selectedClubs.includes(club.name)}
+                  value={clubName}
+                  isChecked={selectedClubs.includes(clubName)}
                   onChange={handleClubFilter}
                 />
-                <Text ml={3}>{club.name}</Text>
+                <Text ml={3}>{clubName}</Text>
               </Box>
             ))}
           </ModalBody>
@@ -320,29 +443,65 @@ function EventPage() {
         <ModalContent>
           <ModalHeader>Sign Up</ModalHeader>
           <ModalCloseButton />
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setIsSignUpModalOpen(false);
-              setSignUpStatus((prevStatus) =>
-                prevStatus.map((status, i) =>
-                  i === currentIndex ? true : status
-                )
-              );
-              console.log("Submit clicked");
-            }}
-          >
+          <form onSubmit={handleSubmit}>
             <ModalBody pb={6}>
-              <FormControl isRequired>
-                <FormLabel>Name</FormLabel>
-                <Input />
-                <FormErrorMessage>Name is required.</FormErrorMessage>
+              <FormControl mt={4} isRequired>
+                <FormLabel>Current Course Year</FormLabel>
+                <Select
+                  placeholder="Select current course year"
+                  value={enrolmentYear}
+                  onChange={(e) => setEnrolmentYear(parseInt(e.target.value))}
+                >
+                  {Array.from({ length: 4 }, (_, i) => i + 1).map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </Select>
               </FormControl>
 
               <FormControl mt={4} isRequired>
-                <FormLabel>Email</FormLabel>
-                <Input type="email" />
-                <FormErrorMessage>Email is required.</FormErrorMessage>
+                <FormLabel>Current Semester</FormLabel>
+                <Select
+                  placeholder="Select current semester"
+                  value={enrolmentIntake}
+                  onChange={(e) => setEnrolmentIntake(parseInt(e.target.value))}
+                >
+                  <option value="1">Sem 1</option>
+                  <option value="2">Sem 2</option>
+                </Select>
+              </FormControl>
+              <FormLabel mt={4}>Addtional Queries</FormLabel>
+              <Box>
+                {selectedEvent &&
+                  (isValidURL(selectedEvent.event_reg_google_form) ? (
+                    <iframe
+                      title="Google Form"
+                      src={`https://docs.google.com/forms/d/e/${getFormIdFromLink(
+                        selectedEvent.event_reg_google_form
+                      )}/viewform?embedded=true`}
+                      width="98%"
+                      height="500"
+                      style={{ margin: "10px" }}
+                    ></iframe>
+                  ) : (
+                    <Text>
+                      {selectedEvent.event_reg_google_form
+                        ? "Invalid URL"
+                        : "There are no additional questions for the event."}
+                    </Text>
+                  ))}
+              </Box>
+
+              <FormControl mt={4} isRequired>
+                <FormLabel>Google Form</FormLabel>
+                <Checkbox
+                  isChecked={isFormFilled}
+                  onChange={(e) => setIsFormFilled(e.target.checked)}
+                  required
+                >
+                  I acknowledge that I have filled out the Google Form
+                </Checkbox>
               </FormControl>
             </ModalBody>
 
