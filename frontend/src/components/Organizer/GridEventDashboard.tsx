@@ -28,13 +28,13 @@ interface EventData {
 interface GridEventDashboardProps {
   data: EventData[];
   formatDate: (date: string) => string;
-  updateEventData: () => void;
+  setRefreshGrid: (refresh: boolean) => void;
 }
 
-function GridEventDashboard({ data, updateEventData  }: GridEventDashboardProps) {
+function GridEventDashboard({ data, setRefreshGrid  }: GridEventDashboardProps) {
   return (
     <Box mt="20px">
-      <Grid templateColumns="repeat(6, 1fr)" gap={0.5}>
+      <Grid templateColumns="repeat(7, 1fr)" gap={0.5}>
         <Box w="100%" h="75" bg="#DFE1E4" display="flex" justifyContent={'center'} pb={'8px'}>
           <Text mt={'auto'} fontWeight={'700'} fontSize={'16px'} fontFamily={'Arial'}>
             Event
@@ -62,11 +62,16 @@ function GridEventDashboard({ data, updateEventData  }: GridEventDashboardProps)
         </Box>
         <Box w="100%" h="75" bg="#DFE1E4" display="flex" justifyContent={'center'} pb={'8px'}>
           <Text mt={'auto'} fontWeight={'700'} fontSize={'16px'} fontFamily={'Arial'}>
+            Status
+          </Text>
+        </Box>
+        <Box w="100%" h="75" bg="#DFE1E4" display="flex" justifyContent={'center'} pb={'8px'}>
+          <Text mt={'auto'} fontWeight={'700'} fontSize={'16px'} fontFamily={'Arial'}>
             Actions
           </Text>
         </Box>
 
-        <GridEventSections data={data} updateEventData={updateEventData}/>
+        <GridEventSections data={data} setRefreshGrid={setRefreshGrid}/>
       </Grid>
     </Box>
   );

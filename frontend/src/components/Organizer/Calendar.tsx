@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { EventClickArg, EventHoveringArg } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -14,6 +14,12 @@ import {
   ModalFooter,
   Button,
   Box,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from "@chakra-ui/react";
 import "./CalendarStyle.css";
 import { IconButton } from "@chakra-ui/react";
@@ -43,8 +49,11 @@ interface EventData {
   user_fire_id: string;
 }
 
+type CalendarProps = {
+  setRefreshGrid: (refresh: boolean) => void;
+};
 
-function Calendar() {
+function Calendar({setRefreshGrid}: CalendarProps) {
   const [selectedEventUUID, setSelectedEventUUID] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -57,12 +66,11 @@ function Calendar() {
   const [club, setClub] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [events, setEvents] = useState<EventData[]>([]);
-  
-  const fetchEventsFromDatabase = async () => {
-    const response = await api.get("/event/for-organiser");
-    console.log(response.data);
-    return response.data;
-  };
+  const [refreshCalendar, setRefreshCalendar] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const onClose = () => setIsOpen(false);
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const navigate = useNavigate();
 
@@ -73,9 +81,35 @@ function Calendar() {
   };
 
   const handleEditClick = () => {
+    const eventDataUUID = selectedEventUUID;
     navigate("/EditEventPage", {
-      state: { selectedEventUUID },
+      state: { eventDataUUID },
     });
+  };
+
+  const deleteEventFromDatabase = async () => {
+    try {
+      let response = await api.delete(
+        `/event/for-organiser/${selectedEventUUID}`
+      );
+      console.log(response.data); // Response data from the server
+      // Handle the response or perform any necessary actions
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      // Handle the error appropriately
+    }
+  };
+
+  const handleDeleteClick = () => {
+    setIsOpen(true);
+  };
+
+  const handleConfirmDeleteClick = () => {
+    deleteEventFromDatabase();
+    onClose(); // Close the alert dialog after form deletion
+    setModal(false) // Close the modal overlay
+    setRefreshCalendar(true); // Trigger refresh of events data of calendar
+    setRefreshGrid(true); // Trigger refresh of events data of calendar
   };
 
   useEffect(() => {
@@ -87,7 +121,11 @@ function Calendar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-
+  const fetchEventsFromDatabase = async () => {
+    const response = await api.get("/event/for-organiser");
+    console.log(response.data);
+    return response.data;
+  };
 
   useEffect(() => {
     fetchEventsFromDatabase()
@@ -111,14 +149,15 @@ function Calendar() {
           club: event.organiser_name,
         }));
         const currentEvents = transformedEvents.filter(
-          (event:any) => new Date(event.start) >= new Date()
+          (event: any) => new Date(event.start) >= new Date()
         );
         setEvents(currentEvents);
+        setRefreshCalendar(false); // Reset the refresh flag
       })
       .catch((error) => {
         console.error("Error fetching events:", error);
       });
-  }, []);
+  }, [refreshCalendar]);
 
   const handleEventClick = (clickInfo: EventClickArg) => {
     setSelectedEventUUID(clickInfo.event.extendedProps.event_uuid);
@@ -155,119 +194,142 @@ function Calendar() {
     hoverInfo.el.style.cursor = "pointer";
   };
 
-  
   return (
-    <div className="calendar-container">
-      <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-        initialView={"dayGridMonth"}
-        headerToolbar={{
-          start: "title",
-          center: "",
-          end: "prev,next dayGridMonth timeGridWeek today",
-        }}
-        buttonText={{
-          today: "Today",
-          month: "Monthly View",
-          week: "Weekly View",
-          day: "Day",
-        }}
-        dayHeaderFormat={isMobile ? { weekday: "short" } : { weekday: "long" }}
-        eventTimeFormat={
-          isMobile
-            ? {
-                hour: "numeric",
-                hour12: true,
-              }
-            : {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true,
-              }
-        }
-        height={isMobile ? "auto" : "90vh"}
-        events={events}
-        eventClick={handleEventClick}
-        eventMouseEnter={handleEventHover}
-      />
+    <>
+      <div className="calendar-container">
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView={"dayGridMonth"}
+          headerToolbar={{
+            start: "title",
+            center: "",
+            end: "prev,next dayGridMonth timeGridWeek today",
+          }}
+          buttonText={{
+            today: "Today",
+            month: "Monthly View",
+            week: "Weekly View",
+            day: "Day",
+          }}
+          dayHeaderFormat={
+            isMobile ? { weekday: "short" } : { weekday: "long" }
+          }
+          eventTimeFormat={
+            isMobile
+              ? {
+                  hour: "numeric",
+                  hour12: true,
+                }
+              : {
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                }
+          }
+          height={isMobile ? "auto" : "90vh"}
+          events={events}
+          eventClick={handleEventClick}
+          eventMouseEnter={handleEventHover}
+        />
 
-      <Modal isOpen={modal} onClose={() => setModal(false)}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader
-            fontFamily="'Helvetica Neue Condensed', 'Arial Narrow', sans-serif"
-            fontWeight="semibold"
-            color="#006dac"
-            pb={2}
-          >
-            {title}
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Box
-              fontSize="lg"
-              fontFamily="'Helvetica Neue', 'Arial Narrow', sans-serif"
+        <Modal isOpen={modal} onClose={() => setModal(false)}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader
+              fontFamily="'Helvetica Neue Condensed', 'Arial Narrow', sans-serif"
+              fontWeight="semibold"
+              color="#006dac"
+              pb={2}
             >
-              <p>{description}</p>
-              <p>Start Date: {startDate}</p>
-              <p>End Date: {endDate}</p>
-              <p>Start Time: {startTime}</p>
-              <p>End Time: {endTime}</p>
-              <p>Venue: {venue}</p>
-              <p>Club: {club}</p>
-            </Box>
-          </ModalBody>
-          <ModalFooter>
-          <Box
-              w="100%"
-              p={2}
-              bg="#EDEEEE"
-              display="flex"
-              justifyContent={["center", "space-between"]}
-              alignItems="center"
-              pl={4}
-              pr={4}
-            >
-              <IconButton
-                colorScheme="blue"
-                aria-label="View Event"
-                icon={<ViewIcon />}
-                size="sm"
-                onClick={handleViewClick}
-              />
-
-              <IconButton
-                colorScheme="blue"
-                aria-label="Reorganise Event"
-                icon={<EditIcon />}
-                size="sm"
-                onClick={handleEditClick}
-              />
-
-              <IconButton
-                colorScheme="blue"
-                aria-label="Delete Event"
-                icon={<DeleteIcon />}
-                size="sm"
-              />
-
-              <Button
-                colorScheme="blue"
-                mr={-3}
-                onClick={() => setModal(false)}
+              {title}
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Box
+                fontSize="lg"
+                fontFamily="'Helvetica Neue', 'Arial Narrow', sans-serif"
               >
-                Close
+                <p>{description}</p>
+                <p>Start Date: {startDate}</p>
+                <p>End Date: {endDate}</p>
+                <p>Start Time: {startTime}</p>
+                <p>End Time: {endTime}</p>
+                <p>Venue: {venue}</p>
+                <p>Club: {club}</p>
+              </Box>
+            </ModalBody>
+            <ModalFooter>
+              <Box
+                w="100%"
+                p={2}
+                bg="#EDEEEE"
+                display="flex"
+                justifyContent={["center", "space-between"]}
+                alignItems="center"
+                pl={4}
+                pr={4}
+              >
+                <IconButton
+                  colorScheme="blue"
+                  aria-label="View Event"
+                  icon={<ViewIcon />}
+                  size="sm"
+                  onClick={handleViewClick}
+                />
+
+                <IconButton
+                  colorScheme="blue"
+                  aria-label="Reorganise Event"
+                  icon={<EditIcon />}
+                  size="sm"
+                  onClick={handleEditClick}
+                />
+
+                <IconButton
+                  colorScheme="red"
+                  aria-label="Delete Event"
+                  icon={<DeleteIcon />}
+                  size="sm"
+                  onClick={handleDeleteClick}
+                />
+
+                <Button
+                  colorScheme="blue"
+                  mr={-3}
+                  onClick={() => setModal(false)}
+                >
+                  Close
+                </Button>
+              </Box>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </div>
+
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader>Confirmation: Delete Event</AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure you want to delete the form?
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
               </Button>
-            </Box>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </div>
+              <Button colorScheme="red" ml={3} onClick={handleConfirmDeleteClick}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </>
   );
 }
 
 export default Calendar;
-
-
-
-

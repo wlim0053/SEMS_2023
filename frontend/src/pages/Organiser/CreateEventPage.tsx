@@ -24,7 +24,7 @@ import * as yup from "yup";
 import api from "../../utils/api";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from 'react';
+import { useState, useRef } from "react";
 
 const validationSchema = yup.object().shape({
   eventTitle: yup.string().required("Event Title is required"),
@@ -67,6 +67,9 @@ const validationSchema = yup.object().shape({
     .string()
     .required("Sign Up Form Link is required")
     .url("Invalid Sign Up Form Link"),
+  hasClickedEMSButton: yup
+    .boolean()
+    .oneOf([true], "Please submit the EMS Google Form."),
 });
 
 interface SubmittedEventData {
@@ -86,13 +89,15 @@ interface SubmittedEventData {
 }
 
 function CreateEventPage() {
-  const [toBeSubmittedEventData, setToBeSubmittedEventData] = useState<SubmittedEventData>();
-  
+  const [toBeSubmittedEventData, setToBeSubmittedEventData] =
+    useState<SubmittedEventData>();
+
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   const handleButtonClick = () => {
+    formik.setFieldValue("hasClickedEMSButton", true);
     const googleFormUrl = "https://forms.gle/gJkH9m6bHcMguMH17"; // Test form
     const openPopup = () => {
       const width = 600;
@@ -143,6 +148,7 @@ function CreateEventPage() {
       registrationStart: null,
       registrationEnd: null,
       signUpFormLink: "",
+      hasClickedEMSButton: false,
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -382,15 +388,7 @@ function CreateEventPage() {
                     : null
                 }
                 onChange={(date) => {
-                  if (date) {
-                    const formattedDate = format(
-                      date,
-                      "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                    );
-                    formik.setFieldValue("eventStart", formattedDate);
-                  } else {
-                    formik.setFieldValue("eventStart", "");
-                  }
+                  formik.setFieldValue("eventStart", date);
                 }}
                 onBlur={formik.handleBlur}
                 showTimeInput
@@ -420,15 +418,7 @@ function CreateEventPage() {
                     : null
                 }
                 onChange={(date) => {
-                  if (date) {
-                    const formattedDate = format(
-                      date,
-                      "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                    );
-                    formik.setFieldValue("eventEnd", formattedDate);
-                  } else {
-                    formik.setFieldValue("eventEnd", "");
-                  }
+                  formik.setFieldValue("eventEnd", date);
                 }}
                 onBlur={formik.handleBlur}
                 showTimeInput
@@ -459,15 +449,7 @@ function CreateEventPage() {
                     : null
                 }
                 onChange={(date) => {
-                  if (date) {
-                    const formattedDate = format(
-                      date,
-                      "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                    );
-                    formik.setFieldValue("registrationStart", formattedDate);
-                  } else {
-                    formik.setFieldValue("registrationStart", "");
-                  }
+                  formik.setFieldValue("registrationStart", date);
                 }}
                 onBlur={formik.handleBlur}
                 showTimeInput
@@ -497,15 +479,7 @@ function CreateEventPage() {
                     : null
                 }
                 onChange={(date) => {
-                  if (date) {
-                    const formattedDate = format(
-                      date,
-                      "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                    );
-                    formik.setFieldValue("registrationEnd", formattedDate);
-                  } else {
-                    formik.setFieldValue("registrationEnd", "");
-                  }
+                  formik.setFieldValue("registrationEnd", date);
                 }}
                 onBlur={formik.handleBlur}
                 showTimeInput
@@ -571,19 +545,21 @@ function CreateEventPage() {
               SARAH Risk Assessment and have completed the venue booking BEFORE
               you submit this form.
             </FormLabel>
-            <button
-              type="button"
-              onClick={handleButtonClick}
-              style={{
-                color: "#ffffff",
-                background: "#006DAE",
-                border: "none",
-                borderRadius: "4px",
-                padding: "8px 16px",
-              }}
-            >
-              Open Google Form
-            </button>
+          </FormControl>
+          <Button
+            type="button"
+            onClick={handleButtonClick}
+            colorScheme="#ffffff"
+            backgroundColor={"#006DAE"}
+            border={"none"}
+            borderRadius={"4px"}
+          >
+            Open Google Form
+          </Button>
+          <FormControl>
+            {formik.errors.hasClickedEMSButton && (
+              <Text color="red">{formik.errors.hasClickedEMSButton}</Text>
+            )}
           </FormControl>
           {/* Submit Button */}
           <Button type="submit">Submit</Button>

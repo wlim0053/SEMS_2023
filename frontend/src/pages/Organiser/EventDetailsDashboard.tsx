@@ -1,13 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Box,
   Heading,
   Flex,
   Text,
-  VStack,
-  HStack,
-  Badge,
   Grid,
   Table,
   Thead,
@@ -25,6 +22,7 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
 } from "@chakra-ui/react";
+import api from "../../utils/api";
 
 interface Student {
   id: number;
@@ -35,7 +33,9 @@ interface Student {
 
 interface EventData {
   event_uuid: string;
+  organiser_uuid: string;
   event_ems_no: string | null;
+  event_ems_link: string | null;
   event_start_date: string;
   event_end_date: string;
   event_title: string;
@@ -47,31 +47,58 @@ interface EventData {
   event_reg_start_date: string;
   event_reg_end_date: string;
   event_reg_google_form: string;
-  organiser_uuid: string;
+  no_participants: number;
   parent_uuid: string | null;
   organiser_name: string;
-  stu_fire_id: string;
+  user_fire_id: string;
 }
 
 const EventDetailsDashboard = () => {
   const location = useLocation();
-  const eventData: EventData = location.state.eventData;
+  const selectedEventUUID = location.state.selectedEventUUID;
+  const [selectedEventData, setSelectedEventData] = useState<EventData>();
 
-  // Sample fake data
-  const fakeData = {
-    numberOfMales: 20,
-    numberOfFemales: 30,
-    numberOfEngineeringSpecialization: 10,
-    numberOfMedicineSpecialization: 5,
-    numberOfArtsSpecialization: 15,
-    // Add other properties as needed
+  const fetchSelectedEventFromDatabase = async () => {
+    const response = await api.get(`/event/for-organiser/${selectedEventUUID}`);
+    console.log(response.data);
+    return response.data[0];
   };
 
+  useEffect(() => {
+    fetchSelectedEventFromDatabase()
+      .then((data) => {
+        setSelectedEventData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching event:", error);
+      });
+  }, []);
+
   const [students, setStudents] = useState<Student[]>([
-    { id: 1, studentId: "321200", name: "Azhan", email: "emma.smith@student.monash.edu" },
-    { id: 2, studentId: "329456", name: "Kidd", email: "david.jones@student.monash.edu" },
-    { id: 3, studentId: "310024", name: "Jett", email: "sarah.wilson@student.monash.edu" },
-    { id: 4, studentId: "346780", name: "Zubin", email: "alexander.brown@student.monash.edu" },
+    {
+      id: 1,
+      studentId: "321200",
+      name: "Azhan",
+      email: "emma.smith@student.monash.edu",
+    },
+    {
+      id: 2,
+      studentId: "329456",
+      name: "Kidd",
+      email: "david.jones@student.monash.edu",
+    },
+    {
+      id: 3,
+      studentId: "310024",
+      name: "Jett",
+      email: "sarah.wilson@student.monash.edu",
+    },
+    {
+      id: 4,
+      studentId: "346780",
+      name: "Zubin",
+      email: "alexander.brown@student.monash.edu",
+    },
 
     // Add more students as needed
   ]);
@@ -84,6 +111,38 @@ const EventDetailsDashboard = () => {
     absent: 0,
     turnoutRate: 0,
   });
+
+  const dateTimeFormatter = (dateTime: string): string => {
+    const date = new Date(dateTime);
+
+    const formattedDate = date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
+    const formattedTime = date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    const formattedDateTime = `${formattedDate} ${formattedTime}`;
+
+    return formattedDateTime;
+  };
+
+  const getEventModeString = (status: string): string => {
+    switch (status) {
+      case "P":
+        return "Physical";
+      case "V":
+        return "Virtual";
+      case "H":
+        return "Hybrid";
+      default:
+        return "";
+    }
+  };
 
   const handleCheckboxChange = (student: Student) => {
     const index = selectedStudents.findIndex((s) => s.id === student.id);
@@ -126,15 +185,9 @@ const EventDetailsDashboard = () => {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            <Text mb={2}>
-              Present: {turnoutDetails.present} students
-            </Text>
-            <Text mb={2}>
-              Absent: {turnoutDetails.absent} students
-            </Text>
-            <Text>
-              Turnout Rate: {turnoutDetails.turnoutRate.toFixed(2)}%
-            </Text>
+            <Text mb={2}>Present: {turnoutDetails.present} students</Text>
+            <Text mb={2}>Absent: {turnoutDetails.absent} students</Text>
+            <Text>Turnout Rate: {turnoutDetails.turnoutRate.toFixed(2)}%</Text>
           </AlertDialogBody>
 
           <AlertDialogFooter>
@@ -147,35 +200,45 @@ const EventDetailsDashboard = () => {
     </AlertDialog>
   );
   return (
-    <Box p={4} fontFamily="SF Pro Display, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif">
+    <Box
+      p={4}
+      fontFamily="SF Pro Display, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif"
+    >
       <Heading size="lg" mb={4}>
         Event Details
       </Heading>
 
       <Box borderWidth={1} borderRadius="md" boxShadow="md" p={4} mb={4}>
-        <Text fontWeight="bold" fontSize="12px" mb={2}>
+        <Text fontWeight="bold" fontSize="18px" mb={2}>
           Name:
         </Text>
-        <Text fontSize="12px">{eventData.event_title}</Text>
+        <Text fontSize="18px">{selectedEventData?.event_title}</Text>
 
-        <Text fontWeight="bold" fontSize="12px" mt={4} mb={2}>
+        <Text fontWeight="bold" fontSize="18px" mt={4} mb={2}>
           Description:
         </Text>
-        <Text fontSize="12px">{eventData.event_desc}</Text>
+        <Text fontSize="18px">{selectedEventData?.event_desc}</Text>
 
-        <Flex alignItems="center" mt={4} mb={2}>
-          <Text fontWeight="bold" marginRight={2} fontSize="12px">
-            Date:
-          </Text>
-          <Text fontSize="12px">{eventData.event_start_date}</Text>
-        </Flex>
+        <Text fontWeight="bold" marginRight={2} mt={4} mb={2} fontSize="18px">
+          Event Start Date and Time:
+        </Text>
+        <Text fontSize="18px">
+          {dateTimeFormatter(selectedEventData?.event_start_date ?? "")}
+        </Text>
 
-        <Flex alignItems="center">
-          <Text fontWeight="bold" marginBottom={2} marginRight={2} fontSize="12px">
-            Time:
-          </Text>
-          <Text fontSize="12px">{ }</Text>
-        </Flex>
+        <Text
+          fontWeight="bold"
+          marginBottom={2}
+          marginRight={2}
+          mt={4}
+          mb={2}
+          fontSize="18px"
+        >
+          Event End Date and Time:
+        </Text>
+        <Text fontSize="18px" marginBottom={2}>
+          {dateTimeFormatter(selectedEventData?.event_end_date ?? "")}
+        </Text>
       </Box>
 
       <Grid
@@ -189,84 +252,50 @@ const EventDetailsDashboard = () => {
       >
         <Box>
           <Flex alignItems="center" mb={2}>
-            <Text fontWeight="bold" marginRight={2} fontSize="12px">
+            <Text fontWeight="bold" marginRight={2} fontSize="18px">
               Capacity:
             </Text>
-            <Text fontSize="12px">{eventData.event_capacity}</Text>
+            <Text fontSize="18px">{selectedEventData?.event_capacity}</Text>
           </Flex>
 
           <Flex alignItems="center">
-            <Text fontWeight="bold" mb={2} marginRight={2} fontSize="12px">
+            <Text fontWeight="bold" mb={2} marginRight={2} fontSize="18px">
               Venue:
             </Text>
-            <Text fontSize="12px" textAlign="justify">{eventData.event_venue}</Text>
+            <Text fontSize="18px" mb={2} textAlign="justify">
+              {selectedEventData?.event_venue}
+            </Text>
           </Flex>
 
           <Flex alignItems="center" mb={2}>
-            <Text fontWeight="bold" marginRight={2} fontSize="12px">
-              Recurring:
+            <Text fontWeight="bold" marginRight={2} fontSize="18px">
+              Attendance Mode:
             </Text>
-            <Text fontSize="12px">{ }</Text>
+            <Text fontSize="18px">
+              {getEventModeString(selectedEventData?.event_mode ?? "")}
+            </Text>
           </Flex>
 
           <Flex alignItems="center">
-            <Text fontWeight="bold" marginRight={2} fontSize="12px">
+            <Text fontWeight="bold" marginRight={2} fontSize="18px">
               Links and QR Code:
             </Text>
-            <Text fontSize="12px">{eventData.event_reg_google_form}</Text>
+            <a
+              href={selectedEventData?.event_reg_google_form}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "none" }}
+            >
+              <Text
+                fontSize="18px"
+                _hover={{ color: "blue", textDecoration: "underline" }}
+              >
+                {selectedEventData?.event_reg_google_form}
+              </Text>
+            </a>
           </Flex>
         </Box>
-
-        <Box>
-          <Text fontWeight="bold" marginBottom={2} fontSize="12px" mt={4}>
-            Event Statistics:
-          </Text>
-
-          <VStack spacing={2} alignItems="start" pl={4}>
-            <HStack>
-              <Text fontWeight="bold" fontSize="12px">
-                Number of Males:
-              </Text>
-              <Badge colorScheme="blue" fontSize="12px">{fakeData.numberOfMales}</Badge>
-            </HStack>
-
-            <HStack>
-              <Text fontWeight="bold" fontSize="12px">
-                Number of Females:
-              </Text>
-              <Badge colorScheme="pink" fontSize="12px">{fakeData.numberOfFemales}</Badge>
-            </HStack>
-
-            <HStack>
-              <Text fontWeight="bold" fontSize="12px">
-                Number of Engineering Specialization:
-              </Text>
-              <Badge colorScheme="green" fontSize="12px">
-                {fakeData.numberOfEngineeringSpecialization}
-              </Badge>
-            </HStack>
-
-            <HStack>
-              <Text fontWeight="bold" fontSize="12px">
-                Number of Medicine Specialization:
-              </Text>
-              <Badge colorScheme="red" fontSize="12px">
-                {fakeData.numberOfMedicineSpecialization}
-              </Badge>
-            </HStack>
-
-            <HStack>
-              <Text fontWeight="bold" fontSize="12px">
-                Number of Arts Specialization:
-              </Text>
-              <Badge colorScheme="purple" fontSize="12px">
-                {fakeData.numberOfArtsSpecialization}
-              </Badge>
-            </HStack>
-          </VStack>
-        </Box>
       </Grid>
-
 
       <Grid
         templateColumns="1fr 1fr"
@@ -278,7 +307,7 @@ const EventDetailsDashboard = () => {
         mb={4}
       >
         <Box>
-          <Text fontWeight="bold" marginBottom={4} fontSize="13px" >
+          <Text fontWeight="bold" marginBottom={4} fontSize="13px">
             Attendance:
           </Text>
           <Box borderWidth={1} borderRadius="md" p={4}>
@@ -311,13 +340,8 @@ const EventDetailsDashboard = () => {
             </Table>
           </Box>
 
-
           {!attendanceSubmitted ? (
-            <Button
-              colorScheme="blue"
-              onClick={handleSubmitAttendance}
-              mt={4}
-            >
+            <Button colorScheme="blue" onClick={handleSubmitAttendance} mt={4}>
               Submit Attendance
             </Button>
           ) : null}
@@ -325,9 +349,6 @@ const EventDetailsDashboard = () => {
       </Grid>
       {attendanceSubmitted ? AlertDialogBox : null}
     </Box>
-
-
-
   );
 };
 

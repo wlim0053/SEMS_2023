@@ -368,7 +368,7 @@ export const completeEventController = async (
                 UPDATE 
                     ${DbTables.EVENT}
                 SET 
-                    event_status='C"
+                    event_status='C'
                 OUTPUT
                     INSERTED.*
                 WHERE

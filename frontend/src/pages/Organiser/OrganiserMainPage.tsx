@@ -55,6 +55,7 @@ function OrganiserMainPage() {
 
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [eventData, setEventData] = useState<EventData[]>([]);
+  const [refreshGrid, setRefreshGrid] = useState(false);
   
   const fetchEventsFromDatabase = async () => {
     const response = await api.get("/event/for-organiser");
@@ -72,15 +73,19 @@ function OrganiserMainPage() {
       });
   }, []);
 
-  const updateEventData = () => {
-    fetchEventsFromDatabase()
-      .then((data) => {
-        setEventData(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
-  };
+  useEffect(() => {
+    if (refreshGrid) {
+      fetchEventsFromDatabase()
+        .then((data) => {
+          setEventData(data);
+          setRefreshGrid(false); // Reset refreshGrid back to false
+        })
+        .catch((error) => {
+          console.error("Error fetching events:", error);
+          setRefreshGrid(false); // Reset refreshGrid back to false even on error
+        });
+    }
+  }, [refreshGrid]);
 
   function toggleView() {
     setCalendarViewFlag(!calendarViewFlag);
@@ -111,9 +116,17 @@ function OrganiserMainPage() {
         return sortOrder === "asc"
           ? dateA.getTime() - dateB.getTime()
           : dateB.getTime() - dateA.getTime();
-      } else {
-        return 0;
       }
+
+      if (sortField === "event_status") {
+        const statusA = a.event_status.toLowerCase();
+        const statusB = b.event_status.toLowerCase();
+        return sortOrder === "asc"
+          ? statusA.localeCompare(statusB)
+          : statusB.localeCompare(statusA);
+      } 
+      
+      return 0;
     });
 
     return sortedData;
@@ -186,7 +199,7 @@ function OrganiserMainPage() {
             ml={"25px"}
           >
             <Input
-              placeholder="Search Venue, Event, or Club"
+              placeholder="Search Venue or Event"
               onChange={handleSearch}
             />
           </Box>
@@ -213,6 +226,7 @@ function OrganiserMainPage() {
             >
               <option value="no_of_participants">Number of Participants</option>
               <option value="event_start_date">Date</option>
+              <option value="event_status">Event Status</option>
             </Select>
 
             <Select
@@ -256,20 +270,20 @@ function OrganiserMainPage() {
                 <GridEventDashboard
                   data={currentEvents}
                   formatDate={formatDate}
-                  updateEventData={updateEventData}
+                  setRefreshGrid={setRefreshGrid}
                 />
               </TabPanel>
               <TabPanel p={0}>
                 <GridEventDashboard
                   data={pastEvents}
                   formatDate={formatDate}
-                  updateEventData={updateEventData}
+                  setRefreshGrid={setRefreshGrid}
                 />
               </TabPanel>
             </TabPanels>
           </Tabs>
         ) : (
-          <Calendar />
+          <Calendar setRefreshGrid={setRefreshGrid}/>
         )}
       </Box>
     </>

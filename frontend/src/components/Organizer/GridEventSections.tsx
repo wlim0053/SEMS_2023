@@ -1,10 +1,20 @@
-import React from "react";
-import { Box } from "@chakra-ui/react";
-import { Text } from "@chakra-ui/react";
-import { IconButton } from "@chakra-ui/react";
-import { DeleteIcon, EditIcon, ViewIcon } from "@chakra-ui/icons";
+import { useState, useRef } from "react";
+import {
+  Text,
+  Button,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  Box,
+  IconButton,
+} from "@chakra-ui/react";
+import { DeleteIcon, EditIcon, ViewIcon, CheckIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../utils/api";
+import React from "react";
 
 interface EventData {
   event_uuid: string;
@@ -30,17 +40,26 @@ interface EventData {
 
 interface GridEventSectionsProps {
   data: EventData[];
-  updateEventData: () => void;
+  setRefreshGrid: (refresh: boolean) => void;
 }
 
-function GridEventSections({ data, updateEventData }: GridEventSectionsProps) {
+function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
   const navigate = useNavigate();
+  const [selectedEventUUID, setSelectedEventUUID] = useState("");
+
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const onDeleteConfirmationClose = () => setIsDeleteConfirmationOpen(false);
+
+  const [isMarkAsCompletedConfirmationOpen, setIsMarkAsCompletedConfirmationOpen] = useState(false);
+  const onMarkAsCompletedConfirmationClose = () => setIsMarkAsCompletedConfirmationOpen(false);
+
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const handleViewClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const index = Number(event.currentTarget.getAttribute("data-index"));
-    const eventData = data[index];
+    const selectedEventUUID = data[index].event_uuid;
     navigate("/EventDetailsDashboard", {
-      state: { eventData },
+      state: { selectedEventUUID },
     });
   };
 
@@ -51,32 +70,101 @@ function GridEventSections({ data, updateEventData }: GridEventSectionsProps) {
     navigate("/EditEventPage", { state: { eventDataUUID } });
   };
 
-  const deleteEventFromDatabase = async (eventId: String) => {
+
+
+  const deleteEventFromDatabase = async () => {
     try {
-      const response = await axios.delete(
-        `http://localhost:3000/api/event/${eventId}`
+      let response = await api.delete(
+        `/event/for-organiser/${selectedEventUUID}`
       );
-      console.log(response.data); // Optional: Log the response data after successful deletion
-      updateEventData();
+      console.log(response.data); // Response data from the server
+      // Handle the response or perform any necessary actions
     } catch (error) {
-      console.error(error);
+      console.log(`Error: ${error}`);
+      // Handle the error appropriately
     }
   };
 
   const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const index = Number(event.currentTarget.getAttribute("data-index"));
-    const eventData = data[index];
-    deleteEventFromDatabase(eventData.event_uuid);
+    setSelectedEventUUID(data[index].event_uuid);
+    setIsDeleteConfirmationOpen(true);
+  };
+
+  const handleConfirmDeleteClick = () => {
+    deleteEventFromDatabase();
+    setRefreshGrid(true); // Trigger refresh of events data of grid
+    onDeleteConfirmationClose(); // Close the alert dialog after form deletion
+  };
+
+  const markEventAsCompletedInDatabase = async () => {
+    try {
+      let response = await api.patch(`/event/for-organiser/${selectedEventUUID}/complete`);
+      console.log(response.data); // Response data from the server
+      // Handle the response or perform any necessary actions
+      setRefreshGrid(true); // Trigger refresh of events data of grid
+    } catch (error) {
+      console.log(`Error: ${error}`);
+      // Handle the error appropriately
+    }
+  };
+
+  const handleMarkAsCompletedClick = async (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    const index = Number(event.currentTarget.getAttribute("data-index"));
+    const completedEventUUID = data[index].event_uuid;
+    setSelectedEventUUID(completedEventUUID);
+    console.log("Selected Event UUID (1st Stage): ", data[index]);
+    setIsMarkAsCompletedConfirmationOpen(true);
+  };
+
+  const handleConfirmMarkAsCompletedClick = () => {
+    markEventAsCompletedInDatabase();
+    setRefreshGrid(true); // Trigger refresh of events data of grid
+    onDeleteConfirmationClose(); // Close the alert dialog after form deletion
   };
 
   const dateFormatter = (event_start_date: string): string => {
     const date = new Date(event_start_date);
-  
+
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = String(date.getFullYear());
 
     return `${day}/${month}/${year}`;
+  };
+
+  const getStatusString = (status: string): string => {
+    switch (status) {
+      case "D":
+        return "Draft";
+      case "P":
+        return "Pending";
+      case "A":
+        return "Approved";
+      case "R":
+        return "Rejected";
+      case "C":
+        return "Completed";
+      default:
+        return "";
+    }
+  };
+
+  const shouldShowEditButton = (status: string): boolean => {
+    return status == "D";
+  };
+
+  const shouldShowDeleteButton = (status: string): boolean => {
+    return status == "D" || status == "A" || status == "R" || status == "C";
+  };
+
+  const shouldShowMarkAsCompletedButton = (
+    status: string,
+    event_start_date: string
+  ): boolean => {
+    return new Date(event_start_date) < new Date() && status != "C";
   };
 
   return (
@@ -128,9 +216,7 @@ function GridEventSections({ data, updateEventData }: GridEventSectionsProps) {
             alignItems={"center"}
           >
             <Text fontSize={"16px"} fontFamily={"Arial"} textAlign={"center"}>
-              {
-                event.no_participants + "/" + event.event_capacity
-              }
+              {event.no_participants + "/" + event.event_capacity}
             </Text>
           </Box>
           <Box
@@ -142,7 +228,19 @@ function GridEventSections({ data, updateEventData }: GridEventSectionsProps) {
             alignItems={"center"}
           >
             <Text fontSize={"16px"} fontFamily={"Arial"} textAlign={"center"}>
-              { dateFormatter(event.event_start_date)}
+              {dateFormatter(event.event_start_date)}
+            </Text>
+          </Box>
+          <Box
+            w="100%"
+            h="71"
+            bg={index % 2 === 0 ? "#FFFFFF" : "#EDEEEE"}
+            display="flex"
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            <Text fontSize={"16px"} fontFamily={"Arial"} textAlign={"center"}>
+              {getStatusString(event.event_status)}
             </Text>
           </Box>
           <Box
@@ -163,25 +261,96 @@ function GridEventSections({ data, updateEventData }: GridEventSectionsProps) {
               onClick={handleViewClick}
               data-index={index}
             />
-            <IconButton
-              colorScheme="blue"
-              aria-label="Edit Event"
-              icon={<EditIcon />}
-              size={"sm"}
-              onClick={handleEditClick}
-              data-index={index}
-            />
-            <IconButton
-              colorScheme="blue"
-              aria-label="Delete Event"
-              icon={<DeleteIcon />}
-              size={"sm"}
-              onClick={handleDeleteClick}
-              data-index={index}
-            />
+
+            {shouldShowEditButton(event.event_status) ? (
+              <IconButton
+                colorScheme="blue"
+                aria-label="Edit Event"
+                icon={<EditIcon />}
+                size={"sm"}
+                onClick={handleEditClick}
+                data-index={index}
+              />
+            ) : null}
+
+            {shouldShowDeleteButton(event.event_status) ? (
+              <IconButton
+                colorScheme="blue"
+                aria-label="Delete Event"
+                icon={<DeleteIcon />}
+                size={"sm"}
+                onClick={handleDeleteClick}
+                data-index={index}
+              />
+            ) : null}
+
+            {shouldShowMarkAsCompletedButton(event.event_status, event.event_start_date) ? (
+              <IconButton
+                colorScheme="blue"
+                aria-label="Mark as Completed"
+                icon={<CheckIcon />}
+                size={"sm"}
+                onClick={handleMarkAsCompletedClick}
+                data-index={index}
+              />
+            ) : null}
           </Box>
         </React.Fragment>
       ))}
+
+      <AlertDialog
+        isOpen={isDeleteConfirmationOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onDeleteConfirmationClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader>Confirmation: Delete Event</AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure you want to delete the form?
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onDeleteConfirmationClose}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                ml={3}
+                onClick={handleConfirmDeleteClick}
+              >
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+
+      <AlertDialog
+        isOpen={isMarkAsCompletedConfirmationOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onMarkAsCompletedConfirmationClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader>Mark This Event As Completed</AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure you want to mark this event as completed?
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onMarkAsCompletedConfirmationClose}>
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                ml={3}
+                onClick={handleConfirmMarkAsCompletedClick}
+              >
+                Completed
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   );
 }
