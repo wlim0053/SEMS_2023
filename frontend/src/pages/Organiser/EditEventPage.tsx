@@ -65,10 +65,12 @@ const validationSchema = yup.object().shape({
   signUpFormLink: yup
     .string()
     .required("Sign Up Form Link is required")
-    .url("Invalid Sign Up Form Link"),
+    .url("Invalid Sign Up Form Link")
+    .matches(
+      /^(https:\/\/docs\.google\.com\/forms\/(.+)|https:\/\/forms\.gle\/(.+))$/,
+      "Invalid Sign Up Form Link format (Please provide a valid link in Google Form format)"
+    ),
 });
-
-
 
 interface EdittedEventData {
   event_ems_no: string | null;
@@ -116,7 +118,8 @@ function EditEventPage() {
   const originalEventUUID = location.state.eventDataUUID;
 
   // Original event data
-  const [originalEventData, setOriginalEventData] = useState<OriginalEventData>();
+  const [originalEventData, setOriginalEventData] =
+    useState<OriginalEventData>();
 
   // Data that has been editted
   const [newEventData, setNewEventData] = useState<EdittedEventData>();

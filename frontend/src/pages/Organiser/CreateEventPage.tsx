@@ -66,7 +66,10 @@ const validationSchema = yup.object().shape({
   signUpFormLink: yup
     .string()
     .required("Sign Up Form Link is required")
-    .url("Invalid Sign Up Form Link"),
+    .matches(
+      /^(https:\/\/docs\.google\.com\/forms\/(.+)|https:\/\/forms\.gle\/(.+))$/,
+      'Invalid Sign Up Form Link format (Please provide a valid link in Google Form format)'
+    ),
   hasClickedEMSButton: yup
     .boolean()
     .oneOf([true], "Please submit the EMS Google Form."),
