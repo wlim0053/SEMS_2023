@@ -24,7 +24,6 @@ function App() {
       <Router>
         <Navbar />
         <Outlet /> {/* Render nested routes */}
-        <NewLandingPage />
       </Router>
     </div>
   );
