@@ -45,7 +45,53 @@ export const createEmailReminderController = async (req: Request, res: Response,
             await transporter.sendMail({
                 from: user,
                 to: eventUserData.user_email,
-                subject: "Reminder: SEMS - Important Information before joining the event",
+                subject: "SEMS - Reminder: Important Information before joining the event",
+                html: mail,
+            })
+        });
+		res.sendStatus(StatusCodes.OK)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const createEmailForCertController = async (req: Request, res: Response, next: NextFunction) => {
+
+    try {
+        const transporter = nodemailer.createTransport(trans_obj);
+        const connection = await pool.connect();
+
+        const eventWithUser: mssql.IResult<EventWithUser> = await connection
+            .request()
+            .input("event_uuid", mssql.UniqueIdentifier, req.params.id)
+            .query(`
+                SELECT * 
+                FROM ${DbTables.EVENT} e 
+                JOIN ${DbTables.PARTICIPATION} p on e.event_uuid = p.event_uuid 
+                JOIN ${DbTables.USER} u on p.user_fire_id = u.user_fire_id
+                WHERE e.event_uuid=@event_uuid
+            `);
+        const eventWithUserData = eventWithUser.recordset; 
+
+        const emailTemplate = handlebars.compile(
+            await readFile("./src/utils/template/emailForCert.html", "utf-8")
+        )
+
+        eventWithUserData.map(async (eventUserData) => {
+            const data = {
+                name:
+                    eventUserData.user_fname.toUpperCase() +
+                    " " +
+                    eventUserData.user_lname.toUpperCase(),
+                eventName: eventUserData.event_title.toUpperCase(),
+            }
+
+            const mail = emailTemplate(data);
+
+            await transporter.sendMail({
+                from: user,
+                to: eventUserData.user_email,
+                subject: "SEMS - Certificate of Participation and Appreciation",
                 html: mail,
             })
         });
