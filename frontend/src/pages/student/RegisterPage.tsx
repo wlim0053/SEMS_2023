@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
-import api from "../utils/api";
+import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 
 const engineeringSchool = "School of Engineering";
