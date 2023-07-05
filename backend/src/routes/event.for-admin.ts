@@ -12,7 +12,7 @@ import { isEventApprovedEmail } from "../middlewares/emailHandler"
 export const adminEventRouter = express.Router()
 
 // * Endpoint to get PENDING events
-adminEventRouter.get("/", verifyJwtHandler(["S"]), getPendingEvents)
+adminEventRouter.get("/", verifyJwtHandler(["A"]), getPendingEvents)
 
 // * Endpoint to approve events
 adminEventRouter.patch(
