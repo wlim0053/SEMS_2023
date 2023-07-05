@@ -1,13 +1,18 @@
 import nodemailer from "nodemailer"
 import { NextFunction, Request, Response } from "express"
 import handlebars from "handlebars"
-import { EventWithOrganiser, EventWithOrganiserUser, EventWithUser } from "../interfaces/event"
+import {
+	EventWithOrganiser,
+	EventWithOrganiserUser,
+	EventWithUser,
+} from "../interfaces/event"
 import { UserWithFireId } from "../interfaces/user"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables } from "../utils/constant"
 import { readFile } from "fs/promises"
 import { user, trans_obj } from "../utils/email"
+import path from "path"
 
 export const registrationEmail = async (
 	req: Request,
@@ -42,7 +47,10 @@ export const registrationEmail = async (
 		connection.close()
 
 		const emailTemplate = handlebars.compile(
-			await readFile("./src/utils/template/registration.html", "utf-8")
+			await readFile(
+				path.resolve(__dirname, "../utils/template/registration.html"),
+				"utf-8"
+			)
 		)
 
 		const data = {
@@ -73,23 +81,25 @@ export const requestForFeedbackEmail = async (
 	next: NextFunction
 ) => {
 	try {
-		const transporter = nodemailer.createTransport(trans_obj);
-		const connection = await pool.connect();
+		const transporter = nodemailer.createTransport(trans_obj)
+		const connection = await pool.connect()
 
 		const eventWithUser: mssql.IResult<EventWithUser> = await connection
-            .request()
-            .input("event_uuid", mssql.UniqueIdentifier, req.params.id)
-            .query(`
+			.request()
+			.input("event_uuid", mssql.UniqueIdentifier, req.params.id).query(`
                 SELECT * 
                 FROM ${DbTables.EVENT} e 
                 JOIN ${DbTables.PARTICIPATION} p on e.event_uuid = p.event_uuid 
                 JOIN ${DbTables.USER} u on p.user_fire_id = u.user_fire_id
                 WHERE e.event_uuid=@event_uuid
-            `);
-        const eventWithUserData = eventWithUser.recordset; 
+            `)
+		const eventWithUserData = eventWithUser.recordset
 
 		const emailTemplate = handlebars.compile(
-			await readFile("./src/utils/template/postEvent.html", "utf-8")
+			await readFile(
+				path.resolve(__dirname, "../utils/template/postEvent.html"),
+				"utf-8"
+			)
 		)
 
 		eventWithUserData.map(async (eventUserData) => {
@@ -99,18 +109,19 @@ export const requestForFeedbackEmail = async (
 					" " +
 					eventUserData.user_lname.toUpperCase(),
 				eventName: eventUserData.event_title.toUpperCase(),
-				feedbackLink: "https://www.monash.edu.my"
+				feedbackLink: "https://www.monash.edu.my",
 			}
 
-			const mail = emailTemplate(data);
+			const mail = emailTemplate(data)
 
 			await transporter.sendMail({
 				from: user,
 				to: eventUserData.user_email,
-				subject: "SEMS - Your Feedback Matters! Share Your Experience of the event that you've joined!",
+				subject:
+					"SEMS - Your Feedback Matters! Share Your Experience of the event that you've joined!",
 				html: mail,
 			})
-		});
+		})
 	} catch (error) {
 		next(error)
 	}
@@ -127,8 +138,7 @@ export const isEventApprovedEmail = async (
 		const connection = await pool.connect()
 		const event: mssql.IResult<EventWithOrganiser> = await connection
 			.request()
-			.input("event_uuid", mssql.UniqueIdentifier, req.params.id)
-			.query(`
+			.input("event_uuid", mssql.UniqueIdentifier, req.params.id).query(`
                     SELECT 
                         e.*,
                         o.parent_uuid,
@@ -152,7 +162,18 @@ export const isEventApprovedEmail = async (
 		connection.close()
 
 		const emailTemplate = handlebars.compile(
-			await readFile((isApproved ? "./src/utils/template/approveEvent.html" : "./src/utils/template/rejectEvent.html"), "utf-8")
+			await readFile(
+				isApproved
+					? path.resolve(
+							__dirname,
+							"../utils/template/approveEvent.html"
+					  )
+					: path.resolve(
+							__dirname,
+							"../utils/template/rejectEvent.html"
+					  ),
+				"utf-8"
+			)
 		)
 
 		const data = {
@@ -168,7 +189,9 @@ export const isEventApprovedEmail = async (
 		await transporter.sendMail({
 			from: user,
 			to: userData.user_email,
-			subject: (isApproved ? "SEMS - Event Approval Notice" : "SEMS - Event Rejection Notice"),
+			subject: isApproved
+				? "SEMS - Event Approval Notice"
+				: "SEMS - Event Rejection Notice",
 			html: mail,
 		})
 	} catch (error) {
