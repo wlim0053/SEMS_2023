@@ -6,11 +6,7 @@ import nodemailer from "nodemailer"
 import { user, trans_obj } from "../utils/email"
 import { readFile } from "fs/promises"
 import handlebars from 'handlebars'
-import {
-    EventWithUUID
-} from "../interfaces/event"
-import { ParticipationWithUUID } from "../interfaces/participation"
-import { UserWithFireId } from "../interfaces/user"
+import { EventWithUser } from "../interfaces/event"
 
 export const createEmailReminderController = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -18,47 +14,29 @@ export const createEmailReminderController = async (req: Request, res: Response,
         const transporter = nodemailer.createTransport(trans_obj);
         const connection = await pool.connect();
 
-        const event: mssql.IResult<EventWithUUID> = await connection
+        const eventWithUser: mssql.IResult<EventWithUser> = await connection
             .request()
             .input("event_uuid", mssql.UniqueIdentifier, req.params.id)
             .query(`
-                SELECT * FROM ${DbTables.EVENT}
-                WHERE event_uuid=@event_uuid
+                SELECT * 
+                FROM ${DbTables.EVENT} e 
+                JOIN ${DbTables.PARTICIPATION} p on e.event_uuid = p.event_uuid 
+                JOIN ${DbTables.USER} u on p.user_fire_id = u.user_fire_id
+                WHERE e.event_uuid=@event_uuid
             `);
-        const eventData = event.recordset[0]; // only single value
-
-        const userFromParticipation: mssql.IResult<ParticipationWithUUID> = await connection
-            .request()
-            .input("event_uuid", mssql.UniqueIdentifier, req.params.id)
-            .query(`
-                SELECT user_fire_id FROM ${DbTables.PARTICIPATION}
-                WHERE event_uuid=@event_uuid
-            `);
-
-        const userFireIds = userFromParticipation.recordset
-            .map((row) => row.user_fire_id)
-            .filter((userFireId) => userFireId !== undefined) as string[];
+        const eventWithUserData = eventWithUser.recordset; 
 
         const emailTemplate = handlebars.compile(
             await readFile("./src/utils/template/reminder.html", "utf-8")
         )
 
-        userFireIds.map(async (userFireId) => {
-            const user_example: mssql.IResult<UserWithFireId> = await connection
-                .request()
-                .input("user_fire_id", mssql.VarChar, userFireId)
-                .query(`
-                    SELECT * FROM ${DbTables.USER} 
-                    WHERE user_fire_id=@user_fire_id
-                `);
-            const userData = user_example.recordset[0]; // only single value
-
+        eventWithUserData.map(async (eventUserData) => {
             const data = {
                 name:
-                    userData.user_fname.toUpperCase() +
+                    eventUserData.user_fname.toUpperCase() +
                     " " +
-                    userData.user_lname.toUpperCase(),
-                eventName: eventData.event_title.toUpperCase(),
+                    eventUserData.user_lname.toUpperCase(),
+                eventName: eventUserData.event_title.toUpperCase(),
                 eventPlatformLink: "https://www.monash.edu.my"
             }
 
@@ -66,11 +44,12 @@ export const createEmailReminderController = async (req: Request, res: Response,
 
             await transporter.sendMail({
                 from: user,
-                to: userData.user_email,
+                to: eventUserData.user_email,
                 subject: "Reminder: SEMS - Important Information before joining the event",
                 html: mail,
             })
         });
+		res.sendStatus(StatusCodes.OK)
     } catch (error) {
         next(error)
     }

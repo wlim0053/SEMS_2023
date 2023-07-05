@@ -1,8 +1,7 @@
 import nodemailer from "nodemailer"
 import { NextFunction, Request, Response } from "express"
 import handlebars from "handlebars"
-import { EventWithOrganiser, EventWithUUID } from "../interfaces/event"
-import { ParticipationWithUUID } from "../interfaces/participation"
+import { EventWithOrganiser, EventWithOrganiserUser, EventWithUser } from "../interfaces/event"
 import { UserWithFireId } from "../interfaces/user"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
@@ -19,17 +18,14 @@ export const registrationEmail = async (
 		const transporter = nodemailer.createTransport(trans_obj)
 		const connection = await pool.connect()
 
-		const event: mssql.IResult<EventWithOrganiser> = await connection
+		const event: mssql.IResult<EventWithOrganiserUser> = await connection
 			.request()
 			.input("event_uuid", mssql.UniqueIdentifier, req.body.event_uuid)
 			.query(`
-                    SELECT 
-                        e.*,
-                        o.parent_uuid,
-                        o.organiser_name,
-                        user_fire_id
-                    FROM 
-                        ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
+                    SELECT *
+                    FROM ${DbTables.EVENT} e 
+					JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
+					JOIN ${DbTables.USER} u on o.user_fire_id = u.user_fire_id
                     WHERE 
                         event_uuid=@event_uuid
                 `)
@@ -55,14 +51,15 @@ export const registrationEmail = async (
 				" " +
 				userData.user_lname.toUpperCase(),
 			eventName: eventData.event_title.toUpperCase(),
+			organiserEmail: eventData.user_email,
 		}
 
 		const mail = emailTemplate(data)
 
 		await transporter.sendMail({
 			from: user,
-			to: [userData.user_email],
-			subject: "Thank you for your registration!",
+			to: userData.user_email,
+			subject: "SEMS - Thank you for your registration!",
 			html: mail,
 		})
 	} catch (error) {
@@ -70,7 +67,7 @@ export const registrationEmail = async (
 	}
 }
 
-export const postEventEmail = async (
+export const requestForFeedbackEmail = async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -79,48 +76,29 @@ export const postEventEmail = async (
 		const transporter = nodemailer.createTransport(trans_obj);
 		const connection = await pool.connect();
 
-		const event: mssql.IResult<EventWithUUID> = await connection
-			.request()
-			.input("event_uuid", mssql.UniqueIdentifier, req.params.id)
-			.query(`
-                SELECT * FROM ${DbTables.EVENT}
-                WHERE event_uuid=@event_uuid
+		const eventWithUser: mssql.IResult<EventWithUser> = await connection
+            .request()
+            .input("event_uuid", mssql.UniqueIdentifier, req.params.id)
+            .query(`
+                SELECT * 
+                FROM ${DbTables.EVENT} e 
+                JOIN ${DbTables.PARTICIPATION} p on e.event_uuid = p.event_uuid 
+                JOIN ${DbTables.USER} u on p.user_fire_id = u.user_fire_id
+                WHERE e.event_uuid=@event_uuid
             `);
-		const eventData = event.recordset[0]; // only single value
-
-		const userFromParticipation: mssql.IResult<ParticipationWithUUID> = await connection
-			.request()
-			.input("event_uuid", mssql.UniqueIdentifier, req.params.id)
-			.query(`
-                SELECT user_fire_id FROM ${DbTables.PARTICIPATION}
-                WHERE event_uuid=@event_uuid
-            `);
-
-		const userFireIds = userFromParticipation.recordset
-			.map((row) => row.user_fire_id)
-			.filter((userFireId) => userFireId !== undefined) as string[];
-
+        const eventWithUserData = eventWithUser.recordset; 
 
 		const emailTemplate = handlebars.compile(
 			await readFile("./src/utils/template/postEvent.html", "utf-8")
 		)
 
-		userFireIds.map(async (userFireId) => {
-			const user_example: mssql.IResult<UserWithFireId> = await connection
-				.request()
-				.input("user_fire_id", mssql.VarChar, userFireId)
-				.query(`
-                    SELECT * FROM ${DbTables.USER} 
-                    WHERE user_fire_id=@user_fire_id
-                `);
-			const userData = user_example.recordset[0]; // only single value
-
+		eventWithUserData.map(async (eventUserData) => {
 			const data = {
 				name:
-					userData.user_fname.toUpperCase() +
+					eventUserData.user_fname.toUpperCase() +
 					" " +
-					userData.user_lname.toUpperCase(),
-				eventName: eventData.event_title.toUpperCase(),
+					eventUserData.user_lname.toUpperCase(),
+				eventName: eventUserData.event_title.toUpperCase(),
 				feedbackLink: "https://www.monash.edu.my"
 			}
 
@@ -128,8 +106,8 @@ export const postEventEmail = async (
 
 			await transporter.sendMail({
 				from: user,
-				to: userData.user_email,
-				subject: "Reminder: SEMS - Important Information before joining the event",
+				to: eventUserData.user_email,
+				subject: "SEMS - Your Feedback Matters! Share Your Experience of the event that you've joined!",
 				html: mail,
 			})
 		});
@@ -190,7 +168,7 @@ export const isEventApprovedEmail = async (
 		await transporter.sendMail({
 			from: user,
 			to: userData.user_email,
-			subject: (isApproved ? "SEMS - Event Approval Confirmation" : "SEMS - Event Rejection Confirmation"),
+			subject: (isApproved ? "SEMS - Event Approval Notice" : "SEMS - Event Rejection Notice"),
 			html: mail,
 		})
 	} catch (error) {
