@@ -1,12 +1,12 @@
-import React from "react"
-import EventPage from "../../components/EventPage"
+import React from "react";
+import EventPage from "../../components/student/EventPage";
 
 function EventHome() {
-	return (
-		<div>
-			<EventPage />
-		</div>
-	)
+  return (
+    <div>
+      <EventPage />
+    </div>
+  );
 }
 
-export default EventHome
+export default EventHome;
