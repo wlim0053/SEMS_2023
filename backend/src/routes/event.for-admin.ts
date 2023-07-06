@@ -1,15 +1,20 @@
 import express from "express"
 import {
 	approveEventController,
+	getPendingEvents,
 	rejectEventController,
 } from "../controllers/eventController.for-admin"
 import { Event } from "../interfaces/event"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
+import { isEventApprovedEmail } from "../controllers/emailController"
 
 export const adminEventRouter = express.Router()
 
-// * Endpoint to change event status
+// * Endpoint to get PENDING events
+adminEventRouter.get("/", verifyJwtHandler(["A"]), getPendingEvents)
+
+// * Endpoint to approve events
 adminEventRouter.patch(
 	"/:id/approve",
 	verifyJwtHandler(["A"]),
@@ -19,11 +24,14 @@ adminEventRouter.patch(
 			event_ems_link: true,
 		}),
 	}),
-	approveEventController
+	approveEventController,
+	isEventApprovedEmail(true)
 )
 
+// * Endpoint to reject events
 adminEventRouter.patch(
 	"/:id/reject",
 	verifyJwtHandler(["A"]),
-	rejectEventController
+	rejectEventController,
+	isEventApprovedEmail(false)
 )

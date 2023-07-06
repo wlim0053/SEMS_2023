@@ -27,6 +27,8 @@ export const getStudentEventController = async (
                 e.organiser_uuid=o.organiser_uuid
             WHERE
                 e.event_status=@event_status
+            ORDER BY
+                e.event_start_date ASC
         `)
 		res.json(events.recordset)
 	} catch (error) {
