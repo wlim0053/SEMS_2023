@@ -18,6 +18,7 @@ import {
 	createEmailForCertController,
 	requestForFeedbackEmail,
 } from "../controllers/emailController"
+import { CertificateCustomMessage } from "../interfaces/email"
 
 export const organiserEventRouter = express.Router()
 
@@ -54,18 +55,22 @@ organiserEventRouter.patch(
 // * Organiser send REMINDER EMAIL
 organiserEventRouter
 	.route("/:id/reminder")
-	.post(verifyJwtHandler(["A", "O"]), createEmailReminderController)
+	.post(
+		verifyJwtHandler(["A", "O"]),
+		requestValidators({ body: CertificateCustomMessage }),
+		createEmailReminderController
+	)
 
 // * Organiser send CERTIFICATE EMAIL
 organiserEventRouter
 	.route("/:id/cert")
-	.post(verifyJwtHandler(["S"]), createEmailForCertController)
+	.post(verifyJwtHandler(["A", "O"]), createEmailForCertController)
 
 // * Organisers PUT, GET & DELETE by event_uuid
 organiserEventRouter
 	.route("/:id")
 	.get(
-		verifyJwtHandler(["S"]),
+		verifyJwtHandler(["A", "O"]),
 		requestValidators({ body: JwtToken }),
 		getEventByIDController
 	)
