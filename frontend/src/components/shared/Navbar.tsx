@@ -20,15 +20,13 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 
+import HistoryPage from "../../pages/student/HistoryPage";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, Route, Routes, Navigate, useNavigate, Outlet } from "react-router-dom";
 import OrganiserList from "../../pages/Admin/OrganiserList";
 import Admin from "../../pages/Admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
 import EventHome from "../../pages/student/EventHome";
-import LoginPage from "../../pages/student/LoginPage";
-import RegisterPage from "../../pages/student/RegisterPage";
-import HistoryPage from "../../pages/student/HistoryPage";
 import OrganiserMainPage from "../../pages/Organiser/OrganiserMainPage";
 import CreateEventPage from "../../pages/Organiser/CreateEventPage";
 import EditEventPage from "../../pages/Organiser/EditEventPage";

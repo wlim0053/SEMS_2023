@@ -152,18 +152,6 @@ function EventPage() {
     }
   };
 
-  const convertToIntakeMonth = (selectedValue: string) => {
-    let intakeMonth = 0;
-    if (selectedValue === "February") {
-      intakeMonth = 2;
-    } else if (selectedValue === "July") {
-      intakeMonth = 7;
-    } else if (selectedValue === "October") {
-      intakeMonth = 10;
-    }
-    return intakeMonth;
-  };
-
   const handleGoToCalendar = () => {
     navigate("/StudentHome");
   };

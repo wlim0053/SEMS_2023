@@ -13,7 +13,7 @@ import {
   FormLabel,
   useToast,
 } from "@chakra-ui/react";
-import api from "../utils/api";
+import api from "../../utils/api";
 import FeedbackRadioTable from "./FeedbackRadioTable";
 
 interface Props {

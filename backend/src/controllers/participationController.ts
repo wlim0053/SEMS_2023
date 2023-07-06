@@ -3,7 +3,7 @@ import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import {
 	Participation,
-	ParticipationWithEvent,
+	ParticipationWithEventOrganiser,
 	ParticipationWithUUID,
 	ParticipationWithJwt,
 } from "../interfaces/participation"
@@ -87,11 +87,11 @@ export const markParticipationAttendanceController = async (
 export const getParticipationController = async (
 	req: Request<
 		{},
-		ParticipationWithEvent[],
+		ParticipationWithEventOrganiser[],
 		ParticipationWithJwt,
 		ParticipationQueryParams
 	>,
-	res: Response<ParticipationWithEvent[]>,
+	res: Response<ParticipationWithEventOrganiser[]>,
 	next: NextFunction
 ) => {
 	let eventStatus = ""
@@ -102,7 +102,7 @@ export const getParticipationController = async (
 
 	try {
 		const connection = await pool.connect()
-		const participants: mssql.IResult<ParticipationWithEvent> =
+		const participants: mssql.IResult<ParticipationWithEventOrganiser> =
 			await connection
 				.request()
 				.input("user_fire_id", req.body.user.user_fire_id)
@@ -115,12 +115,17 @@ export const getParticipationController = async (
                 p.participation_semester,
                 p.participation_attendance,
                 e.*,
-                f.feedback_uuid
+                f.feedback_uuid,
+                o.parent_uuid,
+                o.organiser_name
             FROM 
                 ${DbTables.PARTICIPATION} p LEFT JOIN ${DbTables.FEEDBACK} f ON p.participation_uuid=f.participation_uuid
                 JOIN ${DbTables.EVENT} e ON p.event_uuid=e.event_uuid
+                JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
             WHERE
                 p.user_fire_id=@user_fire_id ${eventStatus}
+            ORDER BY
+                e.event_start_date ASC
         `)
 		res.json(participants.recordset)
 		connection.close()

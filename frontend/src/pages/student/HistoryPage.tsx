@@ -24,9 +24,9 @@ import {
   Checkbox,
 } from "@chakra-ui/react";
 import { SearchIcon, CloseIcon } from "@chakra-ui/icons";
-import FeedbackForm from "../../components/FeedbackForm";
+import FeedbackForm from "../../components/student/FeedbackForm";
 
-function NewHistoryPage() {
+function HistoryPage() {
   // State variables
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
@@ -424,4 +424,4 @@ function NewHistoryPage() {
   );
 }
 
-export default NewHistoryPage;
+export default HistoryPage;

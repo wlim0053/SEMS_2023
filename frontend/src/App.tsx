@@ -2,6 +2,7 @@
 // components
 import Navbar from "./components/shared/Navbar";
 import Admin from "./pages/Admin/AdminDashboard";
+import RegisterPage from "./pages/student/RegisterPage";
 
 import { ChakraProvider } from "@chakra-ui/react";
 // components

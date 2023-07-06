@@ -1,5 +1,5 @@
 import React from "react";
-import EventPage from "./EventPage";
+import EventPage from "../../components/student/EventPage";
 
 function EventHome() {
   return (

@@ -1,7 +1,7 @@
 // LoginPage.tsx
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
-import "../../components/firebase-config";
+import "../../components/student/firebase-config";
 import React, { useState, FormEvent } from "react";
 import {
   Box,

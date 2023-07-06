@@ -16,7 +16,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { EmailIcon } from "@chakra-ui/icons";
-import Grouppic from "../../components/Grouppic.jpg";
+import Grouppic from "../../components/student/Grouppic.jpg";
 
 const NewLandingPage = () => {
   return (

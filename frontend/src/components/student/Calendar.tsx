@@ -16,7 +16,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 import "./CalendarStyle.css";
-import api from "../utils/api";
+import api from "../../utils/api";
 
 function Calendar() {
   const [title, setTitle] = useState("");
