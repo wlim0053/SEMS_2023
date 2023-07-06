@@ -13,12 +13,15 @@ import { JwtToken } from "../interfaces/jwtToken"
 import { OrganiserEventQueryParams } from "../interfaces/queryParams"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
-import { requestForFeedbackEmail } from "../middlewares/emailHandler"
-import { createEmailReminderController, createEmailForCertController } from "../controllers/emailController"
-
+import {
+	createEmailReminderController,
+	createEmailForCertController,
+	requestForFeedbackEmail,
+} from "../controllers/emailController"
 
 export const organiserEventRouter = express.Router()
 
+// * Organisers POST & GET events
 organiserEventRouter
 	.route("/")
 	.post(
@@ -32,6 +35,7 @@ organiserEventRouter
 		getOrganiserEventController
 	)
 
+// * Organisers views the participation for the event
 organiserEventRouter.get(
 	"/:id/participation",
 	verifyJwtHandler(["A", "O"]),
@@ -39,6 +43,7 @@ organiserEventRouter.get(
 	getEventParticipationController
 )
 
+// * Organisers marking event as complete -> send REQUEST FOR FEEDBACK EMAIL
 organiserEventRouter.patch(
 	"/:id/complete",
 	verifyJwtHandler(["A", "O"]),
@@ -46,10 +51,21 @@ organiserEventRouter.patch(
 	requestForFeedbackEmail
 )
 
+// * Organiser send REMINDER EMAIL
+organiserEventRouter
+	.route("/:id/reminder")
+	.post(verifyJwtHandler(["A", "O"]), createEmailReminderController)
+
+// * Organiser send CERTIFICATE EMAIL
+organiserEventRouter
+	.route("/:id/cert")
+	.post(verifyJwtHandler(["S"]), createEmailForCertController)
+
+// * Organisers PUT, GET & DELETE by event_uuid
 organiserEventRouter
 	.route("/:id")
 	.get(
-		verifyJwtHandler(["A", "O"]),
+		verifyJwtHandler(["S"]),
 		requestValidators({ body: JwtToken }),
 		getEventByIDController
 	)
@@ -62,18 +78,4 @@ organiserEventRouter
 		verifyJwtHandler(["A", "O"]),
 		requestValidators({ body: JwtToken }),
 		deleteEventController
-	)
-
-organiserEventRouter
-	.route("/:id/reminder")
-	.post(
-		verifyJwtHandler(["A", "O"]),
-		createEmailReminderController
-	)
-
-organiserEventRouter
-	.route("/:id/cert")
-	.post(
-		verifyJwtHandler(["A", "O"]),
-		createEmailForCertController
 	)

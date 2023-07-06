@@ -7,7 +7,7 @@ import {
 import { Event } from "../interfaces/event"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
-import { isEventApprovedEmail } from "../middlewares/emailHandler"
+import { isEventApprovedEmail } from "../controllers/emailController"
 
 export const adminEventRouter = express.Router()
 
@@ -25,9 +25,7 @@ adminEventRouter.patch(
 		}),
 	}),
 	approveEventController,
-	(req, res, next) => {
-		isEventApprovedEmail(req, res, next, true)
-	}
+	isEventApprovedEmail(true)
 )
 
 // * Endpoint to reject events
@@ -35,7 +33,5 @@ adminEventRouter.patch(
 	"/:id/reject",
 	verifyJwtHandler(["A"]),
 	rejectEventController,
-	(req, res, next) => {
-		isEventApprovedEmail(req, res, next, false)
-	}
+	isEventApprovedEmail(false)
 )
