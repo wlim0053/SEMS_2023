@@ -221,7 +221,10 @@ export const createEmailReminderController = async (
 		const eventWithUserData = eventWithUser.recordset
 
 		const emailTemplate = handlebars.compile(
-			await readFile("./src/utils/template/reminder.html", "utf-8")
+			await readFile(
+				path.resolve(__dirname, "../utils/template/reminder.html"),
+				"utf-8"
+			)
 		)
 
 		eventWithUserData.map(async (eventUserData) => {
