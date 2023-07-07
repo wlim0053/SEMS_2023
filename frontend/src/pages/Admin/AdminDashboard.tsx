@@ -17,10 +17,15 @@ import {
   HStack,
   Button,
   filter,
+  Card,
+  CardHeader,
 } from "@chakra-ui/react";
 
 import { CalendarIcon } from "@chakra-ui/icons";
-import { BiGroup, BiExport } from "react-icons/bi";
+import { BiExport } from "react-icons/bi";
+import { HiUserGroup } from "react-icons/hi";
+import { FaUserCheck } from "react-icons/fa";
+import { BsPersonFillGear } from "react-icons/bs";
 import { IconContext } from "react-icons";
 
 import {
@@ -249,33 +254,132 @@ const Admin = () => {
             h="200px"
             templateRows="repeat(2, 1fr)"
             templateColumns="repeat(5, 1fr)"
-            gap={4}
+            gap={10}
             mt="20px"
             ml="20px"
           >
             <GridItem colSpan={2}>
-              <Box>
-                <HStack alignItems="center" gridGap="8px">
-                  <CalendarIcon boxSize={9} color="blue.500"></CalendarIcon>
-                  <Text fontSize="2xl">124 events</Text>
-                </HStack>
-              </Box>
+              <Card
+                size="lg"
+                variant="elevated"
+                bgColor={"blue.100"}
+                boxShadow="xl"
+              >
+                <CardHeader>
+                  <HStack alignItems="center" gridGap="8px">
+                    <Box
+                      bgColor="#006DAE"
+                      borderRadius="full"
+                      boxSize="60px"
+                      alignContent="center"
+                      px="12px"
+                      py="8px"
+                    >
+                      <CalendarIcon boxSize={9} color="white"></CalendarIcon>
+                    </Box>
+                    <Text fontSize="2xl" fontWeight="bold">
+                      124 events
+                    </Text>
+                  </HStack>
+                </CardHeader>
+              </Card>
             </GridItem>
             <GridItem colSpan={2}>
-              <Box>
-                <HStack alignItems="center" gridGap="8px">
-                  <IconContext.Provider
-                    value={{ color: "green", size: "44px" }}
-                  >
-                    <div>
-                      <BiGroup />
-                    </div>
-                  </IconContext.Provider>
-                  <Text fontSize="2xl">250 attendees</Text>
-                </HStack>
-              </Box>
+              <Card
+                size="lg"
+                variant="elevated"
+                bgColor={"teal.100"}
+                boxShadow="xl"
+              >
+                <CardHeader>
+                  <HStack alignItems="center" gridGap="8px">
+                    <Box
+                      bgColor="teal.500"
+                      borderRadius="full"
+                      boxSize="60px"
+                      alignContent="center"
+                      px="12px"
+                      py="8px"
+                    >
+                      <IconContext.Provider
+                        value={{ color: "white", size: "40px" }}
+                      >
+                        <div>
+                          <FaUserCheck />
+                        </div>
+                      </IconContext.Provider>
+                    </Box>
+                    <Text fontSize="2xl" fontWeight="bold">
+                      124 users
+                    </Text>
+                  </HStack>
+                </CardHeader>
+              </Card>
             </GridItem>
-            <GridItem colSpan={4} bg="white" />
+            <GridItem colSpan={2}>
+              <Card
+                size="lg"
+                variant="elevated"
+                bgColor={"purple.100"}
+                boxShadow="xl"
+              >
+                <CardHeader>
+                  <HStack alignItems="center" gridGap="8px">
+                    <Box
+                      bgColor="purple.500"
+                      borderRadius="full"
+                      boxSize="60px"
+                      alignContent="center"
+                      px="12px"
+                      py="8px"
+                    >
+                      <IconContext.Provider
+                        value={{ color: "white", size: "39px" }}
+                      >
+                        <div>
+                          <HiUserGroup />
+                        </div>
+                      </IconContext.Provider>
+                    </Box>
+                    <Text fontSize="2xl" fontWeight="bold">
+                      124 attendees
+                    </Text>
+                  </HStack>
+                </CardHeader>
+              </Card>
+            </GridItem>
+            <GridItem colSpan={2}>
+              <Card
+                size="lg"
+                variant="elevated"
+                bgColor={"orange.100"}
+                boxShadow="xl"
+              >
+                <CardHeader>
+                  <HStack alignItems="center" gridGap="8px">
+                    <Box
+                      bgColor="orange.500"
+                      borderRadius="full"
+                      boxSize="60px"
+                      alignContent="center"
+                      px="12px"
+                      py="8px"
+                    >
+                      <IconContext.Provider
+                        value={{ color: "white", size: "39px" }}
+                      >
+                        <div>
+                          <BsPersonFillGear />
+                        </div>
+                      </IconContext.Provider>
+                    </Box>
+                    <Text fontSize="2xl" fontWeight="bold">
+                      24 organiser
+                    </Text>
+                  </HStack>
+                </CardHeader>
+              </Card>
+            </GridItem>
           </Grid>
         </Box>
       </Box>
