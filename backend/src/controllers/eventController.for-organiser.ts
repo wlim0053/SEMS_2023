@@ -368,7 +368,7 @@ export const completeEventController = async (
                 UPDATE 
                     ${DbTables.EVENT}
                 SET 
-                    event_status='C"
+                    event_status='C'
                 OUTPUT
                     INSERTED.*
                 WHERE
@@ -376,6 +376,7 @@ export const completeEventController = async (
             `)
 		res.json(updated.recordset)
 		connection.close()
+		next()
 	} catch (error) {
 		next(error)
 	}
