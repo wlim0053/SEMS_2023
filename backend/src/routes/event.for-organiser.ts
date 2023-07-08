@@ -55,16 +55,16 @@ organiserEventRouter.patch(
 // * Organiser send REMINDER EMAIL
 organiserEventRouter
 	.route("/:id/reminder")
-	.post(
-		verifyJwtHandler(["A", "O"]),
-		requestValidators({ body: CertificateCustomMessage }),
-		createEmailReminderController
-	)
+	.post(verifyJwtHandler(["A", "O"]), createEmailReminderController)
 
 // * Organiser send CERTIFICATE EMAIL
 organiserEventRouter
 	.route("/:id/cert")
-	.post(verifyJwtHandler(["A", "O"]), createEmailForCertController)
+	.post(
+		verifyJwtHandler(["A", "O"]),
+		requestValidators({ body: CertificateCustomMessage }),
+		createEmailForCertController
+	)
 
 // * Organisers PUT, GET & DELETE by event_uuid
 organiserEventRouter
