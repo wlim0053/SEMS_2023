@@ -1,8 +1,9 @@
 // LoginPage.tsx
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import UserContext, {User} from './shared/UserContext';
 
 import './firebase-config';
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useContext } from 'react';
 import {
 Box,
 VStack,
@@ -24,6 +25,8 @@ import { useNavigate } from "react-router-dom"
 const LoginPage: React.FC = () => {
 const toast = useToast();
 const navigate = useNavigate();
+const {user, setUser} = useContext(UserContext);
+// const [user, setUser] = useState<Object[] | null>(null)
 const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     toast({
@@ -98,20 +101,24 @@ const handleSubmit = (e: FormEvent) => {
       }
       
       // The signed-in user info.
-      const user = result.user;
+      const user1 = result.user;
       
-      console.log(user);
-      console.log(user.uid);
-      console.log(user.displayName)
-      console.log(user.email)
+      // console.log(user);
+      // console.log(user.uid);
+      // console.log(user.displayName)
+      // console.log(user.email)
   
-      const body = {uid: user.uid, email: user.email, name: user.displayName}
+      const body = {uid: user1.uid, email: user1.email, name: user1.displayName} as User
+      
   
       // if (localStorage.getItem("RegUser") != null){
   
       // }
       localStorage.setItem("RegUser", JSON.stringify(body))
       console.log("User email is not null")
+      console.log(body)
+      setUser(body)
+      console.log(user);
       navigate("/RegisterPage")
       
   

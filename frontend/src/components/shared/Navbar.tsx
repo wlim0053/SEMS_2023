@@ -1,4 +1,5 @@
-import React from "react"
+import React, {useState} from "react"
+import UserContext, {User} from "./UserContext"
 import {
 	Box,
 	Button,
@@ -32,6 +33,7 @@ import RegisterPage from "../RegisterPage"
 const Navbar = () => {
 	const { isOpen, onOpen, onClose } = useDisclosure()
 	const buttonRef = React.useRef(null)
+	const [user, setUser] = useState<User>({uid: "", email: "", name: ""})
 
 	return (
 		<>
@@ -100,6 +102,7 @@ const Navbar = () => {
 				</DrawerContent>
 			</Drawer>
 
+			<UserContext.Provider value={{user, setUser}}>
 			<Routes>
 				<Route path="/" element="" />
 				<Route path="/Admin" element={<Admin />} />
@@ -110,6 +113,7 @@ const Navbar = () => {
 				<Route path="/LoginPage" element={<LoginPage />} />
 				<Route path="/RegisterPage" element={<RegisterPage />} />
 			</Routes>
+			</UserContext.Provider>
 		</>
 	)
 }

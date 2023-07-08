@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
+import UserContext, { User } from "./shared/UserContext"
 import {
 	Box,
 	Button,
@@ -35,6 +36,7 @@ const RegisterPage: React.FC = () => {
 		discipline: "",
 	})
 	const [specialise, setSpecialise] = useState<Object[] | null>(null)
+	const { user, setUser } = useContext(UserContext)
 
 	const handleInputChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -55,11 +57,11 @@ const RegisterPage: React.FC = () => {
 			}
 		}
 
-		const user = JSON.parse(localStorage.getItem("RegUser") || "{}")
+		const user1 = JSON.parse(localStorage.getItem("RegUser") || "{}")
 		const body = {
-			user_fire_id: user.uid,
+			user_fire_id: user1.uid,
 			spec_uuid: formData.discipline,
-			user_email: user.email,
+			user_email: user1.email,
 			user_fname: formData.firstName,
 			user_lname: formData.lastName,
 			user_id: parseInt(formData.studentId),
@@ -96,6 +98,7 @@ const RegisterPage: React.FC = () => {
 
 	useEffect(() => {
 		// Perform your API call here
+		console.log(user)
 		api.get("/specialisation").then((response) => {
 			setSpecialise(response.data)
 		})
