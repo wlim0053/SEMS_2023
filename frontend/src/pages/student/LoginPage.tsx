@@ -1,8 +1,9 @@
 // LoginPage.tsx
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import ACLvlContext, { Aclvl } from "../../components/shared/ACLvlContext";
 
 import "../../components/student/firebase-config";
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useContext } from "react";
 import {
   Box,
   VStack,
@@ -18,10 +19,13 @@ import {
 import { EmailIcon } from "@chakra-ui/icons";
 import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/shared/Navbar";
+import StudentHome from "./StudentHome";
 
 const LoginPage: React.FC = () => {
   const toast = useToast();
   const navigate = useNavigate();
+  const {aclvl, setAclvl} = useContext(ACLvlContext);
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     toast({
@@ -63,8 +67,12 @@ const LoginPage: React.FC = () => {
           let data = res.data;
           console.log(data);
           console.log("POST Request sent");
-        }
+          setAclvl({user_access_level: data.user_access_level});
+          navigate("/StudentHome")
 
+          
+        }
+        
         doPostRequest();
 
         // IdP data available using getAdditionalUserInfo(result)

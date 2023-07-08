@@ -34,7 +34,8 @@ import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 import EventApproval from "../../pages/Admin/EventApproval";
 import NewHistoryPage from "../../pages/student/HistoryPage";
 import NewLandingPage from "../../pages/student/NewLandingPage";
-// import AttendanceHome from "../../pages/student/AttendanceHome";
+import LoginPage from "../../pages/student/LoginPage";
+import RegisterPage from "../../pages/student/RegisterPage";
 import FeedbackPage from "../../pages/student/FeedbackPage";
 
 const Navbar = () => {
@@ -118,9 +119,7 @@ const Navbar = () => {
                 <Link to="/NewLandingPage" onClick={() => handleViewChange("S")}>Home</Link>
                 <Link to="/StudentHome" onClick={() => handleViewChange("S")}>Student Home</Link>
                 <Link to="/EventHome" onClick={() => handleViewChange("S")}>Event Home</Link>
-                <Link to="/AttendanceHome" onClick={() => handleViewChange("S")}>Attendance Home</Link>
                 <Link to="/NewHistoryPage" onClick={() => handleViewChange("S")}>History Page</Link>
-                <Link to="/FeedbackPage" onClick={() => handleViewChange("S")}>Feedback Page</Link>
                 <Link to="/LoginPage" onClick={() => handleViewChange("S")}>Login Page</Link>
               </>
             )}
@@ -170,40 +169,6 @@ const Navbar = () => {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-
-    <Routes>
-          {/* Render links and routes based on the user's access level */}
-          {accessLevel === "S" && (
-            <>
-        <Route path="/" element={<Navigate to="/NewLandingPage" replace />} />
-        <Route path="/NewLandingPage" element={<NewLandingPage />} />
-        <Route path="/StudentHome" element={<StudentHome />} />
-        <Route path="/EventHome" element={<EventHome />} />
-        {/* <Route path="/AttendanceHome" element={<AttendanceHome />} /> */}
-        <Route path="/NewHistoryPage" element={<NewHistoryPage />} />
-        <Route path="/FeedbackPage" element={<FeedbackPage />} />
-        <Route path="/LoginPage" element={<LoginPage />} />
-        <Route path="/RegisterPage" element={<RegisterPage />} />
-        </>
-          )}
-          {accessLevel === "O" && (
-            <>
-              {/* Organiser view */}
-        <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
-        <Route path="/CreateEventPage" element={<CreateEventPage />} />
-        <Route path="/EditEventPage" element={<RegisterPage />} />
-        <Route path="/EventDetailsDashboard" element={<EventDetailsDashboard />} />
-        </>
-          )}
-          {accessLevel === "A" && (
-            <>
-              {/* Admin view */}
-        <Route path="/Admin" element={<Admin />} />
-        <Route path="/OrganiserList" element={<OrganiserList />} />
-        <Route path="/EventApproval" element={<EventApproval />} />
-       </>
-          )}
-      </Routes>
     </>
   );
 };
