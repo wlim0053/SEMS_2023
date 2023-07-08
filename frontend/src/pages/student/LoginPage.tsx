@@ -67,8 +67,10 @@ const LoginPage: React.FC = () => {
           let data = res.data;
           console.log(data);
           console.log("POST Request sent");
-          setAclvl({user_access_level: data.user_access_level});
-          navigate("/StudentHome")
+          console.log(data[0].user_access_lvl);
+          const aclvl1 = {user_access_level: data[0].user_access_lvl} as Aclvl
+          setAclvl(aclvl1);
+          navigate("/RegisterPage")
 
           
         }

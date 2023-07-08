@@ -29,19 +29,16 @@ import OrganiserList from "./pages/Admin/OrganiserList";
 
 
 function App() {
-  const [aclvl, setAclvl] = useContext(ACLvlContext);
-  const [access_lvl,setAccessLevel] = useState<String | null>(null);
+  const [aclvl, setAclvl] = useState<Aclvl>({user_access_level: ""})
   
   return (
     <div className="App">   
       <Router>
-      {access_lvl ? (<Navbar />)  :  null } 
-      {access_lvl ? null : (<LoginPage />)}
-        <Navbar />
+      {aclvl.user_access_level  !=="" ? (<Navbar />)  :  null } 
+      {aclvl.user_access_level !=="" ? null : (<LoginPage />)}
         {/* <LoginPage /> */}
         <ACLvlContext.Provider value={{aclvl, setAclvl}}> 
         <Routes>
-
         <Route path="/Navbar" element={<Navbar/>} />
         <Route path="/Login" element={<LoginPage />} />
         <Route path="/RegisterPage" element={<RegisterPage />} />

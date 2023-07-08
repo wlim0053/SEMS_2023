@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from "react";
+import React,{useEffect, useState, useContext} from "react";
 import {
   Box,
   Button,
@@ -23,6 +23,7 @@ import {
 import HistoryPage from "../../pages/student/HistoryPage";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import { Link, Route, Routes, Navigate, useNavigate, Outlet } from "react-router-dom";
+import ACLvlContext, { Aclvl } from "../../components/shared/ACLvlContext";
 import OrganiserList from "../../pages/Admin/OrganiserList";
 import Admin from "../../pages/Admin/AdminDashboard";
 import StudentHome from "../../pages/student/StudentHome";
@@ -41,12 +42,12 @@ import FeedbackPage from "../../pages/student/FeedbackPage";
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const buttonRef = React.useRef(null);
-  const [accessLevel, setAccessLevel] = useState("S"); // Track the user's access level
+  const {aclvl, setAclvl} = useContext(ACLvlContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Navigate to the appropriate landing page based on the selected view
-    switch (accessLevel) {
+    switch (aclvl.user_access_level) {
       case "S":
         navigate("/NewLandingPage");
         break;
@@ -59,10 +60,10 @@ const Navbar = () => {
       default:
         break;
     }
-  }, [accessLevel]);
+  }, [aclvl.user_access_level]);
 
   const handleViewChange = (selectedView) => {
-    setAccessLevel(selectedView); // Update the user's access level
+    setAclvl(selectedView); // Update the user's access level
   };
 
 
@@ -114,7 +115,7 @@ const Navbar = () => {
         <DrawerHeader>Menu</DrawerHeader>
         <DrawerBody>
           <VStack align="start" spacing={4}>
-            {accessLevel === "S" && (
+            {aclvl.user_access_level === "S" && (
               <>
                 <Link to="/NewLandingPage" onClick={() => handleViewChange("S")}>Home</Link>
                 <Link to="/StudentHome" onClick={() => handleViewChange("S")}>Student Home</Link>
@@ -123,7 +124,7 @@ const Navbar = () => {
                 <Link to="/LoginPage" onClick={() => handleViewChange("S")}>Login Page</Link>
               </>
             )}
-            {accessLevel === "O" && (
+            {aclvl.user_access_level === "O" && (
               <>
                 <Link to="/OrganiserMainPage" onClick={() => handleViewChange("O")}>Home</Link>
                 <Link to="/CreateEventPage" onClick={() => handleViewChange("O")}>Create Event</Link>
@@ -131,7 +132,7 @@ const Navbar = () => {
                 <Link to="/EventDetailsDashboard" onClick={() => handleViewChange("O")}>Event Details</Link>
               </>
             )}
-            {accessLevel === "A" && (
+            {aclvl.user_access_level === "A" && (
               <>
                 <Link to="/Admin" onClick={() => handleViewChange("A")}>AdminDashboard</Link>
                 <Link to="/OrganiserList" onClick={() => handleViewChange("A")}>Organiser List</Link>
@@ -148,19 +149,19 @@ const Navbar = () => {
             <MenuList>
               <MenuItem
                 onClick={() => handleViewChange("S")}
-                disabled={accessLevel === "S"}
+                disabled={aclvl.user_access_level === "S"}
               >
                 Student View
               </MenuItem>
               <MenuItem
                 onClick={() => handleViewChange("O")}
-                disabled={accessLevel === "O"}
+                disabled={aclvl.user_access_level === "O"}
               >
                 Organiser View
               </MenuItem>
               <MenuItem
                 onClick={() => handleViewChange("A")}
-                disabled={accessLevel === "A"}
+                disabled={aclvl.user_access_level === "A"}
               >
                 Admin View
               </MenuItem>

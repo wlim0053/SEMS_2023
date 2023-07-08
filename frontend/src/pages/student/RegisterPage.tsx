@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext} from "react";
 import {
   Box,
   Button,
@@ -15,6 +15,7 @@ import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import api from "../../utils/api";
 import { useNavigate } from "react-router-dom";
+import  ACLvlContext, {Aclvl}  from "../../components/shared/ACLvlContext";
 
 const engineeringSchool = "School of Engineering";
 
@@ -34,6 +35,7 @@ const RegisterPage: React.FC = () => {
   const [specialise, setSpecialise] = useState<Object[] | null>(null);
   const [schoolType, setSchoolType] = useState<string | null>(null);
   const [schools, setSchools] = useState<Object[] | null>(null);
+  const {aclvl, setAclvl} = useContext(ACLvlContext);
 
   // useEffect(() => {
   //   // Assume you have an endpoint /schools to fetch the list of schools
@@ -68,6 +70,7 @@ const RegisterPage: React.FC = () => {
 
   // Fetches data from the database
   useEffect(() => {
+    console.log(aclvl)
     const fetchData = async () => {
       try {
         await api.get("/school").then((response) => {
