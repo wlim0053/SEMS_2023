@@ -103,7 +103,7 @@ const EventApproval = () => {
 
   const fetchEvent = async () => {
     try {
-      const response = await api.get("/event/for-organiser?event_status=P");
+      const response = await api.get("/event/for-admin");
       setEvents(response.data);
       console.log(response.data);
       switch (response.data[0].event_status) {
