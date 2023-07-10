@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Formik, Form, Field } from "formik";
 import {
+  Text,
   Table,
   Thead,
   Tbody,
@@ -8,7 +9,9 @@ import {
   Th,
   Td,
   Checkbox,
+  CheckboxGroup,
   Button,
+  Stack,
   useDisclosure,
   AlertDialog,
   AlertDialogOverlay,
@@ -39,19 +42,38 @@ interface ParticipationData {
 
 interface AttendanceFormProps {
   event_uuid: string;
+  event_status: string;
 }
 
-function AttendanceForm({ event_uuid }: AttendanceFormProps) {
+function AttendanceForm({ event_uuid, event_status }: AttendanceFormProps) {
   const [participationData, setParticipationData] = useState<
     ParticipationData[]
   >([]);
-  const [refreshAttendance, setRefreshAttendance] = useState(false);
+  const [absenteeCount, setAbsenteeCount] = useState(0);
+  const [attendedCount, setAttendedCount] = useState(0);
+  const [turnOutRateCount, setTurnOutRateCount] = useState(0);
+
+
+
+
+  const [isOpen, setIsOpen] = useState(false);
+  const onClose = () => setIsOpen(false);
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const fetchParticipationFromDatabase = async () => {
     const response = await api.get(
       `/event/for-organiser/${event_uuid}/participation`
     );
-    return response.data;
+
+    // Convert boolean values to numbers
+    const formattedData = response.data.map((participation) => ({
+      ...participation,
+      participation_attendance: participation.participation_attendance ? 1 : 0,
+    }));
+
+    console.log(formattedData);
+    setParticipationData(formattedData);
+    return formattedData;
   };
 
   const toggleAttendanceInDatabase = async (
@@ -59,6 +81,12 @@ function AttendanceForm({ event_uuid }: AttendanceFormProps) {
     toggled_participation_attendance: number
   ) => {
     try {
+      console.log(
+        "toggleAttendance || " +
+          participation_uuid +
+          ": " +
+          toggled_participation_attendance
+      );
       let bodyForAttendance = {
         participation_attendance: toggled_participation_attendance,
       };
@@ -83,84 +111,142 @@ function AttendanceForm({ event_uuid }: AttendanceFormProps) {
       });
   }, []);
 
-  useEffect(() => {
-    if (refreshAttendance) {
-      fetchParticipationFromDatabase()
-        .then((data) => {
-          setParticipationData(data);
-          setRefreshAttendance(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching event:", error);
-          setRefreshAttendance(false);
-        });
-    }
-  }, [refreshAttendance]);
-
   return (
-    <Formik
-      initialValues={participationData.reduce(
-        (values, participation) => ({
-          ...values,
-          [participation.participation_uuid]:
-            participation.participation_attendance === 1,
-        }),
-        {}
-      )}
-      onSubmit={async (values) => {
-        try {
-          const promises = Object.keys(values).map((participation_uuid) =>
-            toggleAttendanceInDatabase(
-              participation_uuid,
-              values[participation_uuid] ? 1 : 0
-            )
-          );
-          await Promise.all(promises);
-          setRefreshAttendance(true);
-          console.log("Attendance updated successfully");
-        } catch (error) {
-          console.error("Error updating attendance:", error);
-        }
-      }}
-    >
-      {({ handleSubmit }) => (
-        <Form onSubmit={handleSubmit}>
-          <Table size="sm">
-            <Thead>
-              <Tr>
-                <Th>No</Th>
-                <Th>Student ID</Th>
-                <Th>Name</Th>
-                <Th>Email</Th>
-                <Th>Attendance</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {participationData.map((participation, index) => (
-                <Tr key={participation.participation_uuid}>
-                  <Td>{index + 1}</Td>
-                  <Td>{participation.user_id}</Td>
-                  <Td>
-                    {participation.user_fname} {participation.user_lname}
-                  </Td>
-                  <Td>{participation.user_email}</Td>
-                  <Td>
-                    <Field
-                      type="checkbox"
-                      name={participation.participation_uuid}
-                      as={Checkbox}
-                    />
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-          <Button colorScheme="blue" mt={4} type="submit">
-            Submit
-          </Button>
-        </Form>
-      )}
-    </Formik>
+    <>
+      <Formik
+        initialValues={{
+          // Initialize the form values with checked checkboxes
+          ...participationData.reduce(
+            (values, participation) => ({
+              ...values,
+              [participation.participation_uuid]:
+                participation.participation_attendance === 1,
+            }),
+            {}
+          ),
+        }}
+        onSubmit={async (values) => {
+          try {
+            console.log("Formik submitted with values:");
+            console.log(values);
+
+            // Convert the values object into an array of participations
+            const participations = participationData.map((participation) => {
+              const isChecked = values[participation.participation_uuid];
+              return {
+                participation_uuid: participation.participation_uuid,
+                participation_attendance: isChecked
+                  ? 1
+                  : participation.participation_attendance,
+              };
+            });
+
+            const promises = participations.map((participation) =>
+              toggleAttendanceInDatabase(
+                participation.participation_uuid,
+                participation.participation_attendance
+              )
+            );
+            await Promise.all(promises);
+            console.log("Attendance updated successfully");
+
+            const attendedCount = participations.reduce(
+              (count, participation) =>
+                count + (participation.participation_attendance === 1 ? 1 : 0),
+              0
+            );
+            const absenteeCount = participations.length - attendedCount;
+            const turnoutRate = (attendedCount / participations.length) * 100;
+            setAttendedCount(attendedCount);
+            setAbsenteeCount(absenteeCount);
+            setTurnOutRateCount(turnoutRate);
+
+            setIsOpen(true);
+          } catch (error) {
+            console.error("Error updating attendance:", error);
+          }
+        }}
+      >
+        {({ handleSubmit }) => (
+          <Form onSubmit={handleSubmit}>
+            <Table size="sm">
+              <Thead>{/* ... */}</Thead>
+              <Tbody>
+                {participationData.map((participation, index) => (
+                  <Tr key={participation.participation_uuid}>
+                    <Td>{index + 1}</Td>
+                    <Td>{participation.user_id}</Td>
+                    <Td>
+                      {participation.user_fname} {participation.user_lname}
+                    </Td>
+                    <Td>{participation.user_email}</Td>
+                    <Td>
+                      <Field
+                        name={participation.participation_uuid}
+                        type="checkbox"
+                        render={({ field }) => (
+                          <Checkbox
+                            {...field}
+                            isChecked={
+                              participation.participation_attendance === 1
+                            }
+                            onChange={(e) => {
+                              field.onChange(e);
+                              const isChecked = e.target.checked;
+                              setParticipationData((prevData) =>
+                                prevData.map((prevParticipation) => {
+                                  if (
+                                    prevParticipation.participation_uuid ===
+                                    participation.participation_uuid
+                                  ) {
+                                    return {
+                                      ...prevParticipation,
+                                      participation_attendance: isChecked
+                                        ? 1
+                                        : 0,
+                                    };
+                                  }
+                                  return prevParticipation;
+                                })
+                              );
+                            }}
+                          />
+                        )}
+                      />
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+            <Button colorScheme="blue" mt={4} type="submit">
+              Submit
+            </Button>
+          </Form>
+        )}
+      </Formik>
+
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader>Attendance Summary</AlertDialogHeader>
+            <AlertDialogBody>
+            <Text mb={2}>Present: {attendedCount} students</Text>
+            <Text mb={2}>Absent: {absenteeCount} students</Text>
+            <Text>Turnout Rate: {turnOutRateCount.toFixed(2)}%</Text>
+          </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Close
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </>
   );
 }
 
