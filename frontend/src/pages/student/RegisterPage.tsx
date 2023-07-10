@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import UserContext, {User} from '../../components/shared/UserContext';
 import {
   Box,
   Button,
@@ -34,6 +35,7 @@ const RegisterPage: React.FC = () => {
   const [specialise, setSpecialise] = useState<Object[] | null>(null);
   const [schoolType, setSchoolType] = useState<string | null>(null);
   const [schools, setSchools] = useState<Object[] | null>(null);
+  const {user, setUser} = useContext(UserContext);
 
   // useEffect(() => {
   //   // Assume you have an endpoint /schools to fetch the list of schools
@@ -125,7 +127,6 @@ const RegisterPage: React.FC = () => {
           onSubmit={(values, { setSubmitting }) => {
             setTimeout(() => {
               setSubmitting(false);
-              const user = JSON.parse(localStorage.getItem("RegUser") || "{}");
               const body = {
                 user_fire_id: user.uid,
                 spec_uuid: values.discipline,
