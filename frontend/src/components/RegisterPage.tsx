@@ -57,11 +57,11 @@ const RegisterPage: React.FC = () => {
 			}
 		}
 
-		const user1 = JSON.parse(localStorage.getItem("RegUser") || "{}")
+		// const user1 = JSON.parse(localStorage.getItem("RegUser") || "{}")
 		const body = {
-			user_fire_id: user1.uid,
+			user_fire_id: user.uid,
 			spec_uuid: formData.discipline,
-			user_email: user1.email,
+			user_email: user.email,
 			user_fname: formData.firstName,
 			user_lname: formData.lastName,
 			user_id: parseInt(formData.studentId),
@@ -84,21 +84,10 @@ const RegisterPage: React.FC = () => {
 			console.log("POST Request sent")
 		}
 		doPostRequest()
-
-		// async function doPostRequest2() {
-		//   let payload = { user_fire_id: user.uid};
-
-		//   let res = await api.post('/user/login', payload);
-		//   let data = res.data;
-		//   console.log(data);
-		//   console.log("POST Request sent")
-		// }
-		// doPostRequest2();
 	}
 
 	useEffect(() => {
 		// Perform your API call here
-		console.log(user)
 		api.get("/specialisation").then((response) => {
 			setSpecialise(response.data)
 		})

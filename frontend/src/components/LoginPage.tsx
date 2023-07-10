@@ -102,20 +102,11 @@ const handleSubmit = (e: FormEvent) => {
       
       // The signed-in user info.
       const user1 = result.user;
-      
-      // console.log(user);
-      // console.log(user.uid);
-      // console.log(user.displayName)
-      // console.log(user.email)
-  
+
       const body = {uid: user1.uid, email: user1.email, name: user1.displayName} as User
       
-  
-      // if (localStorage.getItem("RegUser") != null){
-  
-      // }
-      localStorage.setItem("RegUser", JSON.stringify(body))
-      console.log("User email is not null")
+      // localStorage.setItem("RegUser", JSON.stringify(body))
+      // console.log("User email is not null")
       console.log(body)
       setUser(body)
       console.log(user);
