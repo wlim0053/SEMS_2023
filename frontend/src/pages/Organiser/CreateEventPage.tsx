@@ -101,7 +101,7 @@ function CreateEventPage() {
 
   const handleButtonClick = () => {
     formik.setFieldValue("hasClickedEMSButton", true);
-    const googleFormUrl = "https://forms.gle/gJkH9m6bHcMguMH17"; // Test form
+    const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSer5vqDG6TV2xgSAFPnpP76uousw9GQgnpYkxohTDLy7ug52A/viewform?usp=sf_link"; // Test form
     const openPopup = () => {
       const width = 600;
       const height = 600;

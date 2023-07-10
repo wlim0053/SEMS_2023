@@ -1,3 +1,14 @@
+import React from 'react'
+
+function AttendancePage() {
+  return (
+    <div>AttendancePage</div>
+  )
+}
+
+export default AttendancePage
+
+/*
 import React, { useEffect } from "react";
 import {
   Table,
@@ -289,4 +300,4 @@ function AttendancePage() {
   );
 }
 
-export default AttendancePage;
+export default AttendancePage;*/

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import AttendanceForm from "../../components/Organizer/AttendanceForm";
 import {
   Box,
   Heading,
@@ -59,6 +60,7 @@ const EventDetailsDashboard = () => {
   const [selectedEventData, setSelectedEventData] = useState<EventData>();
 
   const fetchSelectedEventFromDatabase = async () => {
+    console.log("Selected event UUID: " + selectedEventUUID);
     const response = await api.get(`/event/for-organiser/${selectedEventUUID}`);
     console.log(response.data);
     return response.data[0];
@@ -74,36 +76,8 @@ const EventDetailsDashboard = () => {
       });
   }, []);
 
-  const [students, setStudents] = useState<Student[]>([
-    {
-      id: 1,
-      studentId: "321200",
-      name: "Azhan",
-      email: "emma.smith@student.monash.edu",
-    },
-    {
-      id: 2,
-      studentId: "329456",
-      name: "Kidd",
-      email: "david.jones@student.monash.edu",
-    },
-    {
-      id: 3,
-      studentId: "310024",
-      name: "Jett",
-      email: "sarah.wilson@student.monash.edu",
-    },
-    {
-      id: 4,
-      studentId: "346780",
-      name: "Zubin",
-      email: "alexander.brown@student.monash.edu",
-    },
 
-    // Add more students as needed
-  ]);
   const [selectedStudents, setSelectedStudents] = useState<Student[]>([]);
-  const [attendanceSubmitted, setAttendanceSubmitted] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [turnoutDetails, setTurnoutDetails] = useState({
@@ -156,24 +130,26 @@ const EventDetailsDashboard = () => {
   };
 
   const handleSubmitAttendance = () => {
-    const presentCount = selectedStudents.length;
-    const absentCount = students.length - presentCount;
-    const turnoutRate = (presentCount / students.length) * 100;
+    console.log("Hello");
+    // const presentCount = selectedStudents.length;
+    // const absentCount = students.length - presentCount;
+    // const turnoutRate = (presentCount / students.length) * 100;
 
-    setTurnoutDetails({
-      present: presentCount,
-      absent: absentCount,
-      turnoutRate,
-    });
+    // setTurnoutDetails({
+    //   present: presentCount,
+    //   absent: absentCount,
+    //   turnoutRate,
+    // });
 
-    setAttendanceSubmitted(true);
-    onOpen();
+    // setAttendanceSubmitted(true);
+    // onOpen();
   };
 
   const handleResetAttendance = () => {
-    setSelectedStudents([]);
-    setAttendanceSubmitted(false);
-    onClose();
+    console.log("Hello")
+    // setSelectedStudents([]);
+    // setAttendanceSubmitted(false);
+    // onClose();
   };
 
   const AlertDialogBox = (
@@ -278,7 +254,7 @@ const EventDetailsDashboard = () => {
 
           <Flex alignItems="center">
             <Text fontWeight="bold" marginRight={2} fontSize="18px">
-              Links and QR Code:
+              Links:
             </Text>
             <a
               href={selectedEventData?.event_reg_google_form}
@@ -311,43 +287,10 @@ const EventDetailsDashboard = () => {
             Attendance:
           </Text>
           <Box borderWidth={1} borderRadius="md" p={4}>
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th>No</Th>
-                  <Th>Student ID</Th>
-                  <Th>Name</Th>
-                  <Th>Email</Th>
-                  <Th>Attendance</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {students.map((student) => (
-                  <Tr key={student.id}>
-                    <Td>{student.id}</Td>
-                    <Td>{student.studentId}</Td>
-                    <Td>{student.name}</Td>
-                    <Td>{student.email}</Td>
-                    <Td>
-                      <Checkbox
-                        isChecked={selectedStudents.includes(student)}
-                        onChange={() => handleCheckboxChange(student)}
-                      />
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
+            <AttendanceForm event_uuid={selectedEventUUID}/>
           </Box>
-
-          {!attendanceSubmitted ? (
-            <Button colorScheme="blue" onClick={handleSubmitAttendance} mt={4}>
-              Submit Attendance
-            </Button>
-          ) : null}
         </Box>
       </Grid>
-      {attendanceSubmitted ? AlertDialogBox : null}
     </Box>
   );
 };
