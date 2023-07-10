@@ -1,4 +1,5 @@
 import express from "express"
+import { registrationEmail } from "../controllers/emailController"
 import {
 	createParticipationController,
 	markParticipationAttendanceController,
@@ -21,7 +22,8 @@ participationRouter
 	.post(
 		verifyJwtHandler(["S", "O", "A"]),
 		requestValidators({ body: ParticipationWithJwt }),
-		createParticipationController
+		createParticipationController,
+		registrationEmail
 	)
 	.get(
 		verifyJwtHandler(["S", "O", "A"]),

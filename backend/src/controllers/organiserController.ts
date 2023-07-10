@@ -3,56 +3,87 @@ import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
 import {
+	OrganiserRequestBody,
 	Organiser,
 	OrganiserWithStudent,
 	OrganiserWithUUID,
 } from "../interfaces/organiser"
 import { AdminOrganiserQueryParams } from "../interfaces/queryParams"
 
+// * Used by Admins to add new organisers
 export const createOrganiserController = async (
-	req: Request<{}, OrganiserWithUUID[], Organiser>,
-	res: Response<OrganiserWithUUID[]>,
+	req: Request<{}, {}, OrganiserRequestBody>,
+	res: Response<{}>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const create: mssql.IResult<OrganiserWithUUID> = await connection
+		await connection
 			.request()
+			.input("user_email", req.body.user_email)
 			.input("parent_uuid", mssql.UniqueIdentifier, req.body.parent_uuid)
 			.input("organiser_name", mssql.VarChar, req.body.organiser_name)
-			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id).query(`
-                INSERT INTO ${DbTables.ORGANISER} (user_fire_id, parent_uuid, organiser_name)
+			.query(`
+                DECLARE @userFireId VARCHAR(255)
+                SELECT
+                    @userFireId=user_fire_id
+                FROM
+                    ${DbTables.USER}
+                WHERE
+                    user_email=@user_email
+
+                IF @@ROWCOUNT=0
+                THROW 50404, 'Email not found', 1
+
+                INSERT INTO ${DbTables.ORGANISER}
 				VALUES (
-                    @user_fire_id,
+                    DEFAULT,
+                    @userFireId,
                     @parent_uuid,
                     @organiser_name
                 )`)
-		res.sendStatus(StatusCodes.NO_CONTENT)
+		res.sendStatus(StatusCodes.CREATED)
 		connection.close()
-	} catch (error) {
+	} catch (error: any) {
+		if (error?.number === 50404) res.status(404)
 		next(error)
 	}
 }
 
+// * Used by Admins to update organiser details
 export const updateOrganiserController = async (
-	req: Request<{ id: string }, OrganiserWithUUID[], Organiser>,
+	req: Request<{ id: string }, OrganiserWithUUID[], OrganiserRequestBody>,
 	res: Response<OrganiserWithUUID[]>,
 	next: NextFunction
 ) => {
 	try {
 		const connection = await pool.connect()
-		const updated: mssql.IResult<OrganiserWithUUID> = await connection
+		await connection
 			.request()
 			.input("organiser_uuid", mssql.UniqueIdentifier, req.params.id)
+			.input("user_email", req.body.user_email)
 			.input("parent_uuid", mssql.UniqueIdentifier, req.body.parent_uuid)
 			.input("organiser_name", mssql.VarChar, req.body.organiser_name)
-			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id)
 			.query(
-				`UPDATE ${DbTables.ORGANISER} 
-			        SET [parent_uuid] = @parent_uuid, 
-                        [organiser_name] = @organiser_name,
-                        [user_fire_id] = @user_fire_id
-			    WHERE [organiser_uuid] = @organiser_uuid`
+				`
+                DECLARE @userFireId VARCHAR(255)
+                SELECT
+                    @userFireId=user_fire_id
+                FROM
+                    ${DbTables.USER}
+                WHERE
+                    user_email=@user_email
+
+                IF @@ROWCOUNT=0
+                THROW 50404, 'Email not found', 1
+                
+                UPDATE ${DbTables.ORGANISER} 
+                SET 
+                    [parent_uuid]=@parent_uuid, 
+                    [organiser_name]=@organiser_name,
+                    [user_fire_id]=@userFireId
+			    WHERE 
+                    [organiser_uuid]=@organiser_uuid`
 			)
 		res.sendStatus(StatusCodes.NO_CONTENT)
 		connection.close()
