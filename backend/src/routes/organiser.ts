@@ -6,9 +6,8 @@ import {
 	getOrganiserController,
 	getOrganiserByIDController,
 } from "../controllers/organiserController"
-import { Organiser } from "../interfaces/organiser"
+import { OrganiserRequestBody } from "../interfaces/organiser"
 import { requestValidators } from "../middlewares/requestValidator"
-import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 
 export const organiserRouter = express.Router()
@@ -17,7 +16,7 @@ organiserRouter
 	.route("/")
 	.post(
 		verifyJwtHandler(["A"]),
-		requestValidators({ body: Organiser }),
+		requestValidators({ body: OrganiserRequestBody }),
 		createOrganiserController
 	)
 	.get(verifyJwtHandler(["A"]), getOrganiserController)
@@ -27,7 +26,7 @@ organiserRouter
 	.get(verifyJwtHandler(["A"]), getOrganiserByIDController)
 	.put(
 		verifyJwtHandler(["A"]),
-		requestValidators({ body: Organiser }),
+		requestValidators({ body: OrganiserRequestBody }),
 		updateOrganiserController
 	)
 	.delete(verifyJwtHandler(["A"]), deleteOrganiserController)

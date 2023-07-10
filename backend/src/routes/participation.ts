@@ -1,4 +1,5 @@
 import express from "express"
+import { registrationEmail } from "../controllers/emailController"
 import {
 	createParticipationController,
 	markParticipationAttendanceController,
@@ -13,7 +14,6 @@ import {
 import { ParticipationQueryParams } from "../interfaces/queryParams"
 import { verifyJwtHandler } from "../middlewares/jwtHandler"
 import { requestValidators } from "../middlewares/requestValidator"
-import { registrationEmail } from "../middlewares/emailHandler"
 
 export const participationRouter = express.Router()
 

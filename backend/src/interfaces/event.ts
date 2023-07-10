@@ -1,6 +1,7 @@
 import zod from "zod"
 import { JwtToken } from "./jwtToken"
 import { Organiser } from "./organiser"
+import { User } from "./user"
 
 // * Response body
 export const Event = zod.object({
@@ -24,13 +25,11 @@ export const EventWithUUID = Event.extend({
 	event_uuid: zod.string().uuid(),
 })
 
-export const EventWithOrganiser = EventWithUUID.merge(
-	Organiser.pick({
-		parent_uuid: true,
-		organiser_name: true,
-		user_fire_id: true,
-	})
-)
+export const EventWithOrganiser = EventWithUUID.merge(Organiser)
+
+export const EventWithUser = EventWithUUID.merge(User)
+
+export const EventWithOrganiserUser = EventWithOrganiser.merge(User)
 
 export type Event = zod.infer<typeof Event>
 
@@ -38,9 +37,13 @@ export type EventWithUUID = zod.infer<typeof EventWithUUID>
 
 export type EventWithOrganiser = zod.infer<typeof EventWithOrganiser>
 
+export type EventWithOrganiserUser = zod.infer<typeof EventWithOrganiserUser>
+
 // * Request body
 export const EventWithJwt = Event.omit({
 	organiser_uuid: true,
 }).merge(JwtToken)
 
 export type EventWithJwt = zod.infer<typeof EventWithJwt>
+
+export type EventWithUser = zod.infer<typeof EventWithUser>

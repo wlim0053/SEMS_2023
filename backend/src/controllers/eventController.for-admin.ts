@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express"
 import mssql from "mssql"
 import { pool } from "../utils/dbConfig"
 import { DbTables, StatusCodes } from "../utils/constant"
-import { EventWithUUID } from "../interfaces/event"
+import { EventWithOrganiser, EventWithUUID } from "../interfaces/event"
 
 // * Used by admins to mark event as approved
 export const approveEventController = async (
@@ -36,6 +36,7 @@ export const approveEventController = async (
             `)
 		res.json(update.recordset)
 		connection.close()
+		next()
 	} catch (error) {
 		next(error)
 	}
@@ -62,6 +63,36 @@ export const rejectEventController = async (
                 event_uuid=@event_uuid
         `)
 		res.json(update.recordset)
+		connection.close()
+		next()
+	} catch (error) {
+		next(error)
+	}
+}
+
+// * Used by admins to get PENDING events
+export const getPendingEvents = async (
+	req: Request,
+	res: Response<EventWithOrganiser[]>,
+	next: NextFunction
+) => {
+	try {
+		const connection = await pool.connect()
+		const result: mssql.IResult<EventWithOrganiser> =
+			await connection.request().query(`
+            SELECT
+                e.*,
+                o.user_fire_id,
+                o.parent_uuid,
+                o.organiser_name
+            FROM
+                ${DbTables.EVENT} e JOIN ${DbTables.ORGANISER} o ON e.organiser_uuid=o.organiser_uuid
+            WHERE
+                e.event_status='P'
+            ORDER BY
+                e.event_start_date ASC
+        `)
+		res.send(result.recordset)
 		connection.close()
 	} catch (error) {
 		next(error)

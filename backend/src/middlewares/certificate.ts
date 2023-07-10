@@ -1,22 +1,21 @@
 import PDFDocument from "pdfkit"
 import path from "path"
-import { UserWithFireId } from "../interfaces/user"
-import { EventWithOrganiser } from "../interfaces/event"
+import { CertificateDetails } from "../interfaces/email"
 
 export const generateCertificate = (data: {
-	user: UserWithFireId
-	event: EventWithOrganiser
+	certDetail: CertificateDetails
+	customMessage: string
 }) => {
 	return new Promise<Buffer>((resolve) => {
-		const { user, event } = data
+		const { certDetail, customMessage } = data
 		const doc = new PDFDocument({
 			size: "A4",
 			info: {
 				Title: "Certificate of Attendance",
-				Author: event.organiser_name,
+				Author: certDetail.organiser_name,
 				Subject: `Certificate of Attendance of ${
-					event.event_title
-				} for ${user.user_fname + " " + user.user_lname}`,
+					certDetail.event_title
+				} for ${certDetail.user_fname + " " + certDetail.user_lname}`,
 			},
 		})
 
@@ -55,9 +54,9 @@ export const generateCertificate = (data: {
 		doc.font("Arial Bold")
 			.fontSize(20)
 			.text(
-				user.user_fname.toUpperCase() +
+				certDetail.user_fname.toUpperCase() +
 					" " +
-					user.user_lname.toUpperCase(),
+					certDetail.user_lname.toUpperCase(),
 				{
 					align: "center",
 				}
@@ -71,7 +70,7 @@ export const generateCertificate = (data: {
 
 		doc.font("Arial Bold")
 			.fontSize(20)
-			.text(event.event_title, {
+			.text(certDetail.event_title, {
 				align: "center",
 			})
 			.moveDown(0.7)
@@ -79,14 +78,13 @@ export const generateCertificate = (data: {
 		doc.font("Arial")
 			.fontSize(16)
 			.text(
-				`held on ${new Date(event.event_start_date).toLocaleDateString(
-					"en-AU",
-					{
-						year: "numeric",
-						month: "long",
-						day: "numeric",
-					}
-				)}`,
+				`held on ${new Date(
+					certDetail.event_start_date
+				).toLocaleDateString("en-AU", {
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				})}`,
 				{ align: "center" }
 			)
 			.moveDown(0.875)
@@ -100,7 +98,7 @@ export const generateCertificate = (data: {
 
 		doc.font("Arial Bold")
 			.fontSize(20)
-			.text("Nazi Socalist Party, LGBTQ+ & The Jews", { align: "center" }) // todo: allow inputs from organiser
+			.text(customMessage, { align: "center" })
 			.moveDown(2)
 
 		const width = (doc.page.width - 2 * doc.x) / 3

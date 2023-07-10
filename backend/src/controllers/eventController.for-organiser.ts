@@ -376,6 +376,7 @@ export const completeEventController = async (
             `)
 		res.json(updated.recordset)
 		connection.close()
+		next()
 	} catch (error) {
 		next(error)
 	}

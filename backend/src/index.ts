@@ -13,7 +13,6 @@ import { statsRouter } from "./routes/stats"
 import { studentEventRouter } from "./routes/event.for-student"
 import { organiserEventRouter } from "./routes/event.for-organiser"
 import { adminEventRouter } from "./routes/event.for-admin"
-import { emailRouter } from "./routes/email"
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -61,9 +60,6 @@ app.use("/api/event/for-admin", adminEventRouter)
 
 // Route for retrieving statistical data from tables (group by statements)
 app.use("/api/stats", statsRouter)
-
-// Route for sending emails
-app.use("/api/email", emailRouter)
 
 // * Error handling middleware
 app.use(errorHandler)
