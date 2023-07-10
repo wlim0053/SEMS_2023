@@ -155,8 +155,12 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
 
   const sendCertificate = async () => {
     try {
-      let response = await api.patch(
-        `/event/for-organiser/${selectedEventUUID}/cert`
+      let bodyForOrganiser = {
+        organisedBy: "MUMTEC"
+     }
+     
+      let response = await api.post(
+        `/event/for-organiser/${selectedEventUUID}/cert`, bodyForOrganiser
       );
       console.log(response.data); // Response data from the server
       // Handle the response or perform any necessary actions
@@ -183,7 +187,7 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
 
   const sendReminderEmail = async () => {
     try {
-      let response = await api.patch(
+      let response = await api.post(
         `/event/for-organiser/${selectedEventUUID}/reminder`
       );
       console.log(response.data); // Response data from the server
@@ -206,6 +210,7 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
 
   const handleConfirmReminderEmailClick = () => {
     sendReminderEmail();
+    console.log("Selected Event UUID: " + selectedEventUUID);
     onSendEmailConfirmationClose(); // Close the alert dialog after form deletion
   };
 
@@ -331,7 +336,7 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
             h="76"
             bg={index % 2 === 0 ? "#FFFFFF" : "#EDEEEE"}
             display="flex"
-            justifyContent={["center", "space-between"]}
+            justifyContent={"center"}
             alignItems={"center"}
             pl={"45px"}
             pr={"45px"}

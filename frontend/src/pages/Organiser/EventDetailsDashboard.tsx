@@ -59,22 +59,22 @@ const EventDetailsDashboard = () => {
   const selectedEventUUID = location.state.selectedEventUUID;
   const [selectedEventData, setSelectedEventData] = useState<EventData>();
 
-  // const fetchSelectedEventFromDatabase = async () => {
-  //   console.log("Selected event UUID: " + selectedEventUUID);
-  //   const response = await api.get(`/event/for-organiser/${selectedEventUUID}`);
-  //   console.log(response.data);
-  //   return response.data[0];
-  // };
+  const fetchSelectedEventFromDatabase = async () => {
+    console.log("Selected event UUID: " + selectedEventUUID);
+    const response = await api.get(`/event/for-organiser/${selectedEventUUID}`);
+    console.log(response.data);
+    return response.data[0];
+  };
 
-  // useEffect(() => {
-  //   fetchSelectedEventFromDatabase()
-  //     .then((data) => {
-  //       setSelectedEventData(data);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching event:", error);
-  //     });
-  // }, []);
+  useEffect(() => {
+    fetchSelectedEventFromDatabase()
+      .then((data) => {
+        setSelectedEventData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching event:", error);
+      });
+  }, []);
 
 
   const [selectedStudents, setSelectedStudents] = useState<Student[]>([]);
@@ -256,7 +256,7 @@ const EventDetailsDashboard = () => {
             Attendance:
           </Text>
           <Box borderWidth={1} borderRadius="md" p={4}>
-            <AttendanceForm event_uuid={"0F5F936C-67CF-4FDF-842A-90AB1D1E71BC"} event_status={"C"}/>
+          <AttendanceForm event_uuid={selectedEventUUID} event_status={"C"}/>
           </Box>
         </Box>
       </Grid>
