@@ -35,6 +35,7 @@ import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 import EventApproval from "../../pages/Admin/EventApproval";
 import LoginPage from "../LoginPage";
 import RegisterPage from "../RegisterPage";
+import NewLandingPage from "../NewLandingPage";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -96,6 +97,7 @@ const Navbar = () => {
               <Link to="/EventHome">Event Home</Link>
               <Link to="/LoginPage">Login Page</Link>
               <Link to="/HistoryPage">History Page</Link>
+              <Link to="/NewLandingPage">Landing Page</Link>
             </VStack>
           </DrawerBody>
           <DrawerFooter>Hello3</DrawerFooter>
@@ -120,6 +122,7 @@ const Navbar = () => {
               <Link to="/EventHome">Event Home</Link>
               <Link to="/LoginPage">Login Page</Link>
               <Link to="/OrganiserMainPage">Organiser Main Page</Link>
+              <Link to="/NewLandingPage">Landing Page</Link>
             </VStack>
           </DrawerBody>
         </DrawerContent>
@@ -139,6 +142,7 @@ const Navbar = () => {
         <Route path="/OrganiserMainPage" element={<OrganiserMainPage />} />
         <Route path="/CreateEventPage" element={<CreateEventPage />} />
         <Route path="/EditEventPage" element={<EditEventPage />} />
+        <Route path="/NewLandingPage" element={<NewLandingPage />} />
         <Route
           path="/EventDetailsDashboard"
           element={<EventDetailsDashboard />}
