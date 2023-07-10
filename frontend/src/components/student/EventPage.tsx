@@ -27,7 +27,7 @@ import {
 } from "@chakra-ui/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/api";
+import api from "../../utils/api";
 
 function EventPage() {
   interface Event {

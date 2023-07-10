@@ -1,32 +1,32 @@
-import express from "express";
+import express from "express"
 import {
-  createOrganiserController,
-  deleteOrganiserController,
-  updateOrganiserController,
-  getOrganiserController,
-  getOrganiserByIDController,
-} from "../controllers/organiserController";
-import { Organiser } from "../interfaces/organiser";
-import { requestValidators } from "../middlewares/requestValidator";
-import { verifyJwtHandler } from "../middlewares/jwtHandler";
+	createOrganiserController,
+	deleteOrganiserController,
+	updateOrganiserController,
+	getOrganiserController,
+	getOrganiserByIDController,
+} from "../controllers/organiserController"
+import { OrganiserRequestBody } from "../interfaces/organiser"
+import { requestValidators } from "../middlewares/requestValidator"
+import { verifyJwtHandler } from "../middlewares/jwtHandler"
 
-export const organiserRouter = express.Router();
-//TODO: change O to A
-organiserRouter
-  .route("/")
-  .post(
-    verifyJwtHandler(["O"]),
-    requestValidators({ body: Organiser }),
-    createOrganiserController
-  )
-  .get(verifyJwtHandler(["O"]), getOrganiserController);
+export const organiserRouter = express.Router()
 
 organiserRouter
-  .route("/:id")
-  .get(verifyJwtHandler(["O"]), getOrganiserByIDController)
-  .put(
-    verifyJwtHandler(["O"]),
-    requestValidators({ body: Organiser }),
-    updateOrganiserController
-  )
-  .delete(verifyJwtHandler(["O"]), deleteOrganiserController);
+	.route("/")
+	.post(
+		verifyJwtHandler(["A"]),
+		requestValidators({ body: OrganiserRequestBody }),
+		createOrganiserController
+	)
+	.get(verifyJwtHandler(["A"]), getOrganiserController)
+
+organiserRouter
+	.route("/:id")
+	.get(verifyJwtHandler(["A"]), getOrganiserByIDController)
+	.put(
+		verifyJwtHandler(["A"]),
+		requestValidators({ body: OrganiserRequestBody }),
+		updateOrganiserController
+	)
+	.delete(verifyJwtHandler(["A"]), deleteOrganiserController)

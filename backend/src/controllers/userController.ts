@@ -1,33 +1,37 @@
-import { NextFunction, Request, Response } from "express";
-import mssql from "mssql";
-import { pool } from "../utils/dbConfig";
-import { DbTables, StatusCodes } from "../utils/constant";
-import { User, UserLogin, UserWithFireId } from "../interfaces/user";
-import { EventWithOrganiser } from "../interfaces/event";
-import { generateJwtHandler } from "../middlewares/jwtHandler";
+import { NextFunction, Request, Response } from "express"
+import mssql from "mssql"
+import { pool } from "../utils/dbConfig"
+import { DbTables, StatusCodes } from "../utils/constant"
+import { User, UserLogin, UserWithFireId } from "../interfaces/user"
+import { EventWithOrganiser } from "../interfaces/event"
+import { generateJwtHandler } from "../middlewares/jwtHandler"
 
 export const registerUserController = async (
-  req: Request<{}, UserWithFireId[], UserWithFireId>,
-  res: Response<UserWithFireId[]>,
-  next: NextFunction
+	req: Request<{}, UserWithFireId[], UserWithFireId>,
+	res: Response<UserWithFireId[]>,
+	next: NextFunction
 ) => {
-  try {
-    const connection = await pool.connect();
-    const create: mssql.IResult<UserWithFireId> = await connection
-      .request()
-      .input("user_fire_id", mssql.VarChar, req.body.user_fire_id)
-      .input("spec_uuid", mssql.UniqueIdentifier, req.body.spec_uuid)
-      .input("user_email", mssql.VarChar, req.body.user_email)
-      .input("user_fname", mssql.VarChar, req.body.user_fname)
-      .input("user_lname", mssql.VarChar, req.body.user_lname)
-      .input("user_id", mssql.Int, req.body.user_id)
-      .input("user_enrolment_year", mssql.Int, req.body.user_enrolment_year)
-      .input(
-        "user_enrolment_semester",
-        mssql.TinyInt,
-        req.body.user_enrolment_semester
-      )
-      .input("user_gender", mssql.Int, req.body.user_gender).query(`
+	try {
+		const connection = await pool.connect()
+		const create: mssql.IResult<UserWithFireId> = await connection
+			.request()
+			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id)
+			.input("spec_uuid", mssql.UniqueIdentifier, req.body.spec_uuid)
+			.input("user_email", mssql.VarChar, req.body.user_email)
+			.input("user_fname", mssql.VarChar, req.body.user_fname)
+			.input("user_lname", mssql.VarChar, req.body.user_lname)
+			.input("user_id", mssql.Int, req.body.user_id)
+			.input(
+				"user_enrolment_year",
+				mssql.Int,
+				req.body.user_enrolment_year
+			)
+			.input(
+				"user_enrolment_semester",
+				mssql.TinyInt,
+				req.body.user_enrolment_semester
+			)
+			.input("user_gender", mssql.Int, req.body.user_gender).query(`
                 INSERT INTO ${DbTables.USER}
                 OUTPUT INSERTED.*
                 VALUES (
@@ -42,45 +46,49 @@ export const registerUserController = async (
                     @user_enrolment_semester,
                     DEFAULT
                 )
-            `);
-    if (create.recordset.length != 0) {
-      const generatedToken = generateJwtHandler(create.recordset[0]);
-      res.cookie("token", generatedToken, {
-        secure: true,
-        sameSite: "none",
-        httpOnly: true,
-      });
-    }
-    res.json(create.recordset);
-    connection.close();
-  } catch (error) {
-    next(error);
-  }
-};
+            `)
+		if (create.recordset.length != 0) {
+			const generatedToken = generateJwtHandler(create.recordset[0])
+			res.cookie("token", generatedToken, {
+				secure: true,
+				sameSite: "none",
+				httpOnly: true,
+			})
+		}
+		res.json(create.recordset)
+		connection.close()
+	} catch (error) {
+		next(error)
+	}
+}
 
 export const updateUserController = async (
-  req: Request<{ id: string }, UserWithFireId[], User>,
-  res: Response<UserWithFireId[]>,
-  next: NextFunction
+	req: Request<{ id: string }, UserWithFireId[], User>,
+	res: Response<UserWithFireId[]>,
+	next: NextFunction
 ) => {
-  try {
-    const connection = await pool.connect();
-    const update: mssql.IResult<UserWithFireId> = await connection
-      .request()
-      .input("user_fire_id", mssql.VarChar, req.params.id)
-      .input("spec_uuid", mssql.UniqueIdentifier, req.body.spec_uuid)
-      .input("user_email", mssql.VarChar, req.body.user_email)
-      .input("user_fname", mssql.VarChar, req.body.user_fname)
-      .input("user_lname", mssql.VarChar, req.body.user_lname)
-      .input("user_id", mssql.Int, req.body.user_id)
-      .input("user_gender", mssql.Int, req.body.user_gender)
-      .input("user_access_lvl", mssql.Char, req.body.user_access_lvl)
-      .input("user_enrolment_year", mssql.Int, req.body.user_enrolment_year)
-      .input(
-        "user_enrolment_semester",
-        mssql.TinyInt,
-        req.body.user_enrolment_semester
-      ).query(`
+	try {
+		const connection = await pool.connect()
+		const update: mssql.IResult<UserWithFireId> = await connection
+			.request()
+			.input("user_fire_id", mssql.VarChar, req.params.id)
+			.input("spec_uuid", mssql.UniqueIdentifier, req.body.spec_uuid)
+			.input("user_email", mssql.VarChar, req.body.user_email)
+			.input("user_fname", mssql.VarChar, req.body.user_fname)
+			.input("user_lname", mssql.VarChar, req.body.user_lname)
+			.input("user_id", mssql.Int, req.body.user_id)
+			.input("user_gender", mssql.Int, req.body.user_gender)
+			.input("user_access_lvl", mssql.Char, req.body.user_access_lvl)
+			.input(
+				"user_enrolment_year",
+				mssql.Int,
+				req.body.user_enrolment_year
+			)
+			.input(
+				"user_enrolment_semester",
+				mssql.TinyInt,
+				req.body.user_enrolment_semester
+			).query(`
             UPDATE ${DbTables.USER} SET
                 [user_email]=@user_email,
                 [spec_uuid]=@spec_uuid,
@@ -92,43 +100,45 @@ export const updateUserController = async (
                 [user_enrolment_semester]=@user_enrolment_semester
             OUTPUT INSERTED.*
             WHERE [user_fire_id]=@user_fire_id
-        `);
-    res.json(update.recordset);
-    connection.close();
-  } catch (error) {
-    next(error);
-  }
-};
+        `)
+		res.json(update.recordset)
+		connection.close()
+	} catch (error) {
+		next(error)
+	}
+}
 
 export const loginUserController = async (
-  req: Request<{}, UserWithFireId[], UserLogin, {}>,
-  res: Response<UserWithFireId[]>,
-  next: NextFunction
+	req: Request<{}, UserWithFireId[], UserLogin, {}>,
+	res: Response<UserWithFireId[]>,
+	next: NextFunction
 ) => {
-  try {
-    const connection = await pool.connect();
-    const student: mssql.IResult<UserWithFireId> = await connection
-      .request()
-      .input("user_fire_id", mssql.VarChar, req.body.user_fire_id)
-      .query(`SELECT * FROM ${DbTables.USER} WHERE user_fire_id=@user_fire_id`);
+	try {
+		const connection = await pool.connect()
+		const student: mssql.IResult<UserWithFireId> = await connection
+			.request()
+			.input("user_fire_id", mssql.VarChar, req.body.user_fire_id)
+			.query(
+				`SELECT * FROM ${DbTables.USER} WHERE user_fire_id=@user_fire_id`
+			)
 
-    if (student.recordset.length !== 0) {
-      const generatedToken = generateJwtHandler(student.recordset[0]);
-      res.cookie("token", generatedToken, {
-        secure: true,
-        sameSite: "none",
-        httpOnly: true,
-      });
-      res.json(student.recordset);
-      connection.close();
-    } else {
-      res.status(401);
-      throw new Error("Unauthorised");
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+		if (student.recordset.length !== 0) {
+			const generatedToken = generateJwtHandler(student.recordset[0])
+			res.cookie("token", generatedToken, {
+				secure: true,
+				sameSite: "none",
+				httpOnly: true,
+			})
+			res.json(student.recordset)
+			connection.close()
+		} else {
+			res.status(401)
+			throw new Error("Unauthorised")
+		}
+	} catch (error) {
+		next(error)
+	}
+}
 // ! might not be needed anymore
 // export const deleteUserController = async (
 // 	req: Request<{ id: string }, {}, {}>,
