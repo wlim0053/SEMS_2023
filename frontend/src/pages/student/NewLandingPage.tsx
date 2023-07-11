@@ -14,7 +14,6 @@ import {
   CardHeader,
   CardBody,
   Stack,
-  VisuallyHidden,
   Center,
   Accordion,
   AccordionButton,

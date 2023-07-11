@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionButton,
@@ -209,8 +209,7 @@ function EventPage() {
     try {
       const url = new URL(string);
       console.log("Parsed URL:", url);
-      const isGoogleFormsUrl =
-        url.hostname === "docs.google.com";
+      const isGoogleFormsUrl = url.hostname === "docs.google.com";
       console.log("Is Google Forms URL:", isGoogleFormsUrl);
       return isGoogleFormsUrl;
     } catch (error) {
