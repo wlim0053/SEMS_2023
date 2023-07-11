@@ -1,8 +1,8 @@
 // stub code
 import { useState } from "react";
-import Calendar from "../../components/Calendar";
+import Calendar from "../../components/student/Calendar";
 import CountdownTimer from "../../components/student/CountdownTimer";
-import StudentEvents from "../../components/StudentEvents";
+import StudentEvents from "../../components/student/StudentEvents";
 import { Box, Button, Flex } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 

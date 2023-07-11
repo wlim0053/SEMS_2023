@@ -27,7 +27,7 @@ import {
 } from "@chakra-ui/react";
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
-import api from "../utils/api";
+import api from "../../utils/api";
 
 function EventPage() {
   interface Event {
@@ -71,10 +71,10 @@ function EventPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isFormFilled, setIsFormFilled] = useState(false);
   const [clubs, setClubs] = useState<string[]>([]);
-  
+
   const toast = useToast();
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -151,7 +151,6 @@ function EventPage() {
       console.error(error);
     }
   };
-
 
   const handleGoToCalendar = () => {
     navigate("/StudentHome");

@@ -1,35 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import { useLocation } from "react-router-dom";
+import AttendanceForm from "../../components/Organizer/AttendanceForm";
 import {
   Box,
   Heading,
   Flex,
   Text,
-  Grid,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Checkbox,
-  Button,
-  useDisclosure,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
-  AlertDialogFooter,
+  Grid
 } from "@chakra-ui/react";
-import api from "../../utils/api";
-
-interface Student {
-  id: number;
-  studentId: string;
-  name: string;
-  email: string;
-}
 
 interface EventData {
   event_uuid: string;
@@ -55,62 +33,7 @@ interface EventData {
 
 const EventDetailsDashboard = () => {
   const location = useLocation();
-  const selectedEventUUID = location.state.selectedEventUUID;
-  const [selectedEventData, setSelectedEventData] = useState<EventData>();
-
-  const fetchSelectedEventFromDatabase = async () => {
-    const response = await api.get(`/event/for-organiser/${selectedEventUUID}`);
-    console.log(response.data);
-    return response.data[0];
-  };
-
-  useEffect(() => {
-    fetchSelectedEventFromDatabase()
-      .then((data) => {
-        setSelectedEventData(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching event:", error);
-      });
-  }, []);
-
-  const [students, setStudents] = useState<Student[]>([
-    {
-      id: 1,
-      studentId: "321200",
-      name: "Azhan",
-      email: "emma.smith@student.monash.edu",
-    },
-    {
-      id: 2,
-      studentId: "329456",
-      name: "Kidd",
-      email: "david.jones@student.monash.edu",
-    },
-    {
-      id: 3,
-      studentId: "310024",
-      name: "Jett",
-      email: "sarah.wilson@student.monash.edu",
-    },
-    {
-      id: 4,
-      studentId: "346780",
-      name: "Zubin",
-      email: "alexander.brown@student.monash.edu",
-    },
-
-    // Add more students as needed
-  ]);
-  const [selectedStudents, setSelectedStudents] = useState<Student[]>([]);
-  const [attendanceSubmitted, setAttendanceSubmitted] = useState(false);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [turnoutDetails, setTurnoutDetails] = useState({
-    present: 0,
-    absent: 0,
-    turnoutRate: 0,
-  });
+  const [viewedEventData, setViewedEventData] = useState<EventData>(location.state.viewedEventData);
 
   const dateTimeFormatter = (dateTime: string): string => {
     const date = new Date(dateTime);
@@ -144,61 +67,6 @@ const EventDetailsDashboard = () => {
     }
   };
 
-  const handleCheckboxChange = (student: Student) => {
-    const index = selectedStudents.findIndex((s) => s.id === student.id);
-    if (index === -1) {
-      setSelectedStudents([...selectedStudents, student]);
-    } else {
-      const updatedStudents = [...selectedStudents];
-      updatedStudents.splice(index, 1);
-      setSelectedStudents(updatedStudents);
-    }
-  };
-
-  const handleSubmitAttendance = () => {
-    const presentCount = selectedStudents.length;
-    const absentCount = students.length - presentCount;
-    const turnoutRate = (presentCount / students.length) * 100;
-
-    setTurnoutDetails({
-      present: presentCount,
-      absent: absentCount,
-      turnoutRate,
-    });
-
-    setAttendanceSubmitted(true);
-    onOpen();
-  };
-
-  const handleResetAttendance = () => {
-    setSelectedStudents([]);
-    setAttendanceSubmitted(false);
-    onClose();
-  };
-
-  const AlertDialogBox = (
-    <AlertDialog isOpen={isOpen} onClose={onClose} isCentered>
-      <AlertDialogOverlay>
-        <AlertDialogContent>
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Attendance Summary
-          </AlertDialogHeader>
-
-          <AlertDialogBody>
-            <Text mb={2}>Present: {turnoutDetails.present} students</Text>
-            <Text mb={2}>Absent: {turnoutDetails.absent} students</Text>
-            <Text>Turnout Rate: {turnoutDetails.turnoutRate.toFixed(2)}%</Text>
-          </AlertDialogBody>
-
-          <AlertDialogFooter>
-            <Button colorScheme="blue" onClick={handleResetAttendance}>
-              Close
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialogOverlay>
-    </AlertDialog>
-  );
   return (
     <Box
       p={4}
@@ -212,18 +80,18 @@ const EventDetailsDashboard = () => {
         <Text fontWeight="bold" fontSize="18px" mb={2}>
           Name:
         </Text>
-        <Text fontSize="18px">{selectedEventData?.event_title}</Text>
+        <Text fontSize="18px">{viewedEventData?.event_title}</Text>
 
         <Text fontWeight="bold" fontSize="18px" mt={4} mb={2}>
           Description:
         </Text>
-        <Text fontSize="18px">{selectedEventData?.event_desc}</Text>
+        <Text fontSize="18px">{viewedEventData?.event_desc}</Text>
 
         <Text fontWeight="bold" marginRight={2} mt={4} mb={2} fontSize="18px">
           Event Start Date and Time:
         </Text>
         <Text fontSize="18px">
-          {dateTimeFormatter(selectedEventData?.event_start_date ?? "")}
+          {dateTimeFormatter(viewedEventData?.event_start_date ?? "")}
         </Text>
 
         <Text
@@ -237,7 +105,7 @@ const EventDetailsDashboard = () => {
           Event End Date and Time:
         </Text>
         <Text fontSize="18px" marginBottom={2}>
-          {dateTimeFormatter(selectedEventData?.event_end_date ?? "")}
+          {dateTimeFormatter(viewedEventData?.event_end_date ?? "")}
         </Text>
       </Box>
 
@@ -255,7 +123,7 @@ const EventDetailsDashboard = () => {
             <Text fontWeight="bold" marginRight={2} fontSize="18px">
               Capacity:
             </Text>
-            <Text fontSize="18px">{selectedEventData?.event_capacity}</Text>
+            <Text fontSize="18px">{viewedEventData?.event_capacity}</Text>
           </Flex>
 
           <Flex alignItems="center">
@@ -263,7 +131,7 @@ const EventDetailsDashboard = () => {
               Venue:
             </Text>
             <Text fontSize="18px" mb={2} textAlign="justify">
-              {selectedEventData?.event_venue}
+              {viewedEventData?.event_venue}
             </Text>
           </Flex>
 
@@ -272,16 +140,16 @@ const EventDetailsDashboard = () => {
               Attendance Mode:
             </Text>
             <Text fontSize="18px">
-              {getEventModeString(selectedEventData?.event_mode ?? "")}
+              {getEventModeString(viewedEventData?.event_mode ?? "")}
             </Text>
           </Flex>
 
           <Flex alignItems="center">
             <Text fontWeight="bold" marginRight={2} fontSize="18px">
-              Links and QR Code:
+              Links:
             </Text>
             <a
-              href={selectedEventData?.event_reg_google_form}
+              href={viewedEventData?.event_reg_google_form}
               target="_blank"
               rel="noopener noreferrer"
               style={{ textDecoration: "none" }}
@@ -290,7 +158,7 @@ const EventDetailsDashboard = () => {
                 fontSize="18px"
                 _hover={{ color: "blue", textDecoration: "underline" }}
               >
-                {selectedEventData?.event_reg_google_form}
+                {viewedEventData?.event_reg_google_form}
               </Text>
             </a>
           </Flex>
@@ -311,43 +179,10 @@ const EventDetailsDashboard = () => {
             Attendance:
           </Text>
           <Box borderWidth={1} borderRadius="md" p={4}>
-            <Table size="sm">
-              <Thead>
-                <Tr>
-                  <Th>No</Th>
-                  <Th>Student ID</Th>
-                  <Th>Name</Th>
-                  <Th>Email</Th>
-                  <Th>Attendance</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {students.map((student) => (
-                  <Tr key={student.id}>
-                    <Td>{student.id}</Td>
-                    <Td>{student.studentId}</Td>
-                    <Td>{student.name}</Td>
-                    <Td>{student.email}</Td>
-                    <Td>
-                      <Checkbox
-                        isChecked={selectedStudents.includes(student)}
-                        onChange={() => handleCheckboxChange(student)}
-                      />
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
+            <AttendanceForm event_uuid={viewedEventData?.event_uuid??""} isStatusCompleted={(viewedEventData?.event_status??"") == "C"}/>
           </Box>
-
-          {!attendanceSubmitted ? (
-            <Button colorScheme="blue" onClick={handleSubmitAttendance} mt={4}>
-              Submit Attendance
-            </Button>
-          ) : null}
         </Box>
       </Grid>
-      {attendanceSubmitted ? AlertDialogBox : null}
     </Box>
   );
 };

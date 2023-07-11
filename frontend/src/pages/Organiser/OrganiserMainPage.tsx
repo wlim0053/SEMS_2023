@@ -224,7 +224,7 @@ function OrganiserMainPage() {
               value={sortField}
               onChange={(e) => setSortField(e.target.value as SortField)}
             >
-              <option value="no_of_participants">Number of Participants</option>
+              <option value="no_participants">Number of Participants</option>
               <option value="event_start_date">Date</option>
               <option value="event_status">Event Status</option>
             </Select>

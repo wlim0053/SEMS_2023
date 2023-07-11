@@ -6,6 +6,7 @@ import {
   Input,
   Select,
   Text,
+  Tooltip,
   Stack,
   Button,
   AlertDialog,
@@ -17,6 +18,7 @@ import {
   Grid,
   Textarea,
 } from "@chakra-ui/react";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useFormik } from "formik";
@@ -510,7 +512,15 @@ function EditEventPage() {
 
             {/* Registration End (Date and Time) */}
             <FormControl>
-              <FormLabel>Registration End (Date and Time)</FormLabel>
+              <FormLabel>Registration End (Date and Time)
+              <Tooltip
+                  label="Please ensure registration deadline is 24 hours prior to or on the event date."
+                  aria-label="Information tooltip"
+                >
+                  <InfoOutlineIcon boxSize={4} ml={2} mt={0.5} color={"grey"} />
+                </Tooltip>
+
+              </FormLabel>
               <DatePicker
                 id="registrationEnd"
                 name="registrationEnd"
