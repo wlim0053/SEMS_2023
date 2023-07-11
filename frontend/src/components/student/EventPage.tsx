@@ -348,14 +348,16 @@ function EventPage() {
           };
 
           return (
-            <AccordionItem key={event.event_uuid}>
+            <AccordionItem key={event.event_uuid} borderStyle={"none"}>
               <h2>
                 <AccordionButton
-                  borderBottom="1px solid #ccc"
                   bg="#bfe6ff"
+                  _hover={{backgroundColor: "#bfe6ff"}}
                   display="flex"
                   justifyContent="space-between"
                   alignItems="center"
+                  borderRadius={4}
+                  mb={2}
                   p={2}
                 >
                   <Box flex="3" textAlign="left" mr={2}>
