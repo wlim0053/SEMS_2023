@@ -147,9 +147,20 @@ function EventPage() {
       console.log(response.data);
       // Close the modal after successful submission
       setIsSignUpModalOpen(false);
+      showToast();
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const showToast = () => {
+    toast({
+      title: "Sign Up Successful",
+      description: "You have successfully signed up!",
+      status: "success",
+      duration: 4000,
+      isClosable: true,
+    });
   };
 
   const handleGoToCalendar = () => {
