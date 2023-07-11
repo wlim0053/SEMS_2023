@@ -12,6 +12,7 @@ import {
   IconButton,
   Grid,
   GridItem,
+  Tooltip,
 } from "@chakra-ui/react";
 import {
   DeleteIcon,
@@ -355,26 +356,30 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
               gap={2} // Adjust the gap between buttons if needed
             >
               <GridItem colSpan={[1, 1]}>
-                <IconButton
-                  colorScheme="blue"
-                  aria-label="View Event"
-                  icon={<ViewIcon />}
-                  size={"sm"}
-                  onClick={handleViewClick}
-                  data-index={index}
-                />
+                <Tooltip label="View Event" fontSize="md">
+                  <IconButton
+                    colorScheme="blue"
+                    aria-label="View Event"
+                    icon={<ViewIcon />}
+                    size={"sm"}
+                    onClick={handleViewClick}
+                    data-index={index}
+                  />
+                </Tooltip>
               </GridItem>
 
               {shouldShowEditButton(event.event_status) ? (
                 <GridItem colSpan={[1, 1]}>
-                  <IconButton
-                    colorScheme="blue"
-                    aria-label="Edit Event"
-                    icon={<EditIcon />}
-                    size={"sm"}
-                    onClick={handleEditClick}
-                    data-index={index}
-                  />
+                  <Tooltip label="Edit Event" fontSize="md">
+                    <IconButton
+                      colorScheme="blue"
+                      aria-label="Edit Event"
+                      icon={<EditIcon />}
+                      size={"sm"}
+                      onClick={handleEditClick}
+                      data-index={index}
+                    />
+                  </Tooltip>
                 </GridItem>
               ) : null}
 
@@ -383,53 +388,61 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
                 event.event_start_date
               ) ? (
                 <GridItem colSpan={[1, 1]}>
-                  <IconButton
-                    colorScheme="blue"
-                    aria-label="Mark as Completed"
-                    icon={<CheckIcon />}
-                    size={"sm"}
-                    onClick={handleMarkAsCompletedClick}
-                    data-index={index}
-                  />
+                  <Tooltip label="Mark Event as Completed" fontSize="md">
+                    <IconButton
+                      colorScheme="blue"
+                      aria-label="Mark as Completed"
+                      icon={<CheckIcon />}
+                      size={"sm"}
+                      onClick={handleMarkAsCompletedClick}
+                      data-index={index}
+                    />
+                  </Tooltip>
                 </GridItem>
               ) : null}
 
               {shouldShowSendCertificateButton(event.event_status) ? (
                 <GridItem colSpan={[1, 1]}>
-                  <IconButton
-                    colorScheme="blue"
-                    aria-label="Send certificate"
-                    icon={<StarIcon />}
-                    size={"sm"}
-                    onClick={handleSendCertificateClick}
-                    data-index={index}
-                  />
+                  <Tooltip label="Send Certificate" fontSize="md">
+                    <IconButton
+                      colorScheme="blue"
+                      aria-label="Send certificate"
+                      icon={<StarIcon />}
+                      size={"sm"}
+                      onClick={handleSendCertificateClick}
+                      data-index={index}
+                    />
+                  </Tooltip>
                 </GridItem>
               ) : null}
 
               {shouldShowReminderEmailButton(event.event_status) ? (
                 <GridItem colSpan={[1, 1]}>
-                  <IconButton
-                    colorScheme="blue"
-                    aria-label="Send reminder email"
-                    icon={<EmailIcon />}
-                    size={"sm"}
-                    onClick={handleReminderEmailClick}
-                    data-index={index}
-                  />
+                  <Tooltip label="Send Reminder Email" fontSize="md">
+                    <IconButton
+                      colorScheme="blue"
+                      aria-label="Send reminder email"
+                      icon={<EmailIcon />}
+                      size={"sm"}
+                      onClick={handleReminderEmailClick}
+                      data-index={index}
+                    />
+                  </Tooltip>
                 </GridItem>
               ) : null}
 
               {shouldShowDeleteButton(event.event_status) ? (
                 <GridItem colSpan={[1, 1]}>
-                  <IconButton
-                    colorScheme="red"
-                    aria-label="Delete Event"
-                    icon={<DeleteIcon />}
-                    size={"sm"}
-                    onClick={handleDeleteClick}
-                    data-index={index}
-                  />
+                  <Tooltip label="Delete Event" fontSize="md">
+                    <IconButton
+                      colorScheme="red"
+                      aria-label="Delete Event"
+                      icon={<DeleteIcon />}
+                      size={"sm"}
+                      onClick={handleDeleteClick}
+                      data-index={index}
+                    />
+                  </Tooltip>
                 </GridItem>
               ) : null}
             </Grid>

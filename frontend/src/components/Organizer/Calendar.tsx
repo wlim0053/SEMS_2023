@@ -14,6 +14,7 @@ import {
   ModalFooter,
   Button,
   Box,
+  Tooltip,
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
@@ -53,7 +54,7 @@ type CalendarProps = {
   setRefreshGrid: (refresh: boolean) => void;
 };
 
-function Calendar({setRefreshGrid}: CalendarProps) {
+function Calendar({ setRefreshGrid }: CalendarProps) {
   const [selectedEventUUID, setSelectedEventUUID] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -64,6 +65,7 @@ function Calendar({setRefreshGrid}: CalendarProps) {
   const [endDate, setEndDate] = useState("");
   const [venue, setVenue] = useState("");
   const [club, setClub] = useState("");
+  const [eventStatus, setEventStatus] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [events, setEvents] = useState<EventData[]>([]);
   const [refreshCalendar, setRefreshCalendar] = useState(false);
@@ -85,7 +87,6 @@ function Calendar({setRefreshGrid}: CalendarProps) {
       .catch((error) => {
         console.error("Error fetching event:", error);
       });
-
   };
 
   const handleEditClick = () => {
@@ -115,7 +116,7 @@ function Calendar({setRefreshGrid}: CalendarProps) {
   const handleConfirmDeleteClick = () => {
     deleteEventFromDatabase();
     onClose(); // Close the alert dialog after form deletion
-    setModal(false) // Close the modal overlay
+    setModal(false); // Close the modal overlay
     setRefreshCalendar(true); // Trigger refresh of events data of calendar
     setRefreshGrid(true); // Trigger refresh of events data of calendar
   };
@@ -139,6 +140,14 @@ function Calendar({setRefreshGrid}: CalendarProps) {
     const response = await api.get("/event/for-organiser");
     console.log(response.data);
     return response.data;
+  };
+
+  const shouldShowEditButton = (status: string): boolean => {
+    return status == "D";
+  };
+
+  const shouldShowDeleteButton = (status: string): boolean => {
+    return status == "D" || status == "A" || status == "R" || status == "C";
   };
 
   useEffect(() => {
@@ -283,29 +292,35 @@ function Calendar({setRefreshGrid}: CalendarProps) {
                 pl={4}
                 pr={4}
               >
-                <IconButton
-                  colorScheme="blue"
-                  aria-label="View Event"
-                  icon={<ViewIcon />}
-                  size="sm"
-                  onClick={handleViewClick}
-                />
+                <Tooltip label="View Event" fontSize="md">
+                  <IconButton
+                    colorScheme="blue"
+                    aria-label="View Event"
+                    icon={<ViewIcon />}
+                    size="sm"
+                    onClick={handleViewClick}
+                  />
+                </Tooltip>
 
-                <IconButton
-                  colorScheme="blue"
-                  aria-label="Reorganise Event"
-                  icon={<EditIcon />}
-                  size="sm"
-                  onClick={handleEditClick}
-                />
+                <Tooltip label="Edit Event" fontSize="md">
+                  <IconButton
+                    colorScheme="blue"
+                    aria-label="Edit Event"
+                    icon={<EditIcon />}
+                    size="sm"
+                    onClick={handleEditClick}
+                  />
+                </Tooltip>
 
-                <IconButton
-                  colorScheme="red"
-                  aria-label="Delete Event"
-                  icon={<DeleteIcon />}
-                  size="sm"
-                  onClick={handleDeleteClick}
-                />
+                <Tooltip label="Delete Event" fontSize="md">
+                  <IconButton
+                    colorScheme="red"
+                    aria-label="Delete Event"
+                    icon={<DeleteIcon />}
+                    size="sm"
+                    onClick={handleDeleteClick}
+                  />
+                </Tooltip>
 
                 <Button
                   colorScheme="blue"
@@ -335,7 +350,11 @@ function Calendar({setRefreshGrid}: CalendarProps) {
               <Button ref={cancelRef} onClick={onClose}>
                 Cancel
               </Button>
-              <Button colorScheme="red" ml={3} onClick={handleConfirmDeleteClick}>
+              <Button
+                colorScheme="red"
+                ml={3}
+                onClick={handleConfirmDeleteClick}
+              >
                 Delete
               </Button>
             </AlertDialogFooter>

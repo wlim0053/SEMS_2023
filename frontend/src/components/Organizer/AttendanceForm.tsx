@@ -51,6 +51,7 @@ function AttendanceForm({
   const [absenteeCount, setAbsenteeCount] = useState(0);
   const [attendedCount, setAttendedCount] = useState(0);
   const [turnOutRateCount, setTurnOutRateCount] = useState(0);
+  const [hasNoAttendee, setHasNoAttendee] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
@@ -60,6 +61,8 @@ function AttendanceForm({
     const response = await api.get(
       `/event/for-organiser/${event_uuid}/participation`
     );
+
+    setHasNoAttendee(response.data.length == 0);
 
     // Convert boolean values to numbers
     const formattedData = response.data.map((participation) => ({
@@ -217,9 +220,11 @@ function AttendanceForm({
                 ))}
               </Tbody>
             </Table>
-            <Button colorScheme="blue" mt={4} type="submit">
-              {isStatusCompleted ? "Check Attendance Summary" : "Submit"}
-            </Button>
+            {!hasNoAttendee ? (
+              <Button colorScheme="blue" mt={4} type="submit">
+                {isStatusCompleted ? "Check Attendance Summary" : "Submit"}
+              </Button>
+            ) : null}
           </Form>
         )}
       </Formik>
@@ -231,7 +236,11 @@ function AttendanceForm({
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader>{isStatusCompleted ? "Attendance Summary" : "Attendance Submitted"}</AlertDialogHeader>
+            <AlertDialogHeader>
+              {isStatusCompleted
+                ? "Attendance Summary"
+                : "Attendance Submitted"}
+            </AlertDialogHeader>
             <AlertDialogBody>
               <Text mb={2}>Present: {attendedCount} students</Text>
               <Text mb={2}>Absent: {absenteeCount} students</Text>
