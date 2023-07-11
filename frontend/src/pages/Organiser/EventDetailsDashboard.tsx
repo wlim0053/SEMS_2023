@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import { useLocation } from "react-router-dom";
 import AttendanceForm from "../../components/Organizer/AttendanceForm";
 import {
@@ -6,31 +6,8 @@ import {
   Heading,
   Flex,
   Text,
-  Grid,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Checkbox,
-  Button,
-  useDisclosure,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
-  AlertDialogFooter,
+  Grid
 } from "@chakra-ui/react";
-import api from "../../utils/api";
-
-interface Student {
-  id: number;
-  studentId: string;
-  name: string;
-  email: string;
-}
 
 interface EventData {
   event_uuid: string;
@@ -56,28 +33,7 @@ interface EventData {
 
 const EventDetailsDashboard = () => {
   const location = useLocation();
-  const selectedEventUUID = location.state.selectedEventUUID;
-  const [selectedEventData, setSelectedEventData] = useState<EventData>();
-
-  const fetchSelectedEventFromDatabase = async () => {
-    console.log("Selected event UUID: " + selectedEventUUID);
-    const response = await api.get(`/event/for-organiser/${selectedEventUUID}`);
-    console.log(response.data);
-    return response.data[0];
-  };
-
-  useEffect(() => {
-    fetchSelectedEventFromDatabase()
-      .then((data) => {
-        setSelectedEventData(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching event:", error);
-      });
-  }, []);
-
-
-  const [selectedStudents, setSelectedStudents] = useState<Student[]>([]);
+  const [viewedEventData, setViewedEventData] = useState<EventData>(location.state.viewedEventData);
 
   const dateTimeFormatter = (dateTime: string): string => {
     const date = new Date(dateTime);
@@ -111,39 +67,6 @@ const EventDetailsDashboard = () => {
     }
   };
 
-  const handleCheckboxChange = (student: Student) => {
-    const index = selectedStudents.findIndex((s) => s.id === student.id);
-    if (index === -1) {
-      setSelectedStudents([...selectedStudents, student]);
-    } else {
-      const updatedStudents = [...selectedStudents];
-      updatedStudents.splice(index, 1);
-      setSelectedStudents(updatedStudents);
-    }
-  };
-
-  const handleSubmitAttendance = () => {
-    console.log("Hello");
-    // const presentCount = selectedStudents.length;
-    // const absentCount = students.length - presentCount;
-    // const turnoutRate = (presentCount / students.length) * 100;
-
-    // setTurnoutDetails({
-    //   present: presentCount,
-    //   absent: absentCount,
-    //   turnoutRate,
-    // });
-
-    // setAttendanceSubmitted(true);
-    // onOpen();
-  };
-
-  const handleResetAttendance = () => {
-    console.log("Hello")
-    // setSelectedStudents([]);
-    // setAttendanceSubmitted(false);
-    // onClose();
-  };
   return (
     <Box
       p={4}
@@ -157,18 +80,18 @@ const EventDetailsDashboard = () => {
         <Text fontWeight="bold" fontSize="18px" mb={2}>
           Name:
         </Text>
-        <Text fontSize="18px">{selectedEventData?.event_title}</Text>
+        <Text fontSize="18px">{viewedEventData?.event_title}</Text>
 
         <Text fontWeight="bold" fontSize="18px" mt={4} mb={2}>
           Description:
         </Text>
-        <Text fontSize="18px">{selectedEventData?.event_desc}</Text>
+        <Text fontSize="18px">{viewedEventData?.event_desc}</Text>
 
         <Text fontWeight="bold" marginRight={2} mt={4} mb={2} fontSize="18px">
           Event Start Date and Time:
         </Text>
         <Text fontSize="18px">
-          {dateTimeFormatter(selectedEventData?.event_start_date ?? "")}
+          {dateTimeFormatter(viewedEventData?.event_start_date ?? "")}
         </Text>
 
         <Text
@@ -182,7 +105,7 @@ const EventDetailsDashboard = () => {
           Event End Date and Time:
         </Text>
         <Text fontSize="18px" marginBottom={2}>
-          {dateTimeFormatter(selectedEventData?.event_end_date ?? "")}
+          {dateTimeFormatter(viewedEventData?.event_end_date ?? "")}
         </Text>
       </Box>
 
@@ -200,7 +123,7 @@ const EventDetailsDashboard = () => {
             <Text fontWeight="bold" marginRight={2} fontSize="18px">
               Capacity:
             </Text>
-            <Text fontSize="18px">{selectedEventData?.event_capacity}</Text>
+            <Text fontSize="18px">{viewedEventData?.event_capacity}</Text>
           </Flex>
 
           <Flex alignItems="center">
@@ -208,7 +131,7 @@ const EventDetailsDashboard = () => {
               Venue:
             </Text>
             <Text fontSize="18px" mb={2} textAlign="justify">
-              {selectedEventData?.event_venue}
+              {viewedEventData?.event_venue}
             </Text>
           </Flex>
 
@@ -217,7 +140,7 @@ const EventDetailsDashboard = () => {
               Attendance Mode:
             </Text>
             <Text fontSize="18px">
-              {getEventModeString(selectedEventData?.event_mode ?? "")}
+              {getEventModeString(viewedEventData?.event_mode ?? "")}
             </Text>
           </Flex>
 
@@ -226,7 +149,7 @@ const EventDetailsDashboard = () => {
               Links:
             </Text>
             <a
-              href={selectedEventData?.event_reg_google_form}
+              href={viewedEventData?.event_reg_google_form}
               target="_blank"
               rel="noopener noreferrer"
               style={{ textDecoration: "none" }}
@@ -235,7 +158,7 @@ const EventDetailsDashboard = () => {
                 fontSize="18px"
                 _hover={{ color: "blue", textDecoration: "underline" }}
               >
-                {selectedEventData?.event_reg_google_form}
+                {viewedEventData?.event_reg_google_form}
               </Text>
             </a>
           </Flex>
@@ -256,7 +179,7 @@ const EventDetailsDashboard = () => {
             Attendance:
           </Text>
           <Box borderWidth={1} borderRadius="md" p={4}>
-          <AttendanceForm event_uuid={selectedEventUUID} event_status={"C"}/>
+            <AttendanceForm event_uuid={viewedEventData?.event_uuid??""} isStatusCompleted={(viewedEventData?.event_status??"") == "C"}/>
           </Box>
         </Box>
       </Grid>

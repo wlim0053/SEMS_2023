@@ -8,6 +8,7 @@ import {
   Text,
   Stack,
   Button,
+  Checkbox,
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
@@ -16,7 +17,9 @@ import {
   AlertDialogOverlay,
   Grid,
   Textarea,
+  Tooltip,
 } from "@chakra-ui/react";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useFormik } from "formik";
@@ -68,11 +71,17 @@ const validationSchema = yup.object().shape({
     .required("Sign Up Form Link is required")
     .matches(
       /^(https:\/\/docs\.google\.com\/forms\/(.+)|https:\/\/forms\.gle\/(.+))$/,
-      'Invalid Sign Up Form Link format (Please provide a valid link in Google Form format)'
+      "Invalid Sign Up Form Link format (Please provide a valid link in Google Form format)"
     ),
   hasClickedEMSButton: yup
     .boolean()
-    .oneOf([true], "Please submit the EMS Google Form."),
+    .oneOf([true], "Please submit the EMS Form."),
+  hasCheckedEMSCheckbox: yup
+    .boolean()
+    .oneOf(
+      [true],
+      "Please make sure to tick here after submitting the EMS Form."
+    ),
 });
 
 interface SubmittedEventData {
@@ -101,7 +110,8 @@ function CreateEventPage() {
 
   const handleButtonClick = () => {
     formik.setFieldValue("hasClickedEMSButton", true);
-    const googleFormUrl = "https://docs.google.com/forms/d/e/1FAIpQLSer5vqDG6TV2xgSAFPnpP76uousw9GQgnpYkxohTDLy7ug52A/viewform?usp=sf_link"; // Test form
+    const googleFormUrl =
+      "https://docs.google.com/forms/d/e/1FAIpQLSeGEl83nW2HBFColEPZOa7ZevHj4suV6LxugiOBzKvONn6FoQ/viewform?usp=sf_link"; // Test form
     const openPopup = () => {
       const width = 600;
       const height = 600;
@@ -115,6 +125,14 @@ function CreateEventPage() {
     };
 
     openPopup();
+  };
+
+  const handleCheckboxClick = () => {
+    console.log(!formik.values.hasCheckedEMSCheckbox);
+    formik.setFieldValue(
+      "hasCheckedEMSCheckbox",
+      !formik.values.hasCheckedEMSCheckbox
+    );
   };
 
   const navigate = useNavigate();
@@ -152,6 +170,7 @@ function CreateEventPage() {
       registrationEnd: null,
       signUpFormLink: "",
       hasClickedEMSButton: false,
+      hasCheckedEMSCheckbox: false,
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -442,7 +461,15 @@ function CreateEventPage() {
 
             {/* Registration Start (Date and Time) */}
             <FormControl>
-              <FormLabel>Registration Start (Date and Time)</FormLabel>
+              <FormLabel display="flex" alignItems="center">
+                Registration Start (Date and Time)
+                <Tooltip
+                  label="Please ensure registration deadline is 24 hours prior to or on the event date."
+                  aria-label="Information tooltip"
+                >
+                  <InfoOutlineIcon boxSize={4} ml={2} mt={0.5} color={"grey"} />
+                </Tooltip>
+              </FormLabel>
               <DatePicker
                 id="registrationStart"
                 name="registrationStart"
@@ -549,6 +576,21 @@ function CreateEventPage() {
               you submit this form.
             </FormLabel>
           </FormControl>
+          <FormControl>
+            <Checkbox
+              id="hasCheckedEMSCheckbox"
+              name="hasCheckedEMSCheckbox"
+              onChange={handleCheckboxClick}
+              onBlur={formik.handleBlur}
+            >
+              EMS Form has been filled and submitted below
+            </Checkbox>
+            {formik.touched.hasCheckedEMSCheckbox &&
+              formik.errors.hasCheckedEMSCheckbox && (
+                <Text color="red">{formik.errors.hasCheckedEMSCheckbox}</Text>
+              )}
+          </FormControl>
+
           <Button
             type="button"
             onClick={handleButtonClick}
@@ -557,8 +599,9 @@ function CreateEventPage() {
             border={"none"}
             borderRadius={"4px"}
           >
-            Open Google Form
+            Open EMS Form
           </Button>
+
           <FormControl>
             {formik.errors.hasClickedEMSButton && (
               <Text color="red">{formik.errors.hasClickedEMSButton}</Text>

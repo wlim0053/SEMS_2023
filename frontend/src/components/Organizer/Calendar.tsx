@@ -74,10 +74,18 @@ function Calendar({setRefreshGrid}: CalendarProps) {
 
   const navigate = useNavigate();
 
-  const handleViewClick = () => {
-    navigate("/EventDetailsDashboard", {
-      state: { selectedEventUUID },
-    });
+  const handleViewClick = async () => {
+    fetchEventFromDatabase()
+      .then((data) => {
+        let viewedEventData = data;
+        navigate("/EventDetailsDashboard", {
+          state: { viewedEventData },
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching event:", error);
+      });
+
   };
 
   const handleEditClick = () => {
@@ -120,6 +128,12 @@ function Calendar({setRefreshGrid}: CalendarProps) {
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const fetchEventFromDatabase = async () => {
+    const response = await api.get(`/event/for-organiser/${selectedEventUUID}`);
+    console.log(response.data[0]);
+    return response.data[0];
+  };
 
   const fetchEventsFromDatabase = async () => {
     const response = await api.get("/event/for-organiser");

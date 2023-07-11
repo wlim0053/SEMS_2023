@@ -6,13 +6,9 @@ import {
   Thead,
   Tbody,
   Tr,
-  Th,
   Td,
   Checkbox,
-  CheckboxGroup,
   Button,
-  Stack,
-  useDisclosure,
   AlertDialog,
   AlertDialogOverlay,
   AlertDialogContent,
@@ -42,19 +38,19 @@ interface ParticipationData {
 
 interface AttendanceFormProps {
   event_uuid: string;
-  event_status: string;
+  isStatusCompleted: boolean;
 }
 
-function AttendanceForm({ event_uuid, event_status }: AttendanceFormProps) {
+function AttendanceForm({
+  event_uuid,
+  isStatusCompleted,
+}: AttendanceFormProps) {
   const [participationData, setParticipationData] = useState<
     ParticipationData[]
   >([]);
   const [absenteeCount, setAbsenteeCount] = useState(0);
   const [attendedCount, setAttendedCount] = useState(0);
   const [turnOutRateCount, setTurnOutRateCount] = useState(0);
-
-
-
 
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
@@ -141,14 +137,16 @@ function AttendanceForm({ event_uuid, event_status }: AttendanceFormProps) {
               };
             });
 
-            const promises = participations.map((participation) =>
-              toggleAttendanceInDatabase(
-                participation.participation_uuid,
-                participation.participation_attendance
-              )
-            );
-            await Promise.all(promises);
-            console.log("Attendance updated successfully");
+            if (!isStatusCompleted) {
+              const promises = participations.map((participation) =>
+                toggleAttendanceInDatabase(
+                  participation.participation_uuid,
+                  participation.participation_attendance
+                )
+              );
+              await Promise.all(promises);
+              console.log("Attendance updated successfully");
+            }
 
             const attendedCount = participations.reduce(
               (count, participation) =>
@@ -210,6 +208,7 @@ function AttendanceForm({ event_uuid, event_status }: AttendanceFormProps) {
                                 })
                               );
                             }}
+                            isDisabled={isStatusCompleted}
                           />
                         )}
                       />
@@ -219,7 +218,7 @@ function AttendanceForm({ event_uuid, event_status }: AttendanceFormProps) {
               </Tbody>
             </Table>
             <Button colorScheme="blue" mt={4} type="submit">
-              Submit
+              {isStatusCompleted ? "Check Attendance Summary" : "Submit"}
             </Button>
           </Form>
         )}
@@ -232,12 +231,12 @@ function AttendanceForm({ event_uuid, event_status }: AttendanceFormProps) {
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
-            <AlertDialogHeader>Attendance Summary</AlertDialogHeader>
+            <AlertDialogHeader>{isStatusCompleted ? "Attendance Summary" : "Attendance Submitted"}</AlertDialogHeader>
             <AlertDialogBody>
-            <Text mb={2}>Present: {attendedCount} students</Text>
-            <Text mb={2}>Absent: {absenteeCount} students</Text>
-            <Text>Turnout Rate: {turnOutRateCount.toFixed(2)}%</Text>
-          </AlertDialogBody>
+              <Text mb={2}>Present: {attendedCount} students</Text>
+              <Text mb={2}>Absent: {absenteeCount} students</Text>
+              <Text>Turnout Rate: {turnOutRateCount.toFixed(2)}%</Text>
+            </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onClose}>
                 Close

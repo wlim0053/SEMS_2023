@@ -74,10 +74,8 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
   const onSendCertificateConfirmationClose = () =>
     setIsSendCertificateConfirmationOpen(false);
 
-  const [
-    isSendEmailConfirmationOpen,
-    setIsSendEmailConfirmationOpen,
-  ] = useState(false);
+  const [isSendEmailConfirmationOpen, setIsSendEmailConfirmationOpen] =
+    useState(false);
   const onSendEmailConfirmationClose = () =>
     setIsSendEmailConfirmationOpen(false);
 
@@ -85,9 +83,9 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
 
   const handleViewClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const index = Number(event.currentTarget.getAttribute("data-index"));
-    const selectedEventUUID = data[index].event_uuid;
+    const viewedEventData = data[index];
     navigate("/EventDetailsDashboard", {
-      state: { selectedEventUUID },
+      state: { viewedEventData },
     });
   };
 
@@ -156,11 +154,12 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
   const sendCertificate = async () => {
     try {
       let bodyForOrganiser = {
-        organisedBy: "MUMTEC"
-     }
-     
+        organisedBy: "MUMTEC",
+      };
+
       let response = await api.post(
-        `/event/for-organiser/${selectedEventUUID}/cert`, bodyForOrganiser
+        `/event/for-organiser/${selectedEventUUID}/cert`,
+        bodyForOrganiser
       );
       console.log(response.data); // Response data from the server
       // Handle the response or perform any necessary actions
@@ -255,6 +254,14 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
     return new Date(event_start_date) < new Date() && status != "C";
   };
 
+  const shouldShowReminderEmailButton = (status: string): boolean => {
+    return status == "A";
+  };
+
+  const shouldShowSendCertificateButton = (status: string): boolean => {
+    return status == "C";
+  };
+
   return (
     <>
       {data.map((event, index) => (
@@ -273,7 +280,7 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
           </Box>
           <Box
             w="100%"
-            h="71"
+            h="76"
             bg={index % 2 === 0 ? "#FFFFFF" : "#EDEEEE"}
             display="flex"
             justifyContent={"center"}
@@ -371,19 +378,6 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
                 </GridItem>
               ) : null}
 
-              {shouldShowDeleteButton(event.event_status) ? (
-                <GridItem colSpan={[1, 1]}>
-                  <IconButton
-                    colorScheme="blue"
-                    aria-label="Delete Event"
-                    icon={<DeleteIcon />}
-                    size={"sm"}
-                    onClick={handleDeleteClick}
-                    data-index={index}
-                  />
-                </GridItem>
-              ) : null}
-
               {shouldShowMarkAsCompletedButton(
                 event.event_status,
                 event.event_start_date
@@ -400,27 +394,44 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
                 </GridItem>
               ) : null}
 
-              <GridItem colSpan={[1, 1]}>
-                <IconButton
-                  colorScheme="blue"
-                  aria-label="Send certificate"
-                  icon={<StarIcon />}
-                  size={"sm"}
-                  onClick={handleSendCertificateClick}
-                  data-index={index}
-                />
-              </GridItem>
+              {shouldShowSendCertificateButton(event.event_status) ? (
+                <GridItem colSpan={[1, 1]}>
+                  <IconButton
+                    colorScheme="blue"
+                    aria-label="Send certificate"
+                    icon={<StarIcon />}
+                    size={"sm"}
+                    onClick={handleSendCertificateClick}
+                    data-index={index}
+                  />
+                </GridItem>
+              ) : null}
 
-              <GridItem colSpan={[1, 1]}>
-                <IconButton
-                  colorScheme="blue"
-                  aria-label="Send certificate"
-                  icon={<EmailIcon />}
-                  size={"sm"}
-                  onClick={handleReminderEmailClick}
-                  data-index={index}
-                />
-              </GridItem>
+              {shouldShowReminderEmailButton(event.event_status) ? (
+                <GridItem colSpan={[1, 1]}>
+                  <IconButton
+                    colorScheme="blue"
+                    aria-label="Send reminder email"
+                    icon={<EmailIcon />}
+                    size={"sm"}
+                    onClick={handleReminderEmailClick}
+                    data-index={index}
+                  />
+                </GridItem>
+              ) : null}
+
+              {shouldShowDeleteButton(event.event_status) ? (
+                <GridItem colSpan={[1, 1]}>
+                  <IconButton
+                    colorScheme="red"
+                    aria-label="Delete Event"
+                    icon={<DeleteIcon />}
+                    size={"sm"}
+                    onClick={handleDeleteClick}
+                    data-index={index}
+                  />
+                </GridItem>
+              ) : null}
             </Grid>
           </Box>
         </React.Fragment>
@@ -495,10 +506,7 @@ function GridEventSections({ data, setRefreshGrid }: GridEventSectionsProps) {
               Are you sure you want to send reminder emails for this event?
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button
-                ref={cancelRef}
-                onClick={onSendEmailConfirmationClose}
-              >
+              <Button ref={cancelRef} onClick={onSendEmailConfirmationClose}>
                 Cancel
               </Button>
               <Button
