@@ -33,9 +33,9 @@ import CreateEventPage from "../../pages/Organiser/CreateEventPage";
 import EditEventPage from "../../pages/Organiser/EditEventPage";
 import EventDetailsDashboard from "../../pages/Organiser/EventDetailsDashboard";
 import EventApproval from "../../pages/Admin/EventApproval";
-import LoginPage from "../LoginPage";
-import RegisterPage from "../RegisterPage";
-import NewLandingPage from "../NewLandingPage";
+import LoginPage from "../../pages/student/LoginPage";
+import NewLandingPage from "../../pages/student/NewLandingPage";
+import RegisterPage from "../../pages/student/RegisterPage";
 
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
