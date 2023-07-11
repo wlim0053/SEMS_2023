@@ -463,12 +463,6 @@ function CreateEventPage() {
             <FormControl>
               <FormLabel display="flex" alignItems="center">
                 Registration Start (Date and Time)
-                <Tooltip
-                  label="Please ensure registration deadline is 24 hours prior to or on the event date."
-                  aria-label="Information tooltip"
-                >
-                  <InfoOutlineIcon boxSize={4} ml={2} mt={0.5} color={"grey"} />
-                </Tooltip>
               </FormLabel>
               <DatePicker
                 id="registrationStart"
@@ -499,7 +493,15 @@ function CreateEventPage() {
 
             {/* Registration End (Date and Time) */}
             <FormControl>
-              <FormLabel>Registration End (Date and Time)</FormLabel>
+              <FormLabel>
+                Registration End (Date and Time)
+                <Tooltip
+                  label="Please ensure registration deadline is 24 hours prior to or on the event date."
+                  aria-label="Information tooltip"
+                >
+                  <InfoOutlineIcon boxSize={4} ml={2} mt={0.5} color={"grey"} />
+                </Tooltip>
+              </FormLabel>
               <DatePicker
                 id="registrationEnd"
                 name="registrationEnd"
