@@ -14,148 +14,210 @@ import {
   CardHeader,
   CardBody,
   Stack,
+  VisuallyHidden,
+  Center,
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Link,
 } from "@chakra-ui/react";
 import { EmailIcon } from "@chakra-ui/icons";
-import Grouppic from "../../components/student/Grouppic.jpg";
+import Devteam2022 from "./Devteam2022.jpg";
 
 const NewLandingPage = () => {
   return (
     <>
-      <Flex position="relative" overflow="auto">
-        <Box bgSize=" cover" height="100vh" position="relative">
+      <Flex
+        flexDirection={["column", "row"]}
+        alignItems="center"
+        justifyContent="space-between"
+        overflow="auto"
+      >
+        <Box bg="#000" h={["50vh", "92vh"]} w={["100vw", "50%"]}>
           <Image
-            height="100vh"
-            bgRepeat=" no-repeat"
-            right="0px"
             src="https://www.easyuni.my/media/institution/photo/2015/09/21/a53749f57df20f401babc429f03e613fead283.jpg.600x400_q85.jpg"
-          ></Image>
+            objectFit="cover"
+            h="100%"
+            w="100%"
+          />
         </Box>
 
         <Flex
-          height="100vh"
-          bg="#027EB6"
-          width="75vh"
-          position="relative"
+          flexDirection="column"
           alignItems="center"
           justifyContent="center"
-          alignContent="center"
-          flexDirection="column"
+          bg="#f6f6f6"
+          h={["42vh", "92vh"]}
+          w={["100vw", "50%"]}
         >
           <Heading
-            position="absolute"
-            fontWeight="bold"
-            bottom="40vh"
-            fontSize="60px"
-            color="white"
-            left="30px"
+            fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
+            fontSize={["8vw", "60px"]}
+            textAlign={"center"}
+            mb={10}
+            color={"black"}
+            mx={{ base: "10px", md: "20px" }}
           >
             STUDENT MANAGEMENT EXPERIENCE SYSTEM
           </Heading>
-          <ButtonGroup gap="10" position="relative" top="180px">
-            <Button
-              backgroundColor="white"
-              variant="outline"
-              leftIcon={<EmailIcon />}
-            >
-              Login
-            </Button>
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="space-between"
+            overflow="auto"
+          >
+            <ButtonGroup spacing={10} position="relative">
+              <Flex>
+                <Button
+                  variant="solid"
+                  color={"white"}
+                  bg="#006dae"
+                  _hover={{ bg: "#005c9e" }}
+                  leftIcon={<EmailIcon />}
+                >
+                  Login
+                </Button>
+              </Flex>
 
-            <Button
-              backgroundColor="white"
-              variant="outline"
-              leftIcon={<EmailIcon />}
-            >
-              Sign Up
-            </Button>
-          </ButtonGroup>
+              <Flex>
+                <Button
+                  variant="solid"
+                  color={"white"}
+                  bg="#006dae"
+                  _hover={{ bg: "#005c9e" }}
+                  leftIcon={<EmailIcon />}
+                >
+                  Sign Up
+                </Button>
+              </Flex>
+            </ButtonGroup>
+          </Flex>
         </Flex>
       </Flex>
 
-      <Flex
-        position="relative"
-        height="100vh"
-        flexWrap="wrap"
-        justifyContent="center"
-      >
-        <Box w="400px">
+      <Flex position="relative" flexWrap="wrap" justifyContent="center">
+        <Box
+          mx={{ base: "20px", md: "auto" }}
+          mb={{ base: "10px", md: "auto" }}
+          maxW={{ base: "100%", md: "600px" }}
+          width={{ base: "100vh", md: "70vh" }}
+          order={{ base: "1", md: "2" }}
+          fontFamily={"Helvetica Neue Light, sans-serif"}
+        >
           <Heading
-            position="relative"
-            top="150px"
+            fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
             fontWeight="bold"
             color="black"
+            textAlign={{ base: "center", md: "left" }}
+            mt={{ base: "50px", md: "100px" }}
           >
-            {" "}
-            About This Page{" "}
+            ABOUT THIS PAGE
           </Heading>
-          <Text position="relative" top="170px" lineHeight="25px">
-            {" "}
+          <Text lineHeight="25px" mt="20px">
             This page serves as a starting point for students in School of
-            Information Technology and School of Engineering to start on thier
+            Information Technology and School of Engineering to start on their
             exciting journey to explore and engage with various events and
             activities happening around Monash campus
           </Text>
-          <Text position="relative" top="190px" lineHeight="25px">
-            {" "}
+          <Text lineHeight="25px" mt="20px">
             This page acts as a hub of information, offering students a
             comprehensive overview of upcoming events, including social
             gatherings, workshops, club activities, sports competitions, and
             many more.
           </Text>
-        </Box>
-
-        <Box>
-          <Image
-            position="relative"
-            src={Grouppic}
-            objectFit="contain"
-            width="600px"
-            height="400px"
-            left="50px"
-            top="70px"
-          ></Image>
-        </Box>
-
-        <Box position="relative" w="1000px">
-          <Text position="relative" lineHeight="25px">
+          <Text lineHeight="25px" mt="20px">
             Its primary objective is to keep students informed and involved by
             providing details such as event descriptions, dates, times,
             locations, and any registration or ticketing requirements.
           </Text>
-          <Text position="relative" lineHeight="25px">
+          <Text lineHeight="25px" mt="20px">
             This page allows students to easily browse through the wide range of
             options available to them and select events that align with their
             interests, academic pursuits, or personal development goals.
           </Text>
         </Box>
+
+        <Flex
+          mx={{ base: "20px", md: "auto" }}
+          maxW={{ base: "100%", md: "300px" }}
+          width={{ base: "100vh", md: "50vh" }}
+          order={{ base: "2", md: "1" }}
+          justifyContent="center"
+          flexDirection="column"
+          alignItems="center"
+          my={{ base: "20px", md: "80px" }}
+        >
+          <Box mb="20px" fontFamily={"Helvetica Neue Light, sans-serif"}>
+            <Image
+              position="relative"
+              src={Devteam2022}
+              objectFit="contain"
+              maxW="100%"
+              height="auto"
+              mb={2}
+            />
+            <Center>2022 Development Team</Center>
+          </Box>
+          <Box>
+            <Image
+              position="relative"
+              src={Devteam2022}
+              objectFit="contain"
+              maxW="100%"
+              height="auto"
+              mb={2}
+            />
+            <Center>2023 Development Team</Center>
+          </Box>
+        </Flex>
       </Flex>
 
+      <Box bg="#f6f6f6" py={10}>
+        <Heading
+          fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
+          textAlign="center"
+          fontWeight="bold"
+          fontSize={{ base: "xl", md: "4xl" }} // Adjust font size for mobile and laptop views
+        >
+          SO WHY JOIN IN ON EVENTS?
+        </Heading>
+      </Box>
       <Flex
         position="relative"
-        height="100vh"
-        bg="#E6E6E6"
+        bg="#f6f6f6"
         justifyContent="space-around"
         flexWrap="wrap"
         overflow="auto"
+        p={2}
+        pb={10}
       >
-        <Heading position="absolute" fontWeight="bold">
-          So Why Join In On Events?
-        </Heading>
-
         <Card
           maxW="sm"
-          height="80vh"
+          maxH="80vh"
           position="relative"
-          top="65px"
-          left="50px"
+          mx={{ base: "2px", md: "4px" }}
+          mb={{ base: "2px", md: "4px" }}
         >
           <CardBody>
             <Image
               src="https://www.monash.edu.my/__data/assets/image/0010/1034938/blindfutsal4.jpg"
               borderRadius="lg"
+              height="220px"
             />
             <Stack mt="6" spacing="3">
-              <Heading size="md">Tons of Exciting Events</Heading>
-              <Text>
+              <Heading
+                fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
+                size="md"
+                textAlign={"center"}
+              >
+                TONS OF EXCITING EVENTS
+              </Heading>
+              <Text
+                fontFamily={"Helvetica Neue Light, sans-serif"}
+                textAlign={"center"}
+              >
                 Join in on various exiciting events to have fun with other
                 people, enjoy time in campus and pursue your own passion, which
                 can make your overall school experience much more enjoyable and
@@ -167,15 +229,31 @@ const NewLandingPage = () => {
 
         <Spacer />
 
-        <Card maxW="sm" height="80vh" position="relative" top="65px">
+        <Card
+          maxW="sm"
+          maxH="80vh"
+          position="relative"
+          mx={{ base: "2px", md: "4px" }}
+          mb={{ base: "15px", md: "30px" }}
+        >
           <CardBody>
             <Image
               src="https://www.monash.edu.my/__data/assets/image/0007/912922/home-involved-2020.png"
               borderRadius="lg"
+              height="220px"
             />
             <Stack mt="6" spacing="3">
-              <Heading size="md">Socialise</Heading>
-              <Text>
+              <Heading
+                fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
+                size="md"
+                textAlign={"center"}
+              >
+                SOCIALISE
+              </Heading>
+              <Text
+                fontFamily={"Helvetica Neue Light, sans-serif"}
+                textAlign={"center"}
+              >
                 Get to connect and interact with your peers who may share a
                 similar interest as you. Also to form new friendships,
                 developing your own social skills as well as creating a sense of
@@ -189,10 +267,9 @@ const NewLandingPage = () => {
 
         <Card
           maxW="sm"
-          height="80vh"
+          maxH="80vh"
           position="relative"
-          top="65px"
-          right="50px"
+          mx={{ base: "2px", md: "4px" }}
         >
           <CardBody>
             <Image
@@ -201,8 +278,17 @@ const NewLandingPage = () => {
               height="220px"
             />
             <Stack mt="6" spacing="3">
-              <Heading size="md">Self-Improvement</Heading>
-              <Text>
+              <Heading
+                fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
+                size="md"
+                textAlign={"center"}
+              >
+                SELF-IMPROVEMENT
+              </Heading>
+              <Text
+                fontFamily={"Helvetica Neue Light, sans-serif"}
+                textAlign={"center"}
+              >
                 Acts as an opportunity for students to further develop and
                 enhance a wide range of skills, regardless of the type of
                 activities. Students will gte to improve their soft skills such
@@ -214,95 +300,131 @@ const NewLandingPage = () => {
         </Card>
       </Flex>
 
-      <Flex position="relative" overflow="auto">
-        <Box
-          height="100vh"
-          bg="#027EB6"
-          width="75vh"
-          position="relative"
-          alignItems="center"
-        >
+      <Stack direction={{ base: "column", md: "row" }} overflow="auto">
+        <Box bg="#006dae" position="relative" alignItems="center" py={8} px={4}>
           <Heading
-            position="absolute"
+            fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
             fontWeight="bold"
-            bottom="40vh"
-            fontSize="60px"
+            fontSize={{ base: "24px", md: "4xl" }}
             color="white"
-            left="30px"
+            textAlign={{ base: "center", md: "left" }}
           >
             SO WHAT CAN YOU DO ON THIS PAGE?
           </Heading>
         </Box>
 
         <Flex
-          height="100vh"
           width="100%"
-          position="relative"
           bg="white"
           alignItems="center"
+          py={8}
+          px={4}
+          direction="column"
         >
-          <Card position="relative" height="50vh">
-            <CardHeader>
-              <Heading size="md">Students</Heading>
-            </CardHeader>
-            <CardBody>
-              <List>
-                <ListItem fontSize={18}>- Register for events</ListItem>
-                <ListItem fontSize={18}>
-                  - View events that they have signed up for, on a personal
-                  calendar
-                </ListItem>
-                <ListItem fontSize={18}>
-                  - Search for all events organised by different schools and
-                  clubs
-                </ListItem>
-                <ListItem fontSize={18}>
-                  - Track all previously attended events
-                </ListItem>
-              </List>
-            </CardBody>
-          </Card>
+          <Accordion
+            allowMultiple
+            width="100%"
+            defaultIndex={[0, 1]}
+            fontFamily={"Helvetica Neue Light, sans-serif"}
+          >
+            <AccordionItem>
+              <AccordionButton>
+                <Box flex="1" textAlign="left">
+                  <Heading
+                    fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
+                    size="md"
+                  >
+                    STUDENTS
+                  </Heading>
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel pb={4}>
+                <List spacing={2}>
+                  <ListItem fontSize={18}>- Register for events</ListItem>
+                  <ListItem fontSize={18}>
+                    - View events that they have signed up for, on a personal
+                    calendar
+                  </ListItem>
+                  <ListItem fontSize={18}>
+                    - Search for all events organised by different schools and
+                    clubs
+                  </ListItem>
+                  <ListItem fontSize={18}>
+                    - Track all previously attended events
+                  </ListItem>
+                </List>
+              </AccordionPanel>
+            </AccordionItem>
 
-          <Spacer />
-
-          <Card position="relative" height="50vh">
-            <CardHeader>
-              <Heading size="md">Organisers</Heading>
-            </CardHeader>
-            <CardBody>
-              <List>
-                <ListItem fontSize={18}>
-                  - Create various amount of events
-                </ListItem>
-                <ListItem fontSize={18}>
-                  - To manage each of the events that have been created
-                </ListItem>
-                <ListItem fontSize={18}>
-                  - Provide the relevant information of the events
-                </ListItem>
-              </List>
-            </CardBody>
-          </Card>
+            <AccordionItem>
+              <AccordionButton>
+                <Box flex="1" textAlign="left">
+                  <Heading
+                    fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
+                    size="md"
+                  >
+                    ORGANISERS
+                  </Heading>
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel pb={4}>
+                <List spacing={2}>
+                  <ListItem fontSize={18}>
+                    - Create various amount of events
+                  </ListItem>
+                  <ListItem fontSize={18}>
+                    - To manage each of the events that have been created
+                  </ListItem>
+                  <ListItem fontSize={18}>
+                    - Provide the relevant information of the events
+                  </ListItem>
+                </List>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
         </Flex>
-      </Flex>
+      </Stack>
 
       <Flex
-        bg="#5A5A5A"
+        bg="#323232"
         width="100%"
-        height="15vh"
+        minHeight="15vh"
         flexDirection="column"
         justifyContent="center"
+        p={4}
       >
-        <Text fontSize="2xl" color="white">
-          {" "}
-          Data Policy
+        <Text
+          fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
+          fontSize={{ base: "md", md: "lg" }}
+          fontWeight={"bold"}
+          color="white"
+          mb={2}
+        >
+          DATA POLICY
         </Text>
 
-        <Divider orientation="horizontal" />
-        <Text color="white" fontSize="m">
-          {" "}
+        <Divider orientation="horizontal" borderColor="white" mb={2} />
+
+        <Text
+          fontFamily={"Helvetica Neue Light, sans-serif"}
+          color="white"
+          fontSize={{ base: "xs", md: "sm" }}
+        >
           All rights belong to Monash
         </Text>
+        <Link
+          href="https://tinyurl.com/3k752nvf"
+          color="white"
+          fontSize={{ base: "sm", md: "md" }}
+          textDecoration="none"
+          _hover={{ textDecoration: "underline" }}
+          isExternal
+          fontFamily={"Helvetica Neue Light, sans-serif"}
+        >
+          Read Our Data Policy
+        </Link>
       </Flex>
     </>
   );
