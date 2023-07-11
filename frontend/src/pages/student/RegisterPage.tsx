@@ -70,6 +70,8 @@ const RegisterPage: React.FC = () => {
 
   // Fetches data from the database
   useEffect(() => {
+    console.log(user.uid);
+    console.log(user.email);
     const fetchData = async () => {
       try {
         await api.get("/school").then((response) => {

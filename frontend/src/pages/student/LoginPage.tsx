@@ -2,7 +2,7 @@
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import UserContext, {User} from '../../components/shared/UserContext';
 
-import './firebase-config';
+import '../../components/shared/firebase-config';
 import React, { useState, FormEvent, useContext } from 'react';
 import {
 Box,
