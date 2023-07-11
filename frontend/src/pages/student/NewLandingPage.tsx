@@ -51,9 +51,15 @@ const NewLandingPage = () => {
           h={["42vh", "92vh"]}
           w={["100vw", "50%"]}
         >
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="space-between"
+            overflow="auto"
+          >
           <Heading
             fontFamily={"Helvetica Neue Condensed Bold, sans-serif"}
-            fontSize={["8vw", "60px"]}
+            fontSize={["8vw", "4vw"]}
             textAlign={"center"}
             mb={10}
             color={"black"}
@@ -61,17 +67,12 @@ const NewLandingPage = () => {
           >
             STUDENT MANAGEMENT EXPERIENCE SYSTEM
           </Heading>
-          <Flex
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="space-between"
-            overflow="auto"
-          >
             <ButtonGroup spacing={10} position="relative">
               <Flex>
                 <Button
                   variant="solid"
                   color={"white"}
+                  minW={{ base: "100px", md: "150px" }}
                   bg="#006dae"
                   _hover={{ bg: "#005c9e" }}
                   leftIcon={<EmailIcon />}
@@ -84,6 +85,7 @@ const NewLandingPage = () => {
                 <Button
                   variant="solid"
                   color={"white"}
+                  minW={{ base: "100px", md: "150px" }}
                   bg="#006dae"
                   _hover={{ bg: "#005c9e" }}
                   leftIcon={<EmailIcon />}
