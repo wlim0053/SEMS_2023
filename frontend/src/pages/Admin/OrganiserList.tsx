@@ -51,12 +51,13 @@ const OrganiserList = () => {
     { key: "actions", value: "Actions", disableSorting: true },
   ];
 
-  type sortField = "ID" | "Name" | "Club" | "Email";
+  type sortField = "Name" | "Club";
 
   const [organisers, setOrganiser] = useState([]);
   const [organiserID, setOrganiserID] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedSort, setSelectedSort] = useState<sortField>("Name");
 
   const [inputName, setInputName] = useState("");
@@ -66,7 +67,9 @@ const OrganiserList = () => {
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editClub, setEditClub] = useState("");
+  const [editClubFlag, setEditClubFlag] = useState(false);
 
+  const [parentClub, setParentClub] = useState(new Map()); //parent club list
   const [parentClubSelection, setParentClubSelection] = useState<
     Object[] | null
   >(null);
@@ -86,9 +89,7 @@ const OrganiserList = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSort = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSort(event.target.value as sortField);
-  };
+  //TODO: handle sorting
 
   const handleEdit = (id: any) => {
     onOpenEdit();
@@ -98,13 +99,15 @@ const OrganiserList = () => {
   const bodyAdmin = {
     organiser_name: inputName,
     parent_uuid: inputClub === "" ? null : inputClub,
-    user_fire_id: inputEmail,
+    user_email: inputEmail,
   };
   //get organiser from api
   const fetchOrganiser = async () => {
     try {
       const response = await api.get("/organiser");
       setOrganiser(response.data);
+      extractParentClub();
+      handleSort(response.data);
       console.log(response.data);
     } catch (error) {
       console.log(error);
@@ -116,12 +119,11 @@ const OrganiserList = () => {
     fetchOrganiser();
   }, []);
 
+  //function to extract the clubs with parent uuid = null
   const extractParentClub = async () => {
     try {
-      //localhost:3000/api/organiser?parent_uuid=null
       const response = await api.get("/organiser?parent_uuid=null");
       setParentClubSelection(response.data);
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -130,9 +132,8 @@ const OrganiserList = () => {
   //add organiser to database using post
   /* we need to manually add the admins into the db, can assume admin is in organiser list already */
 
-  // MUSA can be parent club with parent_uuid = null, but not admin
-  // not every parent is admin, admin is a parent club
-
+  //MUSA can be parent club with parent_uuid = null, but not admin
+  //not every parent is admin, admin is a parent club
   const addOrganiser = async (e: any) => {
     e.preventDefault();
     if (inputClub === "null" || inputClub === "") {
@@ -152,6 +153,7 @@ const OrganiserList = () => {
       setInputEmail("");
       setInputClub("");
     } catch (error) {
+      validateForm(error);
       console.log(error);
       setInputName("");
       setInputEmail("");
@@ -164,48 +166,55 @@ const OrganiserList = () => {
     try {
       const response = await api.get(`/organiser/${id}`);
       setEditName(response.data[0].organiser_name);
-      setEditEmail(response.data[0].user_fire_id);
-      /**
-       * club should be obtained by organiser's parent uuid
-       */
-      //setInputClub(response.data[0].club);
-      //console.log(response.data[0].club);
-      //console.log(response.data);
+      setEditEmail(response.data[0].user_email);
+      if (response.data[0].parent_uuid === null) {
+        setEditClub("None");
+        setEditClubFlag(true);
+      } else {
+        setEditClub(response.data[0].parent_uuid);
+        setEditClubFlag(false);
+      }
       setOrganiserID(id);
     } catch (error) {
       console.log(error);
     }
   };
 
+  //json body for updating organiser
+  const bodyUpdate = {
+    organiser_name: editName,
+    parent_uuid: editClub === "" ? null : editClub,
+    user_email: editEmail,
+  };
+
   //update organiser details
   const updateOrganiser = async (id: any) => {
-    const bodyUpdate = {
-      organiser_name: editName,
-      parent_uuid: null,
-      user_fire_id: editEmail,
-    };
+    if (inputClub === "null" || inputClub === "") {
+      bodyUpdate.parent_uuid = null;
+    }
     try {
       if (organiserID === id) {
         const response = await api.put(`/organiser/${id}`, bodyUpdate);
+        setTimeout(() => fetchOrganiser(), 200);
+        toast({
+          title: "Organiser updated successfully!",
+          status: "success",
+          position: "top",
+          duration: 3000,
+          isClosable: true,
+        });
+        setEditName("");
+        setEditEmail("");
+        setEditClub("");
       }
-      setTimeout(() => fetchOrganiser(), 200);
-      toast({
-        title: "Organiser updated successfully!",
-        status: "success",
-        position: "top",
-        duration: 3000,
-        isClosable: true,
-      });
-      setEditName("");
-      setEditEmail("");
-      setEditClub("");
     } catch (error) {
+      validateForm(error);
       console.log(error);
     }
   };
 
   /**organiser that created event cant be deleted.
-   * Eg IC and Car, Want to sell car, but the car is tie to your IC.
+   * Eg IC and Car, Want to sell car, but the car is tied to your IC.
    * How do u settle the car.*/
   //function to delete organiser by calling api delete
   //TODO: cannot delete parent if parent got child
@@ -235,6 +244,27 @@ const OrganiserList = () => {
     }
   };
 
+  //function to return the error message on input validation
+  const validateForm = (error) => {
+    if (error.response.status === 422) {
+      toast({
+        title: "Invalid name or email!",
+        status: "error",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
+    } else if (error.response.status === 404) {
+      toast({
+        title: "User email not found!",
+        status: "error",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     //add each component to box and add flex or wrap to make it responsive
     <Box width="100%" p="10" overflowX="auto">
@@ -254,17 +284,17 @@ const OrganiserList = () => {
           placeholder="Search for an organiser"
           width="20%"
         />
-        <Text px={5}>Sort by: </Text>
+        {/* <Text px={5}>Sort by: </Text>
         <Select
           variant="outline"
           placeholder="--select an option--"
           width="20%"
-          onChange={handleSort}
           value={selectedSort}
+          onChange={(e) => setSelectedSort(e.target.value as sortField)}
         >
           <option value="option1">Club</option>
           <option value="option2">Name</option>
-        </Select>
+        </Select> */}
         <Button
           leftIcon={<AddIcon />}
           colorScheme="telegram"
@@ -272,7 +302,6 @@ const OrganiserList = () => {
           variant="solid"
           onClick={() => {
             onOpen();
-            extractParentClub();
           }}
           ref={finalRef}
         >
@@ -284,13 +313,14 @@ const OrganiserList = () => {
         onClose={onClose}
         initialFocusRef={initialRef}
         finalFocusRef={finalRef}
+        closeOnOverlayClick={false}
       >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Create organiser</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel>Name</FormLabel>
               <Input
                 value={inputName}
@@ -299,7 +329,7 @@ const OrganiserList = () => {
               />
             </FormControl>
 
-            <FormControl mt={4}>
+            <FormControl mt={4} isRequired>
               <FormLabel>Email</FormLabel>
               <Input
                 value={inputEmail}
@@ -336,7 +366,7 @@ const OrganiserList = () => {
               </Select>
             </FormControl>
 
-            <FormControl mt={4}>
+            {/* <FormControl mt={4}>
               <FormLabel>Import Organiser (CSV)</FormLabel>
               <Button
                 leftIcon={<BiUpload />}
@@ -345,7 +375,7 @@ const OrganiserList = () => {
               >
                 Add File
               </Button>
-            </FormControl>
+            </FormControl> */}
           </ModalBody>
 
           <ModalFooter>
@@ -360,7 +390,14 @@ const OrganiserList = () => {
             >
               Save
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                onClose();
+              }}
+            >
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -453,10 +490,24 @@ const OrganiserList = () => {
                     width="50%"
                     value={editClub}
                     onChange={(e) => setEditClub(e.target.value)}
+                    disabled={editClubFlag}
                   >
-                    <option value="MUMEC">MUMEC</option>
-                    <option value="MUMTEC">MUMTEC</option>
-                    <option value="Monash Staff">Monash Staff</option>
+                    /* Assuming that the admin is already in organiser list*/
+                    <option value="null" key="None">
+                      None
+                    </option>
+                    {parentClubSelection ? (
+                      parentClubSelection.map((club: any) => (
+                        <option
+                          value={club.organiser_uuid}
+                          key={club.organiser_name}
+                        >
+                          {club.organiser_name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" key="None"></option>
+                    )}
                   </Select>
                 </FormControl>
               </ModalBody>
