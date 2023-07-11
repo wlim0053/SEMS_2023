@@ -248,7 +248,7 @@ const NewLandingPage = () => {
                 textAlign={"center"}
               >
                 SOCIALISE
-              </Heading>
+              </Heading> 
               <Text
                 fontFamily={"Helvetica Neue Light, sans-serif"}
                 textAlign={"center"}
