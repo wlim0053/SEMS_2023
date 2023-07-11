@@ -60,8 +60,19 @@ const EventApproval = () => {
     { key: "actions", value: "Actions", disableSorting: true },
   ];
 
+  interface EventDetails {
+    event_title: string;
+    event_desc: string;
+    organiser_name: string;
+    event_start_date: string;
+    event_end_date: string;
+    event_venue: string;
+    event_capacity: number;
+    event_ems_no: string;
+    event_ems_link: string;
+  }
+
   type sortField = "Event" | "Status" | "Email";
-  const [viewEvent, setViewEvent] = useState([]);
   const [events, setEvents] = useState([]);
   const [eventID, setEventID] = useState("");
 
@@ -72,6 +83,17 @@ const EventApproval = () => {
   const [inputEmsLink, setInputEmsLink] = useState("");
   const [eventStatus, setEventStatus] = useState("");
   const [eventStatusColor, setEventStatusColor] = useState("");
+  const [eventDetails, setEventDetails] = useState<EventDetails>({
+    event_title: "",
+    event_desc: "",
+    organiser_name: "",
+    event_start_date: "",
+    event_end_date: "",
+    event_venue: "",
+    event_capacity: 0,
+    event_ems_no: "",
+    event_ems_link: "",
+  });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -108,7 +130,7 @@ const EventApproval = () => {
       console.log(response.data);
       switch (response.data[0].event_status) {
         case "P":
-          setEventStatus("Pending");
+          setEventStatus("Pending Approval");
           setEventStatusColor("yellow");
           break;
         case "A":
@@ -125,17 +147,6 @@ const EventApproval = () => {
     }
   };
 
-  // function to set event ems number and link
-  const getEventById = async (id: string) => {
-    try {
-      const response = await api.get(`/event/for-organiser/${id}`);
-      setViewEvent(response.data);
-      setEventID(id);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   // function to approve the event
   const approveEvent = async (id: string) => {
     const bodyUpdate = {
@@ -143,7 +154,7 @@ const EventApproval = () => {
       event_ems_link: inputEmsLink,
     };
     try {
-      if (eventStatus != "Approved" && eventStatus != "Rejected") {
+      if (eventStatus != "Approved") {
         const response = await api.patch(
           `/event/for-admin/${id}/approve`,
           bodyUpdate
@@ -160,6 +171,13 @@ const EventApproval = () => {
       }
     } catch (error) {
       console.log(error);
+      toast({
+        title: "Invalid EMS number or link!",
+        status: "error",
+        position: "top",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -207,7 +225,7 @@ const EventApproval = () => {
           placeholder="Search for an event"
           width="20%"
         />
-        <Text px={5}>Sort by: </Text>
+        {/* <Text px={5}>Sort by: </Text>
         <Select
           variant="outline"
           placeholder="--select an option--"
@@ -221,7 +239,7 @@ const EventApproval = () => {
           <option key="option2" value="option2">
             Event
           </option>
-        </Select>
+        </Select> */}
       </Box>
 
       <Table variant="striped">
@@ -244,25 +262,45 @@ const EventApproval = () => {
                     .includes(searchTerm.toLowerCase());
             })
             .map((event: any) => (
-              <Tr key="table">
-                <Td key="event title">{event.event_title}</Td>
-                <Td key="organiser name">{event.organiser_name}</Td>
-                <Td key="status">
+              <Tr>
+                <Td>{event.event_title}</Td>
+                <Td>{event.organiser_name}</Td>
+                <Td>
                   <Tag colorScheme={eventStatusColor}>{eventStatus}</Tag>
                 </Td>
-                <Td key="details">
+                <Td>
                   <Link
                     textColor="blue.600"
                     fontWeight="semibold"
                     onClick={() => {
-                      getEventById(event.event_uuid);
                       onOpenDetails();
+                      setEventDetails({
+                        event_title: event.event_title,
+                        event_desc: event.event_desc,
+                        organiser_name: event.organiser_name,
+                        event_start_date: new Date(
+                          event.event_start_date
+                        ).toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }),
+                        event_end_date: new Date(
+                          event.event_end_date
+                        ).toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }),
+                        event_venue: event.event_venue,
+                        event_capacity: event.event_capacity,
+                        event_ems_no: event.event_ems_no,
+                        event_ems_link: event.event_ems_link,
+                      });
                     }}
                   >
                     View More
                   </Link>
                 </Td>
-                <Td key="actions">
+                <Td>
                   <HStack spacing={3}>
                     <Button
                       colorScheme="whatsapp"
@@ -270,7 +308,7 @@ const EventApproval = () => {
                       border="1px"
                       leftIcon={<CheckIcon />}
                       onClick={() => {
-                        getEventById(event.event_uuid);
+                        setEventID(event.event_uuid);
                         onOpen();
                       }}
                     >
@@ -282,7 +320,7 @@ const EventApproval = () => {
                       border="1px"
                       leftIcon={<CloseIcon />}
                       onClick={() => {
-                        getEventById(event.event_uuid);
+                        setEventID(event.event_uuid);
                         onOpenAlert();
                       }}
                     >
@@ -292,6 +330,31 @@ const EventApproval = () => {
                 </Td>
               </Tr>
             ))}
+
+          <Modal onClose={onCloseDetails} isOpen={isOpenDetails} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader fontSize="2xl">Event Details</ModalHeader>
+              <ModalBody>
+                <Box key="detailBox">
+                  <Text key="event_details" fontSize="lg">
+                    Title: {eventDetails.event_title} <br />
+                    Description: {eventDetails.event_desc} <br />
+                    Organiser: {eventDetails.organiser_name} <br />
+                    Start Date: {eventDetails.event_start_date} <br />
+                    End Date: {eventDetails.event_end_date} <br />
+                    Venue: {eventDetails.event_venue} <br />
+                    Capacity: {eventDetails.event_capacity} <br />
+                    EMS Number: {eventDetails.event_ems_no} <br />
+                    EMS Link: {eventDetails.event_ems_link} <br />
+                  </Text>
+                </Box>
+              </ModalBody>
+              <ModalFooter>
+                <Button onClick={onCloseDetails}>Close</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
 
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -332,37 +395,10 @@ const EventApproval = () => {
             </ModalContent>
           </Modal>
 
-          <Modal onClose={onCloseDetails} isOpen={isOpenDetails} isCentered>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Event Details</ModalHeader>
-              <ModalBody>
-                {viewEvent.map((event: any) => (
-                  <Box key="detailBox">
-                    <Text key="details">
-                      Title: {event.event_title} <br />
-                      Description: {event.event_desc} <br />
-                      Organiser: {event.organiser_name} <br />
-                      Start Date: {event.event_start_date} <br />
-                      End Date: {event.event_end_date} <br />
-                      Venue: {event.event_venue} <br />
-                      Capacity: {event.event_capacity} <br />
-                      EMS Number: {event.event_ems_no} <br />
-                      EMS Link: {event.event_ems_link} <br />
-                    </Text>
-                  </Box>
-                ))}
-              </ModalBody>
-              <ModalFooter>
-                <Button onClick={onCloseDetails}>Close</Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
-
           <AlertDialog
             isOpen={isOpenAlert}
-            leastDestructiveRef={cancelRef}
             onClose={onCloseAlert}
+            leastDestructiveRef={cancelRef}
           >
             <AlertDialogOverlay>
               <AlertDialogContent>
