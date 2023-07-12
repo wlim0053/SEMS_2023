@@ -6,7 +6,7 @@ import {
 } from "../controllers/userController"
 import { User, UserLogin, UserWithFireId } from "../interfaces/user"
 import { requestValidators } from "../middlewares/requestValidator"
-import { verifyJwtHandler } from "../middlewares/jwtHandler"
+import { checkLoginHandler, verifyJwtHandler } from "../middlewares/jwtHandler"
 
 export const userRouter = express.Router()
 
@@ -20,7 +20,7 @@ userRouter
 
 userRouter
 	.route("/auth")
-	.get(verifyJwtHandler(["A","O","S"]))
+	.get(checkLoginHandler())
 
 userRouter
 	.route("/:id")
