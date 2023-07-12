@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useState} from "react"
+import UserContext, {User} from "./UserContext"
 import {
   Box,
   Button,
@@ -18,7 +19,7 @@ import {
   Image,
   Flex,
   Spacer,
-} from "@chakra-ui/react";
+} from "@chakra-ui/react"
 
 import HistoryPage from "../../pages/student/HistoryPage";
 import { HamburgerIcon } from "@chakra-ui/icons";
@@ -37,8 +38,9 @@ import LoginPage from "../../pages/student/LoginPage";
 import RegisterPage from "../../pages/student/RegisterPage";
 
 const Navbar = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const buttonRef = React.useRef(null);
+	const { isOpen, onOpen, onClose } = useDisclosure()
+	const buttonRef = React.useRef(null)
+	const [user, setUser] = useState<User>({uid: "", email: "", name: ""})
 
   return (
     <>
@@ -125,6 +127,7 @@ const Navbar = () => {
         </DrawerContent>
       </Drawer>
 
+			<UserContext.Provider value={{user, setUser}}>
       <Routes>
         <Route path="/" element="" />
         <Route path="/Admin" element={<Admin />} />
@@ -144,6 +147,7 @@ const Navbar = () => {
           element={<EventDetailsDashboard />}
         />
       </Routes>
+			</UserContext.Provider>
     </>
   );
 };
